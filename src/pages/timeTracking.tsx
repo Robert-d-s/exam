@@ -7,7 +7,7 @@ const getCurrentDate = () => {
 const adjustForTimezone = (date: Date) => {
   const timeOffsetInMS = date.getTimezoneOffset() * 60000;
   const adjustedDate = new Date(date.getTime() - timeOffsetInMS);
-  return adjustedDate.toISOString().split("T")[1].substr(0, 8);
+  return adjustedDate.toISOString().split("T")[1].slice(0, 8);
 };
 
 const TimeKeeper: React.FC = () => {
@@ -56,8 +56,9 @@ const TimeKeeper: React.FC = () => {
     setIsRunning(false);
     setElapsedTime(0);
     setPreviousElapsedTime(0);
-    const current = new Date().toISOString().substr(11, 8);
-    setStartTime(current);
+    const current = new Date();
+    const adjustedTime = adjustForTimezone(current);
+    setStartTime(adjustedTime);
   };
 
   useEffect(() => {
@@ -181,67 +182,116 @@ const TimeKeeper: React.FC = () => {
   };
 
   return (
-    <div>
-      <h2>Time Keeper</h2>
+    <div className="max-w-lg mx-auto p-6 bg-gray-400 rounded shadow-md flex flex-col">
+      <h2 className="text-2xl mb-6 text-black flex items-center justify-center">
+        § Track Time §
+      </h2>
 
-      {/* Timer display */}
-      <div>{new Date(elapsedTime).toISOString().substr(11, 8)}</div>
+      <div className="text-xl mb-4 bg-gray-100 text-black flex items-center justify-center">
+        {new Date(elapsedTime).toISOString().substr(11, 8).replace(/\./g, ":")}
+      </div>
 
-      {/* Resume/Stop button */}
-      <button onClick={() => setIsRunning(!isRunning)}>
-        {isRunning ? "Stop" : "Start"}
-      </button>
-
-      {/* Reset button */}
-      <button onClick={handleReset}>Reset</button>
-
-      <select
-        value={selectedUser}
-        onChange={(e) => setSelectedUser(e.target.value)}
-      >
-        <option value="">Select a user</option>
-        {users.map((user) => (
-          <option key={user.id} value={user.id}>
-            {user.email}
+      <div className="mt-4">
+        <select
+          value={selectedUser}
+          onChange={(e) => setSelectedUser(e.target.value)}
+          className="form-select block w-full mt-1"
+        >
+          <option value="" disabled>
+            Select a user
           </option>
-        ))}
-      </select>
-      <select
-        value={selectedProject}
-        onChange={(e) => setSelectedProject(e.target.value)}
-      >
-        <option value="">Select a project</option>
-        {projects.map((project) => (
-          <option key={project.id} value={project.id}>
-            {project.name}
+          {users.map((user) => (
+            <option key={user.id} value={user.id}>
+              {user.email}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={selectedProject}
+          onChange={(e) => setSelectedProject(e.target.value)}
+          className="form-select block w-full mt-4"
+        >
+          <option className="text-black" value="">
+            Select a project
           </option>
-        ))}
-      </select>
-      <select
-        value={selectedRate}
-        onChange={(e) => setSelectedRate(e.target.value)}
-      >
-        disabled={!selectedProject}
-        <option value="">
-          {selectedProject ? "Select a rate" : "Select a project first"}
-        </option>
-        {rates.map((rate) => (
-          <option key={rate.id} value={rate.id}>
-            {rate.name} {rate.rate}
-          </option>
-        ))}
-      </select>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="time"
-          step="1"
+          {projects.map((project) => (
+            <option key={project.id} value={project.id}>
+              {project.name}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={selectedRate}
+          onChange={(e) => setSelectedRate(e.target.value)}
+          className="form-select block w-full mt-4"
+          disabled={!selectedProject}
+        >
+          <option value="">Select a rate</option>
+          {rates.map((rate) => (
+            <option key={rate.id} value={rate.id}>
+              {rate.name} {rate.rate}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <form onSubmit={handleSubmit} className="mt-6">
+        {/* <input
+          type="text"
           value={startTime}
-          onChange={(e) => setStartTime(e.target.value)}
-        />
+          onChange={(e) => {
+            const formattedTime = e.target.value.replace(/\./g, ":");
+            setStartTime(formattedTime);
+          }}
+          pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]"
+          placeholder="00:00:00"
+          className="form-input block w-full text-center"
+        /> */}
 
-        <button type="submit" disabled={elapsedTime === 0}>
-          Submit
-        </button>
+        <div className="flex items-center justify-between">
+          <label htmlFor="startTime" className="mr-2">
+            Started at:
+          </label>
+          <input
+            id="startTime"
+            type="text"
+            value={startTime}
+            onChange={(e) => {
+              const formattedTime = e.target.value.replace(/\./g, ":");
+              setStartTime(formattedTime);
+            }}
+            pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]"
+            placeholder="00:00:00"
+            className="form-input flex-grow text-center"
+          />
+        </div>
+
+        <div className="flex justify-between mt-auto py-6">
+          <button
+            type="button"
+            onClick={() => setIsRunning(!isRunning)}
+            className="px-4 py-2 bg-blue-500 text-white rounded"
+            disabled={!selectedUser || !selectedProject || !selectedRate}
+          >
+            {isRunning ? "Stop" : "Start"}
+          </button>
+          <button
+            type="button"
+            onClick={handleReset}
+            className="px-4 py-2 bg-red-500 text-white rounded"
+          >
+            Reset
+          </button>
+          <button
+            type="submit"
+            disabled={elapsedTime === 0}
+            className="px-4 py-2 bg-green-500 text-white rounded"
+          >
+            Submit
+          </button>
+        </div>
       </form>
     </div>
   );
