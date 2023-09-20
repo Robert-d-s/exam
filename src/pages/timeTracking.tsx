@@ -238,18 +238,6 @@ const TimeKeeper: React.FC = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="mt-6">
-        {/* <input
-          type="text"
-          value={startTime}
-          onChange={(e) => {
-            const formattedTime = e.target.value.replace(/\./g, ":");
-            setStartTime(formattedTime);
-          }}
-          pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]"
-          placeholder="00:00:00"
-          className="form-input block w-full text-center"
-        /> */}
-
         <div className="flex items-center justify-between">
           <label htmlFor="startTime" className="mr-2">
             Started at:
