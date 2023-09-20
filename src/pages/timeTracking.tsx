@@ -24,33 +24,84 @@ const TimeKeeper: React.FC = () => {
   const [previousElapsedTime, setPreviousElapsedTime] = useState<number>(0);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [startTimeInputFocused, setStartTimeInputFocused] = useState(false);
+  const [isInitial, setIsInitial] = useState(true);
+
   useEffect(() => {
-    if (isRunning) {
-      if (!startTime) {
+    if (isInitial) {
+      const interval = setInterval(() => {
         const current = new Date();
         const adjustedTime = adjustForTimezone(current);
         setStartTime(adjustedTime);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [isInitial]);
+
+  useEffect(() => {
+    if (
+      !isRunning &&
+      !startTimeInputFocused &&
+      !previousElapsedTime &&
+      !startTimeRef.current
+    ) {
+      const interval = setInterval(() => {
+        const current = new Date();
+        const adjustedTime = adjustForTimezone(current);
+        setStartTime(adjustedTime);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+
+    if (isRunning && !timerIntervalRef.current) {
+      setIsInitial(false);
+      if (!startTime) {
+        const current = new Date();
+        const adjustedTime = adjustForTimezone(current);
+        console.log("Setting startTime:", adjustedTime);
+        setStartTime(adjustedTime);
       }
-      startTimeRef.current = new Date();
+
+      //   startTimeRef.current = new Date(startTime);
+
+      const currentDate = getCurrentDate();
+      const currentDateTime = new Date(`${currentDate}T${startTime}`);
+      const adjustedTime = adjustForTimezone(currentDateTime);
+      startTimeRef.current = new Date(`${currentDate}T${adjustedTime}`);
+
+      // Set initial value of elapsed time to previousElapsedTime when resuming
+      let currentElapsedTime = previousElapsedTime;
+
       timerIntervalRef.current = setInterval(() => {
         const now = new Date().getTime();
-        const elapsed =
-          now - (startTimeRef.current?.getTime() || now) + previousElapsedTime;
-        setElapsedTime(elapsed);
+        currentElapsedTime += 1000; // Increase by one second
+        // const elapsed =
+        //   now - (startTimeRef.current?.getTime() || now) + previousElapsedTime;
+        console.log(
+          "Now:",
+          now,
+          "StartTime:",
+          startTimeRef.current?.getTime(),
+          //   "Elapsed:",
+          //   elapsed
+          "Elapsed:",
+          currentElapsedTime
+        );
+        // setElapsedTime(elapsed);
+        setElapsedTime(currentElapsedTime);
       }, 1000);
-    } else {
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
-        timerIntervalRef.current = null;
-        setPreviousElapsedTime(elapsedTime);
-      }
+    } else if (!isRunning && timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+      setPreviousElapsedTime(elapsedTime);
     }
+
     return () => {
       if (timerIntervalRef.current) {
         clearInterval(timerIntervalRef.current);
       }
     };
-  }, [isRunning, previousElapsedTime, startTime]);
+  }, [isRunning, startTime, startTimeInputFocused]);
 
   const handleReset = () => {
     setIsRunning(false);
@@ -59,6 +110,8 @@ const TimeKeeper: React.FC = () => {
     const current = new Date();
     const adjustedTime = adjustForTimezone(current);
     setStartTime(adjustedTime);
+    setIsInitial(true);
+    startTimeRef.current = null;
   };
 
   useEffect(() => {
@@ -246,6 +299,8 @@ const TimeKeeper: React.FC = () => {
             id="startTime"
             type="text"
             value={startTime}
+            onFocus={() => setStartTimeInputFocused(true)}
+            onBlur={() => setStartTimeInputFocused(false)}
             onChange={(e) => {
               const formattedTime = e.target.value.replace(/\./g, ":");
               setStartTime(formattedTime);
@@ -259,7 +314,11 @@ const TimeKeeper: React.FC = () => {
         <div className="flex justify-between mt-auto py-6">
           <button
             type="button"
-            onClick={() => setIsRunning(!isRunning)}
+            onClick={() => {
+              console.log(isRunning ? "Stopping timer" : "Starting timer");
+
+              setIsRunning(!isRunning);
+            }}
             className="px-4 py-2 bg-blue-500 text-white rounded"
             disabled={!selectedUser || !selectedProject || !selectedRate}
           >
