@@ -112,6 +112,11 @@ const TimeKeeper: React.FC = () => {
     setStartTime(adjustedTime);
     setIsInitial(true);
     startTimeRef.current = null;
+
+    // Reset the dropdown menus
+    setSelectedUser("");
+    setSelectedProject("");
+    setSelectedRate("");
   };
 
   useEffect(() => {
@@ -234,6 +239,16 @@ const TimeKeeper: React.FC = () => {
     }
   };
 
+  const formatDateForDisplay = (date: Date) => {
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    };
+    return date.toLocaleDateString("en-US", options);
+  };
+
   return (
     <div className="max-w-lg mx-auto p-6 bg-gray-400 rounded shadow-md flex flex-col">
       <h2 className="text-2xl mb-6 text-black flex items-center justify-center">
@@ -295,7 +310,7 @@ const TimeKeeper: React.FC = () => {
           <label htmlFor="startTime" className="mr-2">
             Started at:
           </label>
-          <input
+          {/* <input
             id="startTime"
             type="text"
             value={startTime}
@@ -308,7 +323,10 @@ const TimeKeeper: React.FC = () => {
             pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]"
             placeholder="00:00:00"
             className="form-input flex-grow text-center"
-          />
+          /> */}
+          <div className="text-center">
+            {formatDateForDisplay(new Date())} {startTime}
+          </div>
         </div>
 
         <div className="flex justify-between mt-auto py-6">
