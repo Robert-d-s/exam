@@ -4,15 +4,6 @@ const getCurrentDate = () => {
   return new Date().toISOString().split("T")[0];
 };
 
-const adjustForTimezone = (date: Date) => {
-  const timeOffsetInMS = date.getTimezoneOffset() * 60000;
-  const adjustedDate = new Date(date.getTime() - timeOffsetInMS);
-
-  console.log("Date passed:", date);
-
-  return adjustedDate.toISOString().split("T")[1].slice(0, 8);
-};
-
 const formatDateForDisplay = (date: Date) => {
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
@@ -38,6 +29,9 @@ const TimeKeeper: React.FC = () => {
   const startTimeRef = useRef<Date | null>(null);
 
   const [pausedTime, setPausedTime] = useState<number>(0);
+
+  const [isTimerInitiallyStarted, setIsTimerInitiallyStarted] =
+    useState<boolean>(false);
 
   const [isRunning, setIsRunning] = useState(false);
 
@@ -106,89 +100,15 @@ const TimeKeeper: React.FC = () => {
     fetchRates();
   }, [selectedProject, projects]);
 
-  // useEffect(() => {
-  //   console.log("Value of startTime: ", startTime);
-
-  //   let timerInterval: NodeJS.Timeout; // Initialize timerInterval here
-  //   if (isRunning) {
-  //     const currentDate = getCurrentDate();
-  //     // const currentDateTime = new Date(`${currentDate}T${startTime}`);
-  //     const currentDateTime = new Date("2023-09-22T12:34:56");
-  //     console.log("Current date", currentDateTime);
-  //     const adjustedTime = adjustForTimezone(currentDateTime);
-  //     startTimeRef.current = new Date(`${currentDate}T${adjustedTime}`);
-
-  //     timerInterval = setInterval(() => {
-  //       const now = new Date().getTime();
-  //       const elapsed = now - (startTimeRef.current?.getTime() || now);
-  //       setElapsedTime(elapsed);
-  //       setTotalElapsedTime((prevTotal) => prevTotal + elapsed); // Update totalElapsedTime
-  //     }, 1000);
-  //     timerIntervalRef.current = timerInterval;
-  //   } else if (timerIntervalRef.current) {
-  //     clearInterval(timerIntervalRef.current);
-  //     timerIntervalRef.current = null;
-  //   }
-  //   return () => {
-  //     if (timerInterval) {
-  //       clearInterval(timerInterval);
-  //     }
-  //   };
-  // }, [isRunning, startTime]);
-
-  // useEffect(() => {
-  //   let timerInterval: NodeJS.Timeout; // Initialize timerInterval here
-  //   if (isRunning) {
-  //     console.log("Value of startTime before Date conversion:", startTime);
-
-  //     const currentDateTime = new Date(); // Use the current date and time directly
-
-  //     const timezoneOffsetInMinutes = currentDateTime.getTimezoneOffset();
-  //     const offsetInMilliseconds = timezoneOffsetInMinutes * 60 * 1000;
-
-  //     // Adjusting for timezone
-  //     currentDateTime.setTime(currentDateTime.getTime() - offsetInMilliseconds);
-
-  //     console.log(
-  //       "Value of currentDateTime after Date conversion:",
-  //       currentDateTime
-  //     );
-
-  //     console.log("Current date", currentDateTime);
-
-  //     startTimeRef.current = currentDateTime; // Update the ref
-  //     setStartTime(currentDateTime.toISOString()); // Update the state
-
-  //     timerInterval = setInterval(() => {
-  //       const now = new Date().getTime();
-  //       const elapsed = now - (startTimeRef.current?.getTime() || now);
-
-  //       // Add paused time to the elapsed time
-  //       const totalElapsed = pausedTime + elapsed;
-
-  //       // setElapsedTime(elapsed);
-  //       setElapsedTime(totalElapsed);
-  //       setTotalElapsedTime((prevTotal) => prevTotal + elapsed); // Update totalElapsedTime
-  //     }, 1000);
-
-  //     timerIntervalRef.current = timerInterval;
-  //   } else if (timerIntervalRef.current) {
-  //     clearInterval(timerIntervalRef.current);
-  //     timerIntervalRef.current = null;
-
-  //     // Store the elapsed time when the timer is stopped
-  //     setPausedTime(elapsedTime);
-  //   }
-  //   return () => {
-  //     if (timerInterval) {
-  //       clearInterval(timerInterval);
-  //     }
-  //   };
-  // }, [isRunning]);
   useEffect(() => {
     let timerInterval: NodeJS.Timeout;
 
     if (isRunning) {
+      if (!isTimerInitiallyStarted) {
+        const newStartTime = new Date().toISOString();
+        setStartTime(newStartTime);
+        setIsTimerInitiallyStarted(true);
+      }
       const currentDateTime = new Date();
       startTimeRef.current = pausedTime
         ? new Date(currentDateTime.getTime() - pausedTime)
@@ -201,7 +121,6 @@ const TimeKeeper: React.FC = () => {
           : 0;
 
         setElapsedTime(elapsed);
-        setTotalElapsedTime((prevTotal) => prevTotal + elapsed); // Uncomment this line
       }, 1000);
 
       timerIntervalRef.current = timerInterval;
@@ -215,102 +134,90 @@ const TimeKeeper: React.FC = () => {
     };
   }, [isRunning]);
 
-  // const handleStartStop = () => {
-  //   setIsRunning(!isRunning);
-  //   if (!isRunning) {
-  //     const newStartTime = new Date().toISOString();
-  //     console.log("New Start Time: ", newStartTime);
-  //     setStartTime(newStartTime);
-  //   }
-  // };
-
   const handleStartStop = () => {
     setIsRunning(!isRunning);
-    if (!isRunning) {
+    if (!isRunning && !startTime) {
       const newStartTime = new Date().toISOString();
       setStartTime(newStartTime);
     }
   };
 
-  useEffect(() => {
-    console.log("Updated startTime: ", startTime);
-  }, [startTime]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // const totalSeconds = Math.floor(totalElapsedTime / 1000);
-    const totalSeconds = Math.floor(elapsedTime / 1000);
+    // Capture the time right before starting the entire operation
+    const beforeOperationTime = new Date().getTime();
 
-    // Converting to milliseconds as the backend expects time in milliseconds
+    const totalSeconds = Math.floor(elapsedTime / 1000);
     const totalMilliseconds = totalSeconds * 1000;
 
-    console.log("Total Seconds before sending:", totalSeconds);
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    const formattedTotalElapsedTime = `${String(hours).padStart(
-      2,
-      "0"
-    )}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-
-    console.log("Value of startTime: ", startTime);
-
     const currentDate = getCurrentDate();
-
-    // const formattedStartTime = `${currentDate}T${startTime}.000Z`;
     const formattedStartTime = startTime;
 
-    console.log("Current Date:", currentDate);
-    console.log("Original Start Time:", startTime);
-    console.log("Formatted Start Time:", formattedStartTime);
-
-    // Convert startTime to a Date object
     const startDate = new Date(startTime);
 
-    // Add totalElapsedTime (in milliseconds) to it
+    // Debugging logs
+    console.log("Start Date in ms:", startDate.getTime());
+    console.log("Elapsed Time in ms:", elapsedTime);
+
     const endDate = new Date(startDate.getTime() + elapsedTime);
 
-    // Convert it to an ISO string
+    // Debugging logs
+    // console.log("End Date in ms:", endDate.getTime());
+
     const formattedEndTime = endDate.toISOString();
 
     console.log("Calculated End Time:", formattedEndTime);
 
-    // const formattedEndTime = `${currentDate}T${formattedTotalElapsedTime}.000Z`;
-
-    // Fetch API logic here, make sure to include 'totalElapsedTime' in the request
     const token = localStorage.getItem("token");
 
-    console.log("Debugging variables before fetch:", {
-      startTime: formattedStartTime,
-      endTime: formattedEndTime,
-      totalElapsedTime: totalMilliseconds,
-      userId: parseFloat(selectedUser),
-      projectId: selectedProject,
-      rateId: parseFloat(selectedRate),
-    });
-
-    // Add a type check for totalElapsedTime to ensure it is an integer
     if (Number.isInteger(totalSeconds)) {
       console.log("totalElapsedTime is an integer:", totalSeconds);
     } else {
       console.log("totalElapsedTime is NOT an integer:", totalSeconds);
     }
 
-    // Convert local startTime to UTC
     const localStartDate = new Date(startTime);
+
     const utcStartTime = new Date(
       localStartDate.getTime() - localStartDate.getTimezoneOffset() * 60000
     ).toISOString();
 
-    // Convert local endTime to UTC
-    const localEndDate = new Date(localStartDate.getTime() + totalElapsedTime);
+    const localEndDate = new Date(localStartDate.getTime() + elapsedTime);
     const utcEndTime = new Date(
       localEndDate.getTime() - localEndDate.getTimezoneOffset() * 60000
     ).toISOString();
 
-    console.log("UTC Start Time:", utcStartTime);
-    console.log("UTC End Time:", utcEndTime);
+    // Capture the time right before the fetch operation
+    const beforeFetchTime = new Date().getTime();
+
+    // Debugging logs
+    console.log("End Date in ms:", endDate.getTime());
+
+    console.log("Sending totalMilliseconds to API:", totalMilliseconds);
+
+    console.log("Debugging payload sent to API:", {
+      query: `
+        mutation CreateTime($timeInputCreate: TimeInputCreate!) {
+          createTime(timeInputCreate: $timeInputCreate) {
+            id
+            startTime
+            endTime
+            totalElapsedTime 
+          }
+        }
+      `,
+      variables: {
+        timeInputCreate: {
+          startTime: utcStartTime,
+          endTime: utcEndTime,
+          totalElapsedTime: totalMilliseconds,
+          userId: parseFloat(selectedUser),
+          projectId: selectedProject,
+          rateId: parseFloat(selectedRate),
+        },
+      },
+    });
 
     const response = await fetch("http://localhost:8080/graphql", {
       method: "POST",
@@ -331,10 +238,8 @@ const TimeKeeper: React.FC = () => {
         `,
         variables: {
           timeInputCreate: {
-            // startTime: formattedStartTime,
-            // endTime: formattedEndTime,
-            startTime: utcStartTime, // Use UTC time
-            endTime: utcEndTime, // Use UTC time
+            startTime: utcStartTime,
+            endTime: utcEndTime,
             totalElapsedTime: totalMilliseconds,
             userId: parseFloat(selectedUser),
             projectId: selectedProject,
@@ -344,12 +249,28 @@ const TimeKeeper: React.FC = () => {
       }),
     });
 
+    // Capture the time right after the fetch operation
+    const afterFetchTime = new Date().getTime();
+
+    // Log the time taken for the fetch operation
+    console.log("Fetch Time Elapsed:", afterFetchTime - beforeFetchTime, "ms");
+
     const data = await response.json();
     if (data.errors) {
       console.error("Error creating time entry:", data.errors);
     } else {
       console.log("Time entry created successfully:", data);
     }
+
+    // Capture the time right after the entire operation is complete
+    const afterOperationTime = new Date().getTime();
+
+    // Log the total time taken for the entire operation
+    console.log(
+      "Total Operation Time Elapsed:",
+      afterOperationTime - beforeOperationTime,
+      "ms"
+    );
   };
 
   const handleReset = () => {
@@ -362,6 +283,7 @@ const TimeKeeper: React.FC = () => {
     setSelectedUser("");
     setSelectedProject("");
     setSelectedRate("");
+    setIsTimerInitiallyStarted(false);
   };
 
   const formatTimeFromISOString = (isoString: string) => {
@@ -434,7 +356,6 @@ const TimeKeeper: React.FC = () => {
             Started at:
           </label>
           <div className="text-center">
-            {/* {formatDateForDisplay(new Date())} {startTime} */}
             {formatDateForDisplay(new Date())}{" "}
             {formatTimeFromISOString(startTime)}
           </div>
