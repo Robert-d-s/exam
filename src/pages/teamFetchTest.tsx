@@ -27,7 +27,7 @@ const TeamFetchTest: React.FC = () => {
 
   const fetchTeams = async () => {
     const token = localStorage.getItem("token");
-    const personalApiKey = "lin_api_iPrBSuq7VphXWOlAvvK30mZe1BbjZF2E60qQiJWx";
+
     if (!token) {
       console.error("No token found");
       return;
