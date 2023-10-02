@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 
-const getCurrentDate = () => {
-  return new Date().toISOString().split("T")[0];
-};
+// const getCurrentDate = () => {
+//   return new Date().toISOString().split("T")[0];
+// };
 
 const formatDateForDisplay = (date: Date) => {
   const options: Intl.DateTimeFormatOptions = {
@@ -23,7 +23,7 @@ const TimeKeeper: React.FC = () => {
   const [selectedRate, setSelectedRate] = useState<string>("");
   const [startTime, setStartTime] = useState<string>("");
   const [elapsedTime, setElapsedTime] = useState<number>(0);
-  const [totalElapsedTime, setTotalElapsedTime] = useState<number>(0);
+  // const [totalElapsedTime, setTotalElapsedTime] = useState<number>(0);
 
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const startTimeRef = useRef<Date | null>(null);
@@ -151,8 +151,8 @@ const TimeKeeper: React.FC = () => {
     const totalSeconds = Math.floor(elapsedTime / 1000);
     const totalMilliseconds = totalSeconds * 1000;
 
-    const currentDate = getCurrentDate();
-    const formattedStartTime = startTime;
+    // const currentDate = getCurrentDate();
+    // const formattedStartTime = startTime;
 
     const startDate = new Date(startTime);
 
@@ -212,9 +212,9 @@ const TimeKeeper: React.FC = () => {
           startTime: utcStartTime,
           endTime: utcEndTime,
           totalElapsedTime: totalMilliseconds,
-          userId: parseFloat(selectedUser),
+          userId: parseInt(selectedUser),
           projectId: selectedProject,
-          rateId: parseFloat(selectedRate),
+          rateId: parseInt(selectedRate),
         },
       },
     });
@@ -276,7 +276,7 @@ const TimeKeeper: React.FC = () => {
   const handleReset = () => {
     setIsRunning(false);
     setElapsedTime(0);
-    setTotalElapsedTime(0); // Reset the new field
+    // setTotalElapsedTime(0); // Reset the new field
     setPausedTime(0); // Reset paused time
     startTimeRef.current = null;
     // Reset the dropdown menus
@@ -284,6 +284,8 @@ const TimeKeeper: React.FC = () => {
     setSelectedProject("");
     setSelectedRate("");
     setIsTimerInitiallyStarted(false);
+
+    setStartTime("");
   };
 
   const formatTimeFromISOString = (isoString: string) => {
@@ -356,14 +358,20 @@ const TimeKeeper: React.FC = () => {
             Started at:
           </label>
           <div className="text-center">
-            {formatDateForDisplay(new Date())}{" "}
-            {formatTimeFromISOString(startTime)}
+            {startTime
+              ? `${formatDateForDisplay(new Date())} ${formatTimeFromISOString(
+                  startTime
+                )}`
+              : "Not Started"}
+            {/* {formatDateForDisplay(new Date())}{" "}
+            {formatTimeFromISOString(startTime)} */}
           </div>
         </div>
         <div className="flex justify-between mt-auto py-6">
           <button
             type="button"
             onClick={handleStartStop}
+            disabled={!selectedUser || !selectedProject || !selectedRate}
             className="px-4 py-2 bg-blue-500 text-white rounded"
           >
             {isRunning ? "Stop" : "Start"}
@@ -377,7 +385,7 @@ const TimeKeeper: React.FC = () => {
           </button>
           <button
             type="submit"
-            disabled={elapsedTime === 0}
+            disabled={isRunning || elapsedTime === 0}
             className="px-4 py-2 bg-green-500 text-white rounded"
           >
             Submit
