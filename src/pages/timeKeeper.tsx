@@ -2,6 +2,14 @@ import React, { useEffect, useRef } from "react";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import useStore from "../lib/store";
 
+import UserSelector from "../components/UserSelector";
+import ProjectSelector from "../components/ProjectSelector";
+import RateSelector from "../components/RateSelector";
+import {
+  formatDateForDisplay,
+  formatTimeFromISOString,
+} from "../utils/timeUtils";
+
 const USERS_QUERY = gql`
   query GetUsers {
     users {
@@ -41,16 +49,6 @@ const CREATE_TIME_MUTATION = gql`
     }
   }
 `;
-
-const formatDateForDisplay = (date: Date) => {
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
-  return date.toLocaleDateString("en-US", options);
-};
 
 const TimeKeeper: React.FC = () => {
   const {
@@ -181,7 +179,7 @@ const TimeKeeper: React.FC = () => {
     const totalMilliseconds = totalSeconds * 1000;
     const startDate = new Date(startTime);
 
-    const endDate = new Date(startDate.getTime() + elapsedTime);
+    // const endDate = new Date(startDate.getTime() + elapsedTime);
     // const formattedEndTime = endDate.toISOString();
 
     const localStartDate = new Date(startTime);
@@ -208,18 +206,6 @@ const TimeKeeper: React.FC = () => {
     });
   };
 
-  const formatTimeFromISOString = (isoString: string) => {
-    const date = new Date(isoString);
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    const seconds = date.getSeconds();
-
-    const formattedTime = `${hours}:${minutes < 10 ? `0${minutes}` : minutes}:${
-      seconds < 10 ? `0${seconds}` : seconds
-    }`;
-    return formattedTime;
-  };
-
   return (
     <div className="max-w-lg mx-auto p-6 bg-gray-400 rounded shadow-md flex flex-col">
       <h2 className="text-2xl mb-6 text-black flex items-center justify-center">
@@ -229,48 +215,21 @@ const TimeKeeper: React.FC = () => {
         {new Date(elapsedTime).toISOString().substr(11, 8)}
       </div>
       <div className="mt-4">
-        <select
-          value={selectedUser}
-          onChange={(e) => setSelectedUser(e.target.value)}
-          className="form-select block w-full mt-1"
-        >
-          <option value="" disabled>
-            Select a user
-          </option>
-          {users.map((user) => (
-            <option key={user.id} value={user.id}>
-              {user.email}
-            </option>
-          ))}
-        </select>
-        <select
-          value={selectedProject}
-          onChange={(e) => setSelectedProject(e.target.value)}
-          className="form-select block w-full mt-4"
-        >
-          <option value="" disabled>
-            Select a project
-          </option>
-          {projects.map((project) => (
-            <option key={project.id} value={project.id}>
-              {project.name}
-            </option>
-          ))}
-        </select>
-        <select
-          value={selectedRate}
-          onChange={(e) => setSelectedRate(e.target.value)}
-          className="form-select block w-full mt-4"
-        >
-          <option value="" disabled>
-            Select a rate
-          </option>
-          {rates.map((rate) => (
-            <option key={rate.id} value={rate.id}>
-              {rate.name} ({rate.rate})
-            </option>
-          ))}
-        </select>
+        <UserSelector
+          users={users}
+          selectedUser={selectedUser}
+          onUserChange={(userId) => setSelectedUser(userId)}
+        />
+        <ProjectSelector
+          projects={projects}
+          selectedProject={selectedProject}
+          onProjectChange={setSelectedProject}
+        />
+        <RateSelector
+          rates={rates}
+          selectedRate={selectedRate}
+          onRateChange={setSelectedRate}
+        />
       </div>
       <form onSubmit={handleSubmit} className="mt-6">
         <div className="flex items-center justify-between">

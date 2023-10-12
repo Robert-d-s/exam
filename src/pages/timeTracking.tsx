@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 
-// const getCurrentDate = () => {
-//   return new Date().toISOString().split("T")[0];
-// };
-
 const formatDateForDisplay = (date: Date) => {
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
@@ -150,10 +146,6 @@ const TimeKeeper: React.FC = () => {
 
     const totalSeconds = Math.floor(elapsedTime / 1000);
     const totalMilliseconds = totalSeconds * 1000;
-
-    // const currentDate = getCurrentDate();
-    // const formattedStartTime = startTime;
-
     const startDate = new Date(startTime);
 
     // Debugging logs
@@ -276,10 +268,8 @@ const TimeKeeper: React.FC = () => {
   const handleReset = () => {
     setIsRunning(false);
     setElapsedTime(0);
-    // setTotalElapsedTime(0); // Reset the new field
-    setPausedTime(0); // Reset paused time
+    setPausedTime(0);
     startTimeRef.current = null;
-    // Reset the dropdown menus
     setSelectedUser("");
     setSelectedProject("");
     setSelectedRate("");
@@ -363,8 +353,6 @@ const TimeKeeper: React.FC = () => {
                   startTime
                 )}`
               : "Not Started"}
-            {/* {formatDateForDisplay(new Date())}{" "}
-            {formatTimeFromISOString(startTime)} */}
           </div>
         </div>
         <div className="flex justify-between mt-auto py-6">

@@ -8,14 +8,15 @@ interface User {
 interface Team {
   id: string;
   name: string;
-  members: {
-    nodes: User[];
-  };
+  createdAt: string;
+  timezone: string;
+  members: User[];
 }
 
-interface TeamsResponse {
+// This interface should be in line with how your server sends the data
+interface FetchTeamsFromLinearResponse {
   data: {
-    teams: {
+    fetchTeamsFromLinear: {
       nodes: Team[];
     };
   };
@@ -23,59 +24,23 @@ interface TeamsResponse {
 
 const TeamFetchTest: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
-  // const organizationID = "58cc4093-54ae-4b2e-ac84-f626159d164f";
 
   const fetchTeams = async () => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      console.error("No token found");
-      return;
-    }
-
-    const query = `
-    query {
-      teams {
-        nodes {
-          id
-          name
-          createdAt
-          timezone
-          members {
-            nodes {
-              id
-              name
-            }
-          }
-        }
-      }
-    }
-    
-    `;
-
     try {
-      const response = await fetch("https://api.linear.app/graphql", {
-        method: "POST",
+      // Use JWT token from local storage
+      const token = localStorage.getItem("token");
+
+      // Make a request to your own backend
+      const response = await fetch("/api/fetchTeamsFromLinear", {
         headers: {
-          "Content-Type": "application/json",
-          Authorization: `${personalApiKey}`,
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ query }),
       });
 
-      console.log("Response:", response);
+      const data: FetchTeamsFromLinearResponse = await response.json();
 
-      const data: TeamsResponse = await response.json();
-
-      if (!response.ok) {
-        console.error("Server responded with an error:", data);
-        return;
-      }
-
-      console.log(data.data.teams.nodes);
-
-      if (data && data.data && data.data.teams) {
-        setTeams(data.data.teams.nodes);
+      if (data && data.data && data.data.fetchTeamsFromLinear) {
+        setTeams(data.data.fetchTeamsFromLinear.nodes);
       } else {
         console.error("Unexpected data structure", data);
       }
@@ -91,14 +56,16 @@ const TeamFetchTest: React.FC = () => {
   return (
     <div>
       <h1>Teams</h1>
-      {teams.map((team, teamIndex) => (
-        <div key={teamIndex}>
+      {teams.map((team) => (
+        <div key={team.id}>
           <h3>{team.name}</h3>
           <p>ID: {team.id}</p>
+          <p>Created At: {team.createdAt}</p>
+          <p>Timezone: {team.timezone}</p>
           <h4>Members</h4>
           <ul>
-            {team.members.nodes.map((member, memberIndex) => (
-              <li key={memberIndex}>
+            {team.members.map((member) => (
+              <li key={member.id}>
                 {member.name} (ID: {member.id})
               </li>
             ))}
