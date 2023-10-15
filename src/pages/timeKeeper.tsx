@@ -10,6 +10,16 @@ import {
   formatTimeFromISOString,
 } from "../utils/timeUtils";
 
+interface Time {
+  id: number;
+  startTime: string; // Assuming DateTime translates to string in JS
+  endTime: string | null; // Same assumption as above, and it's nullable
+  userId: number;
+  projectId: string;
+  rateId: number;
+  totalElapsedTime: number;
+}
+
 const USERS_QUERY = gql`
   query GetUsers {
     users {
@@ -50,6 +60,39 @@ const CREATE_TIME_MUTATION = gql`
   }
 `;
 
+const UPDATE_TIME_MUTATION = gql`
+  mutation UpdateTime($timeInputUpdate: TimeInputUpdate!) {
+    updateTime(timeInputUpdate: $timeInputUpdate) {
+      id
+      startTime
+      endTime
+      totalElapsedTime
+    }
+  }
+`;
+
+const DELETE_TIME_MUTATION = gql`
+  mutation DeleteTime($id: Float!) {
+    deleteTime(id: $id) {
+      id
+    }
+  }
+`;
+
+const TIMES_QUERY = gql`
+  query GetTimes($projectId: String!) {
+    times(projectId: $projectId) {
+      id
+      startTime
+      endTime
+      userId
+      projectId
+      rateId
+      totalElapsedTime
+    }
+  }
+`;
+
 const TimeKeeper: React.FC = () => {
   const {
     users,
@@ -67,13 +110,8 @@ const TimeKeeper: React.FC = () => {
     setTeamId,
   } = useStore();
 
-  // ----------------------------------------------------------------
-  console.log("selectedProject from useStore:", selectedProject);
-  // ----------------------------------------------------------------
-
   const { data: usersData } = useQuery(USERS_QUERY);
   const { data: projectsData } = useQuery(PROJECTS_QUERY);
-  console.log("selectedProject:", selectedProject);
   const { teamId } = useStore();
   const { data: ratesData, error } = useQuery(RATES_QUERY, {
     variables: { teamId },
@@ -86,6 +124,8 @@ const TimeKeeper: React.FC = () => {
   }
 
   const [createTime] = useMutation(CREATE_TIME_MUTATION);
+  const [updateTime] = useMutation(UPDATE_TIME_MUTATION);
+  const [deleteTime] = useMutation(DELETE_TIME_MUTATION);
 
   useEffect(() => {
     // Update the teamId in the Zustand store when selectedProject changes
@@ -152,6 +192,10 @@ const TimeKeeper: React.FC = () => {
     };
   }, [isRunning]);
 
+  const { data: timesData } = useQuery(TIMES_QUERY, {
+    variables: { projectId: selectedProject },
+  });
+
   const handleStartStop = () => {
     setIsRunning(!isRunning);
     if (!isRunning && !startTime) {
@@ -177,33 +221,98 @@ const TimeKeeper: React.FC = () => {
 
     const totalSeconds = Math.floor(elapsedTime / 1000);
     const totalMilliseconds = totalSeconds * 1000;
-    const startDate = new Date(startTime);
-
-    // const endDate = new Date(startDate.getTime() + elapsedTime);
-    // const formattedEndTime = endDate.toISOString();
-
     const localStartDate = new Date(startTime);
     const utcStartTime = new Date(
       localStartDate.getTime() - localStartDate.getTimezoneOffset() * 60000
     ).toISOString();
+
+    console.log("Checking for duplicates with:", {
+      utcStartTime,
+      userId: parseFloat(selectedUser),
+      projectId: selectedProject,
+      rateId: parseFloat(selectedRate),
+    });
 
     const localEndDate = new Date(localStartDate.getTime() + elapsedTime);
     const utcEndTime = new Date(
       localEndDate.getTime() - localEndDate.getTimezoneOffset() * 60000
     ).toISOString();
 
-    await createTime({
-      variables: {
-        timeInputCreate: {
-          startTime: utcStartTime,
-          endTime: utcEndTime,
-          totalElapsedTime: totalMilliseconds,
-          userId: parseFloat(selectedUser),
-          projectId: selectedProject,
-          rateId: parseFloat(selectedRate),
-        },
-      },
+    // Assuming you have the times data and updateTime function available in your component
+    // const duplicateEntry = timesData?.times.find(
+    //   (time: Time) =>
+    //     time.startTime === utcStartTime &&
+    //     time.userId === parseFloat(selectedUser) &&
+    //     time.projectId === selectedProject &&
+    //     time.rateId === parseFloat(selectedRate)
+    // );
+
+    timesData?.times.forEach((time: Time, index: number) => {
+      console.log(`Entry ${index}:`, time.startTime);
     });
+
+    const duplicateEntry = timesData?.times.find((time: Time) => {
+      const isSameStartTime = time.startTime === utcStartTime;
+      const isSameUserId = time.userId === parseFloat(selectedUser);
+      const isSameProjectId = time.projectId === selectedProject;
+      const isSameRateId = time.rateId === parseFloat(selectedRate);
+      console.log({
+        isSameStartTime,
+        isSameUserId,
+        isSameProjectId,
+        isSameRateId,
+        time,
+      });
+      return isSameStartTime && isSameUserId && isSameProjectId && isSameRateId;
+    });
+
+    // console.log("timesData.times:", timesData?.times);
+
+    console.log("Duplicate entry found:", duplicateEntry);
+    console.log(timesData?.times);
+    console.log(utcStartTime, selectedUser, selectedProject, selectedRate);
+
+    if (duplicateEntry) {
+      // If a duplicate entry is found, check if the new totalElapsedTime is greater
+      if (totalMilliseconds > duplicateEntry.totalElapsedTime) {
+        // If it is greater, update the existing entry
+        await updateTime({
+          variables: {
+            timeInputUpdate: {
+              id: duplicateEntry.id,
+              startTime: utcStartTime,
+              endTime: utcEndTime,
+              projectId: selectedProject,
+              userId: parseFloat(selectedUser),
+              rateId: parseFloat(selectedRate),
+              totalElapsedTime: totalMilliseconds,
+            },
+          },
+        });
+      } else {
+        // If it's not greater, you might want to alert the user or handle it accordingly
+        alert("New elapsed time is not greater than the existing elapsed time");
+      }
+    } else {
+      // If no duplicate entry is found, create a new entry
+      try {
+        const result = await createTime({
+          variables: {
+            timeInputCreate: {
+              startTime: utcStartTime,
+              endTime: utcEndTime,
+              totalElapsedTime: totalMilliseconds,
+              userId: parseFloat(selectedUser),
+              projectId: selectedProject,
+              rateId: parseFloat(selectedRate),
+            },
+          },
+        });
+        // console.log("createTime result:", result);
+      } catch (error) {
+        console.error("Error creating time:", error);
+      }
+    }
   };
 
   return (

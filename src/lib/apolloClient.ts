@@ -5,22 +5,22 @@ const httpLink = createHttpLink({
   uri: "http://localhost:8080/graphql",
 });
 
-console.log("Before setContext");
+// console.log("Before setContext");
 const authLink = setContext((_, { headers }) => {
-  console.log("Inside setContext");
+  // console.log("Inside setContext");
   // get the authentication token from local storage if it exists
   const token = localStorage.getItem("token");
   // return the headers to the context so httpLink can read them
-  console.log(token);
+  // console.log(token);
   const newHeaders = {
     ...headers,
     authorization: token ? `Bearer ${token}` : "",
   };
-  console.log(newHeaders); // <-- Add this line to log the headers
+  // console.log(newHeaders);
   return { headers: newHeaders };
 });
 
-console.log("After setContext");
+// console.log("After setContext");
 
 const client = new ApolloClient({
   link: authLink.concat(httpLink), // Chain it with the HttpLink
