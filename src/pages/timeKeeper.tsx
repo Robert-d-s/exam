@@ -12,8 +12,8 @@ import {
 
 interface Time {
   id: number;
-  startTime: string; // Assuming DateTime translates to string in JS
-  endTime: string | null; // Same assumption as above, and it's nullable
+  startTime: string;
+  endTime: string | null;
   userId: number;
   projectId: string;
   rateId: number;
@@ -226,92 +226,27 @@ const TimeKeeper: React.FC = () => {
       localStartDate.getTime() - localStartDate.getTimezoneOffset() * 60000
     ).toISOString();
 
-    console.log("Checking for duplicates with:", {
-      utcStartTime,
-      userId: parseFloat(selectedUser),
-      projectId: selectedProject,
-      rateId: parseFloat(selectedRate),
-    });
-
     const localEndDate = new Date(localStartDate.getTime() + elapsedTime);
     const utcEndTime = new Date(
       localEndDate.getTime() - localEndDate.getTimezoneOffset() * 60000
     ).toISOString();
 
-    // Assuming you have the times data and updateTime function available in your component
-    // const duplicateEntry = timesData?.times.find(
-    //   (time: Time) =>
-    //     time.startTime === utcStartTime &&
-    //     time.userId === parseFloat(selectedUser) &&
-    //     time.projectId === selectedProject &&
-    //     time.rateId === parseFloat(selectedRate)
-    // );
-
-    timesData?.times.forEach((time: Time, index: number) => {
-      console.log(`Entry ${index}:`, time.startTime);
-    });
-
-    const duplicateEntry = timesData?.times.find((time: Time) => {
-      const isSameStartTime = time.startTime === utcStartTime;
-      const isSameUserId = time.userId === parseFloat(selectedUser);
-      const isSameProjectId = time.projectId === selectedProject;
-      const isSameRateId = time.rateId === parseFloat(selectedRate);
-      console.log({
-        isSameStartTime,
-        isSameUserId,
-        isSameProjectId,
-        isSameRateId,
-        time,
+    try {
+      const result = await createTime({
+        variables: {
+          timeInputCreate: {
+            startTime: utcStartTime,
+            endTime: utcEndTime,
+            totalElapsedTime: totalMilliseconds,
+            userId: parseFloat(selectedUser),
+            projectId: selectedProject,
+            rateId: parseFloat(selectedRate),
+          },
+        },
       });
-      return isSameStartTime && isSameUserId && isSameProjectId && isSameRateId;
-    });
-
-    // console.log("timesData.times:", timesData?.times);
-
-    console.log("Duplicate entry found:", duplicateEntry);
-    console.log(timesData?.times);
-    console.log(utcStartTime, selectedUser, selectedProject, selectedRate);
-
-    if (duplicateEntry) {
-      // If a duplicate entry is found, check if the new totalElapsedTime is greater
-      if (totalMilliseconds > duplicateEntry.totalElapsedTime) {
-        // If it is greater, update the existing entry
-        await updateTime({
-          variables: {
-            timeInputUpdate: {
-              id: duplicateEntry.id,
-              startTime: utcStartTime,
-              endTime: utcEndTime,
-              projectId: selectedProject,
-              userId: parseFloat(selectedUser),
-              rateId: parseFloat(selectedRate),
-              totalElapsedTime: totalMilliseconds,
-            },
-          },
-        });
-      } else {
-        // If it's not greater, you might want to alert the user or handle it accordingly
-        alert("New elapsed time is not greater than the existing elapsed time");
-      }
-    } else {
-      // If no duplicate entry is found, create a new entry
-      try {
-        const result = await createTime({
-          variables: {
-            timeInputCreate: {
-              startTime: utcStartTime,
-              endTime: utcEndTime,
-              totalElapsedTime: totalMilliseconds,
-              userId: parseFloat(selectedUser),
-              projectId: selectedProject,
-              rateId: parseFloat(selectedRate),
-            },
-          },
-        });
-        // console.log("createTime result:", result);
-      } catch (error) {
-        console.error("Error creating time:", error);
-      }
+      console.log("createTime result:", result);
+    } catch (error) {
+      console.error("Error creating time:", error);
     }
   };
 
