@@ -13,7 +13,6 @@ interface Team {
   members: User[];
 }
 
-// This interface should be in line with how your server sends the data
 interface FetchTeamsFromLinearResponse {
   data: {
     fetchTeamsFromLinear: {
@@ -22,15 +21,35 @@ interface FetchTeamsFromLinearResponse {
   };
 }
 
-const TeamFetchTest: React.FC = () => {
+const TeamSyncAndFetch: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
 
-  const fetchTeams = async () => {
-    try {
-      // Use JWT token from local storage
-      const token = localStorage.getItem("token");
+  const syncTeams = async () => {
+    const token = localStorage.getItem("token");
 
-      // Make a request to your own backend
+    try {
+      const response = await fetch(
+        "http://localhost:8080/team-synchronize/teams",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        }
+      );
+
+      const data = await response.json();
+      console.log("Sync Response:", data);
+    } catch (error) {
+      console.error("Error during sync:", error);
+    }
+  };
+
+  const fetchTeams = async () => {
+    const token = localStorage.getItem("token");
+
+    try {
       const response = await fetch("/api/fetchTeamsFromLinear", {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -50,11 +69,18 @@ const TeamFetchTest: React.FC = () => {
   };
 
   useEffect(() => {
-    fetchTeams();
+    const fetchDataAndSync = async () => {
+      await syncTeams();
+      await fetchTeams();
+    };
+
+    fetchDataAndSync();
   }, []);
 
   return (
     <div>
+      <h1>Team Synchronization</h1>
+      <p>Check the console for synchronization results.</p>
       <h1>Teams</h1>
       {teams.map((team) => (
         <div key={team.id}>
@@ -76,4 +102,4 @@ const TeamFetchTest: React.FC = () => {
   );
 };
 
-export default TeamFetchTest;
+export default TeamSyncAndFetch;

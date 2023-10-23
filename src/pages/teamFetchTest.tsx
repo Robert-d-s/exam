@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
+import { useQuery, gql } from "@apollo/client";
+// import gql from "graphql-tag";
 
 interface User {
   id: string;
@@ -13,50 +15,59 @@ interface Team {
   members: User[];
 }
 
-// This interface should be in line with how your server sends the data
-interface FetchTeamsFromLinearResponse {
-  data: {
-    fetchTeamsFromLinear: {
-      nodes: Team[];
-    };
-  };
-}
-
-const TeamFetchTest: React.FC = () => {
-  const [teams, setTeams] = useState<Team[]>([]);
-
-  const fetchTeams = async () => {
-    try {
-      // Use JWT token from local storage
-      const token = localStorage.getItem("token");
-
-      // Make a request to your own backend
-      const response = await fetch("/api/fetchTeamsFromLinear", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      const data: FetchTeamsFromLinearResponse = await response.json();
-
-      if (data && data.data && data.data.fetchTeamsFromLinear) {
-        setTeams(data.data.fetchTeamsFromLinear.nodes);
-      } else {
-        console.error("Unexpected data structure", data);
+const FETCH_TEAMS = gql`
+  query {
+    fetchTeamsFromLinear {
+      nodes {
+        id
+        name
+        createdAt
+        timezone
+        members {
+          id
+          name
+        }
       }
+    }
+  }
+`;
+
+const TeamSyncAndFetch: React.FC = () => {
+  const { loading, error, data } = useQuery(FETCH_TEAMS);
+
+  const syncTeams = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(
+        "http://localhost:8080/team-synchronize/teams",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        }
+      );
+      const responseData = await response.json();
+      console.log("Sync Response:", responseData);
     } catch (error) {
-      console.error("An error occurred while fetching data:", error);
+      console.error("Error during sync:", error);
     }
   };
 
   useEffect(() => {
-    fetchTeams();
+    syncTeams();
   }, []);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
 
   return (
     <div>
+      <h1>Team Synchronization</h1>
+      <p>Check the console for synchronization results.</p>
       <h1>Teams</h1>
-      {teams.map((team) => (
+      {data.fetchTeamsFromLinear.nodes.map((team: Team) => (
         <div key={team.id}>
           <h3>{team.name}</h3>
           <p>ID: {team.id}</p>
@@ -64,7 +75,7 @@ const TeamFetchTest: React.FC = () => {
           <p>Timezone: {team.timezone}</p>
           <h4>Members</h4>
           <ul>
-            {team.members.map((member) => (
+            {team.members.map((member: User) => (
               <li key={member.id}>
                 {member.name} (ID: {member.id})
               </li>
@@ -76,4 +87,4 @@ const TeamFetchTest: React.FC = () => {
   );
 };
 
-export default TeamFetchTest;
+export default TeamSyncAndFetch;

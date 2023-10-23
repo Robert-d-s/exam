@@ -27,7 +27,7 @@ const SyncComponent: React.FC = () => {
     };
 
     syncTeams();
-  }, []); // The empty dependency array ensures this useEffect runs once when the component mounts.
+  }, []);
 
   return (
     <div>
