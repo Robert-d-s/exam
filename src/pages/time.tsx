@@ -7,6 +7,7 @@ const getCurrentDate = () => {
 type User = {
   id: string;
   name: string;
+  email: string;
 };
 
 type Project = {
@@ -35,6 +36,7 @@ const TotalTimeSpent: React.FC = () => {
         query {
           users {
             id
+            email
           }
           projects {
             id
@@ -154,7 +156,7 @@ const TotalTimeSpent: React.FC = () => {
       >
         {users.map((user) => (
           <option key={user.id} value={user.id}>
-            {user.id}
+            {user.email}
           </option>
         ))}
       </select>

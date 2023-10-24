@@ -13,7 +13,6 @@ const SyncComponent: React.FC = () => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              // Add Authorization header if a token is present
               ...(token ? { Authorization: `Bearer ${token}` } : {}),
             },
           }
