@@ -1,0 +1,7 @@
+name: enablment_tt
+packages:
+  - path: src/lib
+  - path: src/pages/api
+  - path: src/utils
+language: javascript
+appmap_dir: tmp/appmap
