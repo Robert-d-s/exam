@@ -10,15 +10,15 @@ import {
   formatTimeFromISOString,
 } from "../utils/timeUtils";
 
-// interface Time {
-//   id: number;
-//   startTime: string;
-//   endTime: string | null;
-//   userId: number;
-//   projectId: string;
-//   rateId: number;
-//   totalElapsedTime: number;
-// }
+interface Time {
+  id: number;
+  startTime: string;
+  endTime: string | null;
+  userId: number;
+  projectId: string;
+  rateId: number;
+  totalElapsedTime: number;
+}
 
 const USERS_QUERY = gql`
   query GetUsers {
@@ -116,12 +116,6 @@ const TimeKeeper: React.FC = () => {
   const { data: ratesData, error } = useQuery(RATES_QUERY, {
     variables: { teamId },
   });
-  if (error) {
-    console.error("Error fetching rates:", error.message);
-    console.log("GraphQL Errors:", error.graphQLErrors);
-    console.log("Network Error:", error.networkError);
-    console.log("Full Error:", error); // Logs the entire ApolloError object
-  }
 
   const [createTime] = useMutation(CREATE_TIME_MUTATION);
   const [updateTime] = useMutation(UPDATE_TIME_MUTATION);
@@ -149,8 +143,7 @@ const TimeKeeper: React.FC = () => {
     }
   }, [usersData, projectsData, ratesData]);
 
-  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const startTimeRef = useRef<Date | null>(null);
+  const startTimeRef = useRef<number | null>(null);
 
   const [isRunning, setIsRunning] = React.useState(false);
   const [isTimerInitiallyStarted, setIsTimerInitiallyStarted] =
@@ -159,52 +152,106 @@ const TimeKeeper: React.FC = () => {
   const [elapsedTime, setElapsedTime] = React.useState<number>(0);
   const [pausedTime, setPausedTime] = React.useState<number>(0);
 
-  useEffect(() => {
-    let timerInterval: NodeJS.Timeout;
-    if (isRunning) {
-      if (!isTimerInitiallyStarted) {
-        const newStartTime = new Date().toISOString();
-        setStartTime(newStartTime);
-        setIsTimerInitiallyStarted(true);
-      }
-      const currentDateTime = new Date();
-      startTimeRef.current = pausedTime
-        ? new Date(currentDateTime.getTime() - pausedTime)
-        : currentDateTime;
+  const animationFrameRef = useRef<number | null>(null);
 
-      timerInterval = setInterval(() => {
-        const now = new Date().getTime();
-        const elapsed = startTimeRef.current
-          ? now - startTimeRef.current.getTime()
-          : 0;
-
-        setElapsedTime(elapsed);
-      }, 1000);
-
-      timerIntervalRef.current = timerInterval;
-    } else {
-      clearInterval(timerIntervalRef.current as NodeJS.Timeout);
-      setPausedTime(elapsedTime);
-    }
-
-    return () => {
-      clearInterval(timerInterval);
-    };
-  }, [isRunning]);
-
-  const { data: timesData } = useQuery(TIMES_QUERY, {
-    variables: { projectId: selectedProject },
-  });
-
-  const handleStartStop = () => {
-    setIsRunning(!isRunning);
-    if (!isRunning && !startTime) {
-      const newStartTime = new Date().toISOString();
-      setStartTime(newStartTime);
+  const updateTimer = () => {
+    console.log(
+      "updateTimer called. Current startTimeRef.current:",
+      startTimeRef.current
+    );
+    if (typeof startTimeRef.current === "number") {
+      const now = performance.now();
+      const newElapsedTime = now - startTimeRef.current;
+      setElapsedTime(newElapsedTime); // Add the pausedTime to the new elapsed time
+      console.log("Timer updated. New elapsedTime:", newElapsedTime);
+      animationFrameRef.current = requestAnimationFrame(updateTimer);
     }
   };
 
-  const handleReset = () => {
+  useEffect(() => {
+    console.log("Effect for isRunning changes. Current isRunning:", isRunning);
+    if (isRunning) {
+      console.log("Effect is starting or resuming the timer.");
+      if (!isTimerInitiallyStarted) {
+        startTimeRef.current = performance.now();
+        setIsTimerInitiallyStarted(true);
+      } else if (pausedTime) {
+        // Adjust the startTimeRef to account for the paused time
+        startTimeRef.current = performance.now() - pausedTime;
+      }
+      animationFrameRef.current = requestAnimationFrame(updateTimer);
+      console.log(
+        "Effect started the timer. animationFrameRef.current:",
+        animationFrameRef.current
+      );
+    } else {
+      console.log("Effect is stopping the timer.");
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+        console.log(
+          "Effect stopped the timer. animationFrameRef.current:",
+          animationFrameRef.current
+        );
+      }
+      setPausedTime(elapsedTime);
+      console.log("Effect has set paused time to:", elapsedTime);
+    }
+
+    // Clean up the animation frame request when the component unmounts or the timer stops
+    return () => {
+      if (animationFrameRef.current) {
+        console.log(
+          "Effect cleanup. Cancelling animation frame. animationFrameRef.current:",
+          animationFrameRef.current
+        );
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [isRunning]);
+
+  const handleStartStop = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    console.log(
+      "Start/Stop button clicked. Previous isRunning state:",
+      isRunning
+    );
+    setIsRunning((prevIsRunning) => {
+      console.log(
+        "Toggling isRunning from:",
+        prevIsRunning,
+        "to:",
+        !prevIsRunning
+      );
+      if (!prevIsRunning) {
+        console.log(
+          "Starting or resuming the timer. Current pausedTime:",
+          pausedTime
+        );
+        const now = performance.now();
+        startTimeRef.current = now - (pausedTime || 0);
+        setStartTime(new Date().toISOString()); // Set the startTime state when the timer starts
+        setPausedTime(0);
+        console.log(
+          `Timer started. startTimeRef.current: ${startTimeRef.current}, startTime: ${startTime}`
+        );
+      } else {
+        console.log("Pausing the timer. Current elapsedTime:", elapsedTime);
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+          animationFrameRef.current = null;
+        }
+        setPausedTime(elapsedTime);
+        console.log(
+          `Timer stopped. elapsedTime: ${elapsedTime}, pausedTime: ${pausedTime}`
+        );
+      }
+
+      return !prevIsRunning;
+    });
+  };
+
+  const handleReset = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
     setIsRunning(false);
     setElapsedTime(0);
     setPausedTime(0);
@@ -216,35 +263,47 @@ const TimeKeeper: React.FC = () => {
     setStartTime("");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  //   const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("handleSubmit called");
 
-    const totalSeconds = Math.floor(elapsedTime / 1000);
-    const totalMilliseconds = totalSeconds * 1000;
-    const localStartDate = new Date(startTime);
-    const utcStartTime = new Date(
-      localStartDate.getTime() - localStartDate.getTimezoneOffset() * 60000
-    ).toISOString();
+    // Check if the start time is set and is a number
+    if (!startTime || typeof startTimeRef.current !== "number") {
+      console.log("Invalid start time. Aborting handleSubmit.");
+      return;
+    }
 
-    const localEndDate = new Date(localStartDate.getTime() + elapsedTime);
-    const utcEndTime = new Date(
-      localEndDate.getTime() - localEndDate.getTimezoneOffset() * 60000
+    const utcEndTime = new Date().toISOString(); // Capture current UTC end time
+    console.log("Current UTC end time:", utcEndTime);
+    const timezoneOffset = new Date().getTimezoneOffset() * 60000; // offset in milliseconds
+    console.log("User's timezone offset in milliseconds:", timezoneOffset);
+
+    // Adjust for timezone - this assumes you want to adjust to the user's local timezone
+    const adjustedStartTime = new Date(
+      new Date(startTime).getTime() - timezoneOffset
     ).toISOString();
+    console.log("Adjusted start time:", adjustedStartTime);
+    const adjustedEndTime = new Date(
+      new Date(utcEndTime).getTime() - timezoneOffset
+    ).toISOString();
+    console.log("Adjusted end time:", adjustedEndTime);
 
     try {
       const result = await createTime({
         variables: {
           timeInputCreate: {
-            startTime: utcStartTime,
-            endTime: utcEndTime,
-            totalElapsedTime: totalMilliseconds,
+            startTime: adjustedStartTime,
+            endTime: adjustedEndTime,
+            totalElapsedTime: elapsedTime,
             userId: parseFloat(selectedUser),
             projectId: selectedProject,
             rateId: parseFloat(selectedRate),
           },
         },
       });
-      console.log("createTime result:", result);
+      console.log("createTime result:", result.data.createTime);
+      // After submission, reset only the elapsed time and paused time if needed
     } catch (error) {
       console.error("Error creating time:", error);
     }
