@@ -3,8 +3,9 @@ import { useQuery, useMutation, gql } from "@apollo/client";
 import {
   formatISO,
   parseISO,
-  intervalToDuration,
-  formatDuration,
+  differenceInSeconds,
+  format,
+  isValid,
 } from "date-fns";
 import {
   formatDateForDisplay,
@@ -162,51 +163,75 @@ const TimeKeeper: React.FC = () => {
     }
   }, [selectedProject, projects, setTeamId]);
 
-  // Function to update the display time
-  const updateDisplay = (start: Date) => {
+  // Timer Logic
+  const calculateElapsedTime = () => {
     const now = new Date();
-    let elapsed = now.getTime() - start.getTime();
-    for (let i = 0; i < pauseTimes.length; i++) {
-      const pauseTime = pauseTimes[i];
-      const resumeTime = resumeTimes[i] || now;
-      elapsed -= resumeTime.getTime() - pauseTime.getTime();
+
+    // Ensure startTime is a valid Date object
+    if (!isValid(startTime) || startTime === null) {
+      return 0;
     }
-    if (elapsed < 0) elapsed = 0;
-    let seconds = Math.floor((elapsed / 1000) % 60);
-    let minutes = Math.floor((elapsed / (1000 * 60)) % 60);
-    let hours = Math.floor(elapsed / (1000 * 60 * 60));
-    const formattedTime = [hours, minutes, seconds]
-      .map((unit) => String(unit).padStart(2, "0"))
-      .join(":");
+
+    let elapsedSeconds = differenceInSeconds(now, startTime);
+
+    pauseTimes.forEach((pauseTime, index) => {
+      const resumeTime = resumeTimes[index] || now;
+      if (isValid(pauseTime) && isValid(resumeTime)) {
+        elapsedSeconds -= differenceInSeconds(resumeTime, pauseTime);
+      }
+    });
+
+    return Math.max(elapsedSeconds, 0);
+  };
+
+  const updateDisplay = () => {
+    const elapsedSeconds = calculateElapsedTime();
+    const formattedTime = format(
+      new Date(0, 0, 0, 0, 0, elapsedSeconds),
+      "HH:mm:ss"
+    );
     setDisplayTime(formattedTime);
   };
 
   useEffect(() => {
-    if (isRunning && startTime) {
-      updateDisplay(startTime); // Immediate update
-      const intervalId = setInterval(updateDisplay, 1000) as unknown as number;
-      timerIntervalRef.current = intervalId;
-      return () => clearInterval(intervalId);
+    if (isRunning && isValid(startTime)) {
+      updateDisplay(); // Immediate update
+      timerIntervalRef.current = setInterval(
+        updateDisplay,
+        1000
+      ) as unknown as number;
+      return () => {
+        if (timerIntervalRef.current !== null) {
+          clearInterval(timerIntervalRef.current);
+          timerIntervalRef.current = null;
+        }
+      };
     }
   }, [isRunning, startTime, pauseTimes, resumeTimes]);
 
   const handleStartStop = () => {
     const now = new Date();
+
     if (isRunning) {
-      setPauseTimes((prev) => [...prev, now]);
+      // Pause the timer
+      if (isValid(startTime)) {
+        setPauseTimes((prevPauseTimes) => [...prevPauseTimes, now]);
+      }
       setIsRunning(false);
     } else {
-      if (!startTime) {
-        let start = startDate > now ? now : startDate;
-        setStartTime(start);
-        updateDisplay(start); // Update display time immediately
-      } else {
-        setResumeTimes((prev) => [...prev, now]);
-      }
+      // Start or resume the timer
+      if (startTime === null) {
+        // Start with the current time if no time was picked
+        setStartTime(now);
+      } // If startTime is not null, it means a time has been picked and we use that
       setIsRunning(true);
+      if (pauseTimes.length !== resumeTimes.length) {
+        // Resume after a pause
+        setResumeTimes((prevResumeTimes) => [...prevResumeTimes, now]);
+      }
     }
   };
-
+  const [resetMessage, setResetMessage] = useState(false);
   // Reset timer logic
   const handleReset = () => {
     setIsRunning(false);
@@ -215,12 +240,13 @@ const TimeKeeper: React.FC = () => {
     setResumeTimes([]);
     setDisplayTime("00:00:00");
     accumulatedTimeRef.current = 0;
-    if (timerIntervalRef.current !== null) {
-      clearInterval(timerIntervalRef.current);
-    }
-
-    // setCurrentEntryId(null);
+    setCurrentEntryId(null);
+    setResetMessage(true);
+    setTimeout(() => setResetMessage(false), 2000);
   };
+
+  const [submissionSuccess, setSubmissionSuccess] = useState(false);
+  const [submissionError, setSubmissionError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -229,28 +255,27 @@ const TimeKeeper: React.FC = () => {
       console.error("No start time set.");
       return;
     }
-
-    const submissionTime = new Date();
-    console.log("Frontend - Formatted End Time:", formatISO(submissionTime));
-    console.log(
-      "Submitting time. Start Time:",
-      startTime,
-      "End Time:",
-      submissionTime
-    );
-    const totalElapsedTime =
-      accumulatedTimeRef.current +
-      (submissionTime.getTime() - startTime.getTime()) -
-      pauseTimes.reduce((acc, time, index) => {
-        const resumeTime = resumeTimes[index] || submissionTime;
-        return acc + (resumeTime.getTime() - time.getTime());
-      }, 0);
-
-    console.log("Frontend - Formatted Start Time:", formatISO(startTime));
-    console.log("Frontend - Formatted End Time:", formatISO(submissionTime));
-    console.log("Total Elapsed Time on Submit:", totalElapsedTime);
-
     try {
+      const submissionTime = new Date();
+      console.log("Frontend - Formatted End Time:", formatISO(submissionTime));
+      console.log(
+        "Submitting time. Start Time:",
+        startTime,
+        "End Time:",
+        submissionTime
+      );
+      const totalElapsedTime =
+        accumulatedTimeRef.current +
+        (submissionTime.getTime() - startTime.getTime()) -
+        pauseTimes.reduce((acc, time, index) => {
+          const resumeTime = resumeTimes[index] || submissionTime;
+          return acc + (resumeTime.getTime() - time.getTime());
+        }, 0);
+
+      console.log("Frontend - Formatted Start Time:", formatISO(startTime));
+      console.log("Frontend - Formatted End Time:", formatISO(submissionTime));
+      console.log("Total Elapsed Time on Submit:", totalElapsedTime);
+
       let result;
 
       if (currentEntryId) {
@@ -279,9 +304,14 @@ const TimeKeeper: React.FC = () => {
         setCurrentEntryId(result.data.createTime.id);
       }
 
+      setSubmissionSuccess(true);
+      setSubmissionError("");
+
+      setTimeout(() => setSubmissionSuccess(false), 3000);
+
       console.log("Time entry result:", result);
     } catch (error) {
-      console.error("Error with time entry:", error);
+      setSubmissionError("Error with time entry: " + error.message);
     }
   };
 
@@ -289,16 +319,12 @@ const TimeKeeper: React.FC = () => {
     const now = new Date();
     if (date) {
       if (date > now) {
-        // Notify user if the selected date is in the future
         alert("Please select a current or past date/time.");
       } else {
-        // Set the date only if it's not in the future
         setStartDate(date);
-        setStartTime(null);
+        setStartTime(date);
       }
     } else {
-      // If the date picker returns null (e.g., the date is cleared), handle accordingly
-      // For example, you can reset the date to now or handle it based on your application's needs
       setStartDate(now); // Reset to now or another default value as needed
     }
   };
@@ -306,6 +332,24 @@ const TimeKeeper: React.FC = () => {
   // Render component JSX
   return (
     <div className="max-w-lg mx-auto p-6 bg-gray-400 rounded shadow-md flex flex-col">
+      <div className="feedback-messages">
+        {submissionSuccess && (
+          <div className="bg-green-100 text-green-800 text-sm font-semibold px-4 py-2 rounded-lg">
+            Time entry saved!
+          </div>
+        )}
+        {submissionError && (
+          <div className="bg-red-100 text-red-800 text-sm font-semibold px-4 py-2 rounded-lg">
+            {submissionError}
+          </div>
+        )}
+        {resetMessage && (
+          <div className="bg-blue-100 text-blue-800 text-sm font-semibold px-4 py-2 rounded-lg">
+            Timer reset!
+          </div>
+        )}
+      </div>
+
       <h2 className="text-2xl mb-6 text-black flex items-center justify-center">
         § Track Time §
       </h2>
@@ -349,7 +393,7 @@ const TimeKeeper: React.FC = () => {
             htmlFor="startDate"
             className="block text-sm font-medium text-gray-700"
           >
-            Start Time:
+            Pick a time:
           </label>
           <DatePicker
             id="startDate"

@@ -11,6 +11,9 @@ import {
   formatTimeFromISOString,
 } from "../utils/timeUtils";
 
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 import useStore from "../lib/store";
 import UserSelector from "../components/UserSelector";
 import ProjectSelector from "../components/ProjectSelector";
@@ -129,8 +132,11 @@ const TimeKeeper: React.FC = () => {
 
   const [currentEntryId, setCurrentEntryId] = useState<number | null>(null);
 
+  const [startDate, setStartDate] = useState(new Date());
+
   // References for intervals and accumulated time
-  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const timerIntervalRef = useRef<number | null>(null);
+
   const accumulatedTimeRef = useRef(0);
 
   // Query data handling
@@ -160,20 +166,33 @@ const TimeKeeper: React.FC = () => {
     if (isRunning) {
       const updateDisplay = () => {
         const now = new Date();
-        const totalElapsedTime =
-          accumulatedTimeRef.current +
-          (startTime ? now.getTime() - startTime.getTime() : 0) -
-          pauseTimes.reduce((acc, time, index) => {
-            const resumeTime = resumeTimes[index] || now;
-            return acc + (resumeTime.getTime() - time.getTime());
-          }, 0);
+        let elapsed = now.getTime() - (startTime ? startTime.getTime() : 0);
 
-        // Convert totalElapsedTime to hours, minutes, and seconds
-        let seconds = Math.floor((totalElapsedTime / 1000) % 60);
-        let minutes = Math.floor((totalElapsedTime / (1000 * 60)) % 60);
-        let hours = Math.floor((totalElapsedTime / (1000 * 60 * 60)) % 24);
+        console.log("Update Display - Current Time:", now);
+        console.log("Elapsed Time before subtracting pauses:", elapsed);
 
-        // Format the time components to add leading zeros
+        for (let i = 0; i < pauseTimes.length; i++) {
+          const pauseTime = pauseTimes[i];
+          const resumeTime = resumeTimes[i] || now;
+          elapsed -= resumeTime.getTime() - pauseTime.getTime();
+        }
+
+        // Log detailed time calculation
+        console.log("Elapsed time calculation:", {
+          now,
+          startTime,
+          elapsed,
+          pauseTimes,
+          resumeTimes,
+        });
+
+        if (elapsed < 0) elapsed = 0;
+
+        // Convert to hours, minutes, seconds and update displayTime
+        let seconds = Math.floor((elapsed / 1000) % 60);
+        let minutes = Math.floor((elapsed / (1000 * 60)) % 60);
+        let hours = Math.floor(elapsed / (1000 * 60 * 60));
+
         const formattedTime = [
           hours.toString().padStart(2, "0"),
           minutes.toString().padStart(2, "0"),
@@ -183,32 +202,67 @@ const TimeKeeper: React.FC = () => {
         setDisplayTime(formattedTime);
       };
 
-      updateDisplay();
-      timerIntervalRef.current = setInterval(updateDisplay, 1000);
+      // timerIntervalRef.current = setInterval(updateDisplay, 1000);
+      timerIntervalRef.current = Number(setInterval(updateDisplay, 1000));
 
       return () => {
-        if (timerIntervalRef.current) {
+        if (timerIntervalRef.current !== null) {
           clearInterval(timerIntervalRef.current);
         }
       };
     }
   }, [isRunning, startTime, pauseTimes, resumeTimes]);
 
-  // Start/Stop Timer logic
+  // const handleStartStop = () => {
+  //   const now = new Date();
+
+  //   if (isRunning) {
+  //     setPauseTimes((prevPauseTimes) => [...prevPauseTimes, now]);
+  //     setIsRunning(false);
+  //   } else {
+  //     if (!startTime) {
+  //       const start = startDate > now ? now : startDate;
+  //       console.log("Setting start time to:", start);
+
+  //       setStartTime(start);
+
+  //       // setStartTime(now);
+  //     } else {
+  //       setResumeTimes((prevResumeTimes) => [...prevResumeTimes, now]);
+  //     }
+  //     setIsRunning(true);
+  //   }
+
   const handleStartStop = () => {
+    const now = new Date();
+    console.log("Start Time set to:", startTime);
     if (isRunning) {
-      // Stop timer logic
-      setPauseTimes([...pauseTimes, new Date()]);
+      const newPauseTimes = [...pauseTimes, now];
+      console.log("Pausing timer at:", now, "New pause times:", newPauseTimes);
+      setPauseTimes(newPauseTimes);
       setIsRunning(false);
+      // Use newPauseTimes directly for any immediate logic
     } else {
-      // Start timer logic
       if (!startTime) {
-        setStartTime(new Date());
+        const start = startDate > now ? now : startDate;
+        console.log("Setting start time to:", start);
+        setStartTime(start);
       } else {
-        setResumeTimes([...resumeTimes, new Date()]);
+        const newResumeTimes = [...resumeTimes, now];
+        console.log(
+          "Resuming timer at:",
+          now,
+          "New resume times:",
+          newResumeTimes
+        );
+        setResumeTimes(newResumeTimes);
+        // Use newResumeTimes directly for any immediate logic
       }
       setIsRunning(true);
     }
+    // Logging for debugging
+    console.log("Pause Times after update:", pauseTimes);
+    console.log("Resume Times after update:", resumeTimes);
   };
 
   // Reset timer logic
@@ -231,6 +285,13 @@ const TimeKeeper: React.FC = () => {
     }
 
     const submissionTime = new Date();
+    console.log("Frontend - Formatted End Time:", formatISO(submissionTime));
+    console.log(
+      "Submitting time. Start Time:",
+      startTime,
+      "End Time:",
+      submissionTime
+    );
     const totalElapsedTime =
       accumulatedTimeRef.current +
       (submissionTime.getTime() - startTime.getTime()) -
@@ -241,6 +302,7 @@ const TimeKeeper: React.FC = () => {
 
     console.log("Frontend - Formatted Start Time:", formatISO(startTime));
     console.log("Frontend - Formatted End Time:", formatISO(submissionTime));
+    console.log("Total Elapsed Time on Submit:", totalElapsedTime);
 
     try {
       let result;
@@ -274,6 +336,24 @@ const TimeKeeper: React.FC = () => {
       console.log("Time entry result:", result);
     } catch (error) {
       console.error("Error with time entry:", error);
+    }
+  };
+
+  const handleDateChange = (date: Date | null) => {
+    const now = new Date();
+    if (date) {
+      if (date > now) {
+        // Notify user if the selected date is in the future
+        alert("Please select a current or past date/time.");
+      } else {
+        // Set the date only if it's not in the future
+        setStartDate(date);
+        setStartTime(null);
+      }
+    } else {
+      // If the date picker returns null (e.g., the date is cleared), handle accordingly
+      // For example, you can reset the date to now or handle it based on your application's needs
+      setStartDate(now); // Reset to now or another default value as needed
     }
   };
 
@@ -316,6 +396,25 @@ const TimeKeeper: React.FC = () => {
               : "Not Started"}
           </div>
         </div>
+
+        {/* DatePicker for custom start time */}
+        <div className="mt-4 mb-6">
+          <label
+            htmlFor="startDate"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Start Time:
+          </label>
+          <DatePicker
+            id="startDate"
+            selected={startDate}
+            onChange={handleDateChange}
+            showTimeSelect
+            dateFormat="Pp"
+            className="form-control block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          />
+        </div>
+
         <div className="flex justify-between mt-auto py-6">
           <button
             type="button"
