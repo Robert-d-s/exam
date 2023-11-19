@@ -81,17 +81,23 @@ const DELETE_TIME_MUTATION = gql`
   }
 `;
 
-const TIMES_QUERY = gql`
-  query GetTimes($projectId: String!) {
-    times(projectId: $projectId) {
-      id
-      startTime
-      endTime
-      userId
-      projectId
-      rateId
-      totalElapsedTime
-    }
+// const TIMES_QUERY = gql`
+//   query GetTimes($projectId: String!) {
+//     times(projectId: $projectId) {
+//       id
+//       startTime
+//       endTime
+//       userId
+//       projectId
+//       rateId
+//       totalElapsedTime
+//     }
+//   }
+// `;
+
+const TOTAL_TIME_PER_USER_PROJECT_QUERY = gql`
+  query GetTotalTimeForUserProject($userId: Float!, $projectId: String!) {
+    getTotalTimeForUserProject(userId: $userId, projectId: $projectId)
   }
 `;
 
@@ -311,7 +317,13 @@ const TimeKeeper: React.FC = () => {
 
       console.log("Time entry result:", result);
     } catch (error) {
-      setSubmissionError("Error with time entry: " + error.message);
+      // Check if error is an instance of Error and has a message property
+      if (error instanceof Error) {
+        setSubmissionError("Error with time entry: " + error.message);
+      } else {
+        // Fallback error message if the error is not an instance of Error
+        setSubmissionError("An unexpected error occurred.");
+      }
     }
   };
 
@@ -329,22 +341,43 @@ const TimeKeeper: React.FC = () => {
     }
   };
 
+  const {
+    loading: totalTimeLoading,
+    data: totalTimeData,
+    error: totalTimeError,
+  } = useQuery(TOTAL_TIME_PER_USER_PROJECT_QUERY, {
+    variables: {
+      userId: parseFloat(selectedUser), // Ensure userId is a number
+      projectId: selectedProject,
+    },
+    skip: !selectedUser || !selectedProject, // Skip the query if no user or project is selected
+  });
+
+  const formatTimeFromMilliseconds = (totalMilliseconds: number) => {
+    const totalSeconds = Math.floor(totalMilliseconds / 1000);
+    const days = Math.floor(totalSeconds / (3600 * 24));
+    const hours = Math.floor((totalSeconds % (3600 * 24)) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+
+    return `${days} days, ${hours} hours, ${minutes} minutes`;
+  };
+
   // Render component JSX
   return (
-    <div className="max-w-lg mx-auto p-6 bg-gray-400 rounded shadow-md flex flex-col">
+    <div className="relative max-w-lg mx-auto p-6 bg-gray-400 rounded shadow-md flex flex-col">
       <div className="feedback-messages">
         {submissionSuccess && (
-          <div className="bg-green-100 text-green-800 text-sm font-semibold px-4 py-2 rounded-lg">
+          <div className="absolute top-5 right-5 md:top-10 md:right-10 transform translate-x-0 translate-y-0 z-50 bg-green-100 text-green-800 text-sm font-semibold px-4 py-2 rounded-lg shadow-lg mt-2 transition ease-out duration-300">
             Time entry saved!
           </div>
         )}
         {submissionError && (
-          <div className="bg-red-100 text-red-800 text-sm font-semibold px-4 py-2 rounded-lg">
+          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-red-100 text-red-800 text-sm font-semibold px-4 py-2 rounded-lg shadow-lg mt-2 transition ease-out duration-300">
             {submissionError}
           </div>
         )}
         {resetMessage && (
-          <div className="bg-blue-100 text-blue-800 text-sm font-semibold px-4 py-2 rounded-lg">
+          <div className="absolute top-5 right-5 md:top-10 md:right-10 transform translate-x-0 translate-y-0 z-50 text-blue-800 text-sm font-semibold px-4 py-2 rounded-lg shadow-lg mt-2 transition ease-out duration-300">
             Timer reset!
           </div>
         )}
@@ -354,7 +387,40 @@ const TimeKeeper: React.FC = () => {
         § Track Time §
       </h2>
       <div className="text-xl mb-4 bg-gray-100 text-black flex items-center justify-center">
-        {displayTime}
+        {displayTime}{" "}
+        <div
+          className={` clock-icon h-6 w-6  ${
+            isRunning ? "animate-spin" : ""
+          }text-gray-500`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line
+              x1="12"
+              y1="12"
+              x2="12"
+              y2="8"
+              className="hour-hand"
+            ></line>{" "}
+            {/* Short hand */}
+            <line
+              x1="12"
+              y1="12"
+              x2="16"
+              y2="12"
+              className={`minute-hand ${isRunning ? "animate-spin" : ""}`}
+            ></line>{" "}
+            {/* Long hand that spins */}
+          </svg>
+        </div>
       </div>
       <div className="mt-4">
         <UserSelector
@@ -403,6 +469,21 @@ const TimeKeeper: React.FC = () => {
             dateFormat="Pp"
             className="form-control block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           />
+        </div>
+
+        <div>
+          {totalTimeLoading ? (
+            <p>Loading total time...</p>
+          ) : totalTimeError ? (
+            <p>Error loading total time: {totalTimeError.message}</p>
+          ) : (
+            <p>
+              Your Total Time Spent:{" "}
+              {formatTimeFromMilliseconds(
+                totalTimeData?.getTotalTimeForUserProject || 0
+              )}
+            </p>
+          )}
         </div>
 
         <div className="flex justify-between mt-auto py-6">

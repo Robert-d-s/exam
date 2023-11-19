@@ -27,6 +27,9 @@ const TotalTimeSpent: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [startDate, setStartDate] = useState(getCurrentDate());
+  const [endDate, setEndDate] = useState(getCurrentDate());
+
   // Fetch userId and projectId when component mounts
   // Fetch all users and projects
   useEffect(() => {
@@ -77,16 +80,30 @@ const TotalTimeSpent: React.FC = () => {
     const fetchTotalTime = async () => {
       const token = localStorage.getItem("token");
 
-      const query = `
-        query GetTotalTimeSpent($userId: Float!, $projectId: String!, $date: String!) {
-          getTotalTimeSpent(userId: $userId, projectId: $projectId, date: $date)
-        }
-      `;
+      // const query = `
+      //   query GetTotalTimeSpent($userId: Float!, $projectId: String!, $date: String!) {
+      //     getTotalTimeSpent(userId: $userId, projectId: $projectId, date: $date)
+      //   }
+      // `;
 
+      // const variables = {
+      //   userId: parseFloat(selectedUser),
+      //   projectId: selectedProject,
+      //   date: selectedDate,
+      // };
+
+      const query = `
+  query GetTotalTimeSpent($userId: Float!, $projectId: String!, $startDate: String!, $endDate: String!) {
+    getTotalTimeSpent(userId: $userId, projectId: $projectId, startDate: $startDate, endDate: $endDate)
+  }
+`;
+
+      // Add startDate and endDate to the variables
       const variables = {
         userId: parseFloat(selectedUser),
         projectId: selectedProject,
-        date: selectedDate,
+        startDate: startDate,
+        endDate: endDate,
       };
 
       try {
@@ -180,11 +197,24 @@ const TotalTimeSpent: React.FC = () => {
 
       {/* Date Picker */}
       <label htmlFor="datePicker">Select a date:</label>
-      <input
+      {/* <input
         type="date"
         id="datePicker"
         value={selectedDate}
         onChange={(e) => setSelectedDate(e.target.value)}
+      /> */}
+
+      <input
+        type="date"
+        id="startDatePicker"
+        value={startDate}
+        onChange={(e) => setStartDate(e.target.value)}
+      />
+      <input
+        type="date"
+        id="endDatePicker"
+        value={endDate}
+        onChange={(e) => setEndDate(e.target.value)}
       />
 
       {/* Total Time Display */}
