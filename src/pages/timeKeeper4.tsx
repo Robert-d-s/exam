@@ -157,7 +157,6 @@ const TimeKeeper: React.FC = () => {
   useEffect(() => {
     if (ratesError) {
       console.error("Error fetching rates:", ratesError.message);
-      // Handle or display the error as needed
     }
   }, [ratesError]);
 

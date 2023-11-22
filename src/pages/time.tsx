@@ -80,18 +80,6 @@ const TotalTimeSpent: React.FC = () => {
     const fetchTotalTime = async () => {
       const token = localStorage.getItem("token");
 
-      // const query = `
-      //   query GetTotalTimeSpent($userId: Float!, $projectId: String!, $date: String!) {
-      //     getTotalTimeSpent(userId: $userId, projectId: $projectId, date: $date)
-      //   }
-      // `;
-
-      // const variables = {
-      //   userId: parseFloat(selectedUser),
-      //   projectId: selectedProject,
-      //   date: selectedDate,
-      // };
-
       const query = `
   query GetTotalTimeSpent($userId: Float!, $projectId: String!, $startDate: String!, $endDate: String!) {
     getTotalTimeSpent(userId: $userId, projectId: $projectId, startDate: $startDate, endDate: $endDate)
@@ -139,7 +127,7 @@ const TotalTimeSpent: React.FC = () => {
     };
 
     fetchTotalTime();
-  }, [selectedUser, selectedProject, selectedDate]);
+  }, [selectedUser, selectedProject, startDate, endDate]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -147,63 +135,43 @@ const TotalTimeSpent: React.FC = () => {
   const formatMilliseconds = (ms: number) => {
     const seconds = Math.floor((ms / 1000) % 60);
     const minutes = Math.floor((ms / (1000 * 60)) % 60);
-    const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
+    const hours = Math.floor(ms / (1000 * 60 * 60));
 
     return `${hours.toString().padStart(2, "0")}:${minutes
       .toString()
       .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  // Usage
-  const formattedTotalTime = formatMilliseconds(totalTime);
-
   return (
     <div>
       <h3>Total Time Spent on Project</h3>
-
-      {/* User Dropdown */}
-      <label className="font-bold mr-2" htmlFor="userSelector">
-        Select a User:
-      </label>
       <select
         id="userSelector"
         value={selectedUser || ""}
         onChange={(e) => setSelectedUser(e.target.value)}
         className="w-full p-2 mt-2 border rounded text-black"
       >
+        <option value="">Select a User</option> {/* Placeholder option */}
         {users.map((user) => (
           <option key={user.id} value={user.id}>
             {user.email}
           </option>
         ))}
       </select>
-
-      {/* Project Dropdown */}
-      <label className="font-bold mr-2" htmlFor="projectSelector">
-        Select a Project:
-      </label>
       <select
         id="projectSelector"
         value={selectedProject || ""}
         onChange={(e) => setSelectedProject(e.target.value)}
-        className="form-select block w-full mt-1 text-black "
+        className="w-full p-2 mt-2 border rounded text-black"
       >
+        <option value="">Select a Project</option>
         {projects.map((project) => (
           <option key={project.id} value={project.id}>
             {project.name}
           </option>
         ))}
       </select>
-
-      {/* Date Picker */}
       <label htmlFor="datePicker">Select a date:</label>
-      {/* <input
-        type="date"
-        id="datePicker"
-        value={selectedDate}
-        onChange={(e) => setSelectedDate(e.target.value)}
-      /> */}
-
       <input
         type="date"
         id="startDatePicker"
@@ -216,8 +184,6 @@ const TotalTimeSpent: React.FC = () => {
         value={endDate}
         onChange={(e) => setEndDate(e.target.value)}
       />
-
-      {/* Total Time Display */}
       <p>Total Time: {formatMilliseconds(totalTime)}</p>
     </div>
   );

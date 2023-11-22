@@ -12,7 +12,7 @@ const linearLink = createHttpLink({
 const authLink = setContext((_, { headers }) => {
   // Access the token based on the specific context of the operation
   const token = localStorage.getItem("token");
-  console.log("Token for Auth Link:", token);
+  // console.log("Token for Auth Link:", token);
 
   // Set the appropriate headers
   return {
