@@ -361,9 +361,8 @@ const TimeKeeper: React.FC = () => {
     return `${days} days, ${hours} hours, ${minutes} minutes`;
   };
 
-  // Render component JSX
   return (
-    <div className="relative max-w-lg mx-auto p-6 bg-gray-400 rounded shadow-md flex flex-col">
+    <div className="relative max-w-lg mx-auto p-6 bg-gray-200 rounded shadow-md flex flex-col">
       <div className="feedback-messages">
         {submissionSuccess && (
           <div className="absolute top-5 right-5 md:top-10 md:right-10 transform translate-x-0 translate-y-0 z-50 bg-green-100 text-green-800 text-sm font-semibold px-4 py-2 rounded-lg shadow-lg mt-2 transition ease-out duration-300">
@@ -376,17 +375,16 @@ const TimeKeeper: React.FC = () => {
           </div>
         )}
         {resetMessage && (
-          <div className="absolute top-5 right-5 md:top-10 md:right-10 transform translate-x-0 translate-y-0 z-50 text-blue-800 text-sm font-semibold px-4 py-2 rounded-lg shadow-lg mt-2 transition ease-out duration-300">
+          <div className="absolute top-7 right-4 md:top-10 md:right-10 transform translate-x-0 translate-y-0 z-50 bg-yellow-500 text-blue-800 text-sm font-semibold px-4 py-2 rounded-lg shadow-lg mt-2 transition ease-out duration-300">
             Timer reset!
           </div>
         )}
       </div>
 
-      <h2 className="text-2xl mb-6 text-black flex items-center justify-center">
-        § Track Time §
-      </h2>
-      <div className="text-xl mb-4 bg-gray-100 text-black flex items-center justify-center">
-        {displayTime}{" "}
+      <div className="flex items-center justify-center space-x-4 mb-4">
+        <h2 className="text-2xl  text-black flex items-center justify-center">
+          Track Time
+        </h2>
         <div
           className={` clock-icon h-6 w-6  ${
             isRunning ? "animate-spin" : ""
@@ -420,69 +418,68 @@ const TimeKeeper: React.FC = () => {
             {/* Long hand that spins */}
           </svg>
         </div>
+        <div className="text-xl  text-black flex items-center justify-center">
+          {displayTime}{" "}
+        </div>
       </div>
-      <div className="mt-4">
-        <UserSelector
-          users={users}
-          selectedUser={selectedUser}
-          onUserChange={(userId) => setSelectedUser(userId)}
-        />
-        <ProjectSelector
-          projects={projects}
-          selectedProject={selectedProject}
-          onProjectChange={setSelectedProject}
-        />
-        <RateSelector
-          rates={rates}
-          selectedRate={selectedRate}
-          onRateChange={setSelectedRate}
-        />
-      </div>
+
       <form onSubmit={handleSubmit} className="mt-6">
-        <div className="flex items-center justify-between">
-          <label htmlFor="startTime" className="mr-2">
-            Started at:
-          </label>
-          <div className="text-center">
-            {startTime
-              ? `${formatDateForDisplay(
-                  parseISO(formatISO(startTime))
-                )} ${formatTimeFromISOString(formatISO(startTime))}`
-              : "Not Started"}
+        <div className="flex flex-wrap justify-between -mx-3">
+          <div className="w-full md:w-1/2 px-3 mb-4 md:mb-0">
+            <div className="mb-4">
+              <UserSelector
+                users={users}
+                selectedUser={selectedUser}
+                onUserChange={(userId) => setSelectedUser(userId)}
+              />
+            </div>
+            <div className="mb-4">
+              <ProjectSelector
+                projects={projects}
+                selectedProject={selectedProject}
+                onProjectChange={setSelectedProject}
+              />
+            </div>
+            <RateSelector
+              rates={rates}
+              selectedRate={selectedRate}
+              onRateChange={setSelectedRate}
+            />
+          </div>
+          <div className="flex justify-center px-3 mb-4">
+            <DatePicker
+              id="startDate"
+              selected={startDate}
+              onChange={handleDateChange}
+              showTimeSelect
+              dateFormat="Pp"
+              className="form-input block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
           </div>
         </div>
-
-        {/* DatePicker for custom start time */}
-        <div className="mt-4 mb-6">
-          <label
-            htmlFor="startDate"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Pick a time:
-          </label>
-          <DatePicker
-            id="startDate"
-            selected={startDate}
-            onChange={handleDateChange}
-            showTimeSelect
-            dateFormat="Pp"
-            className="form-control block w-full px-3 py-2 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-          />
-        </div>
-
-        <div>
-          {totalTimeLoading ? (
-            <p>Loading total time...</p>
-          ) : totalTimeError ? (
-            <p>Error loading total time: {totalTimeError.message}</p>
-          ) : (
-            <p>
-              Your Total Time Spent:{" "}
-              {formatTimeFromMilliseconds(
-                totalTimeData?.getTotalTimeForUserProject || 0
-              )}
-            </p>
-          )}
+        <div className="py-6">
+          <div className="mb-2">
+            Started at:{" "}
+            {startTime
+              ? formatDateForDisplay(parseISO(formatISO(startTime))) +
+                " " +
+                formatTimeFromISOString(formatISO(startTime))
+              : "Not Started"}
+          </div>
+          <div>
+            {totalTimeLoading ? (
+              <p>Loading total time...</p>
+            ) : totalTimeError ? (
+              <p>Error loading total time: {totalTimeError.message}</p>
+            ) : (
+              <p>
+                Your Total Time Spent:{" "}
+                {formatTimeFromMilliseconds(
+                  totalTimeData?.getTotalTimeForUserProject || 0
+                )}
+              </p>
+            )}
+          </div>
         </div>
 
         <div className="flex justify-between mt-auto py-6">
@@ -509,7 +506,7 @@ const TimeKeeper: React.FC = () => {
             className="px-4 py-2 bg-blue-500 text-white rounded"
             disabled={isRunning || !startTime}
           >
-            Submit
+            Submit Time
           </button>
         </div>
       </form>

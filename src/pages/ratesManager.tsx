@@ -1,6 +1,6 @@
 // RatesManager.jsx
 import React, { useState } from "react";
-import { useQuery, useMutation, gql } from "@apollo/client";
+import { useQuery, useMutation, gql, ApolloError } from "@apollo/client";
 
 interface Team {
   id: string;
@@ -58,10 +58,19 @@ const RatesManager = () => {
   const [rateName, setRateName] = useState("");
   const [rateValue, setRateValue] = useState(0);
 
-  const { loading: teamsLoading, data: teamsData } = useQuery(
-    GET_ALL_SIMPLE_TEAMS,
-    { context: { useLinearApi: false } }
-  );
+  const [error, setError] = useState<ApolloError | null>(null);
+
+  const {
+    loading: teamsLoading,
+    data: teamsData,
+    error: teamsError,
+  } = useQuery(GET_ALL_SIMPLE_TEAMS, {
+    context: { useLinearApi: false },
+    onError: (error) => {
+      setError(error);
+    },
+  });
+
   const {
     loading: ratesLoading,
     data: ratesData,
@@ -92,14 +101,18 @@ const RatesManager = () => {
 
   const handleDeleteRate = (rateId: number) => {
     console.log("Attempting to delete rate with ID:", rateId); // Debugging log
-    deleteRate({ variables: { rateId } });
+    deleteRate({ variables: { rateId } }).catch((error) => {
+      setError(error);
+    });
   };
-
+  if (error) return <p>Error: {error.message}</p>;
   if (teamsLoading || ratesLoading) return <p>Loading...</p>;
+  if (!teamsData || !teamsData.getAllSimpleTeams)
+    return <p>No data available.</p>;
 
   return (
-    <div className="max-w-md mx-auto p-4">
-      <div className="text-center mb-4">
+    <div className="relative max-w-lg mx-auto p-6 bg-gray-200 rounded shadow-md flex flex-col">
+      <div className="mb-4">
         <h3 className="font-bold text-lg">Manage Rates</h3>
       </div>
 

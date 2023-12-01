@@ -1,6 +1,7 @@
 import React from "react";
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client";
+import { formatDateForDisplay } from "../utils/timeUtils";
 
 type Label = {
   id: string;
@@ -53,8 +54,12 @@ const GET_ISSUES = gql`
 `;
 
 const IssuesComponent: React.FC = () => {
-  const { loading, error, data } = useQuery<{ issues: Issue[] }>(GET_ISSUES);
-
+  const { loading, error, data, refetch } = useQuery<{ issues: Issue[] }>(
+    GET_ISSUES
+  );
+  const handleRefresh = () => {
+    refetch();
+  };
   console.log("GraphQL Response:", { loading, error, data });
 
   if (loading) return <p>Loading issues...</p>;
@@ -65,9 +70,36 @@ const IssuesComponent: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Issues</h1>
+      {/* <h1 className="text-2xl font-bold mb-4">Issues</h1>
+      <button
+        onClick={handleRefresh}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        Refresh
+      </button> */}
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Issues</h1>
+        <button
+          onClick={handleRefresh}
+          className="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600"
+          style={{ width: "40px", height: "40px" }}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            x="0px"
+            y="0px"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path d="M16 15L24 15 20 20zM8 9L0 9 4 4z"></path>
+            <path d="M21 6c0-1.654-1.346-3-3-3H7.161l1.6 2H18c.551 0 1 .448 1 1v10h2V6zM3 18c0 1.654 1.346 3 3 3h10.839l-1.6-2H6c-.551 0-1-.448-1-1V8H3V18z"></path>
+          </svg>
+        </button>
+      </div>
       {data && data.issues.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {data.issues.map((issue) => (
             <div key={issue.id} className="border border-gray-200 rounded p-4">
               <h2 className="text-xl font-semibold">{issue.title}</h2>
@@ -89,8 +121,12 @@ const IssuesComponent: React.FC = () => {
               {/* Rest of the issue details */}
               <div className="mt-2 text-sm text-gray-500">
                 <p>Due Date: {issue.dueDate}</p>
-                <p>Created At: {issue.createdAt}</p>
-                <p>Updated At: {issue.updatedAt}</p>
+                <p>
+                  Created At: {formatDateForDisplay(new Date(issue.createdAt))}
+                </p>
+                <p>
+                  Updated At: {formatDateForDisplay(new Date(issue.updatedAt))}
+                </p>
                 <p>Priority: {issue.priorityLabel}</p>
                 <p>State: {issue.state}</p>
                 <p>Team Key: {issue.teamKey}</p>

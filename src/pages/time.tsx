@@ -143,26 +143,40 @@ const TotalTimeSpent: React.FC = () => {
   };
 
   return (
-    <div>
-      <h3>Total Time Spent on Project</h3>
+    <div className="relative max-w-lg mx-auto p-6 bg-gray-200 rounded shadow-md flex flex-col">
+      <h3 className="text-lg font-bold mb-4">Total Time Spent on Project</h3>
+
+      <label
+        htmlFor="userSelector"
+        className="block text-sm font-medium text-gray-700 my-2"
+      >
+        Select a User:
+      </label>
       <select
         id="userSelector"
         value={selectedUser || ""}
         onChange={(e) => setSelectedUser(e.target.value)}
-        className="w-full p-2 mt-2 border rounded text-black"
+        className="w-full p-2 border border-gray-300 rounded text-black"
       >
-        <option value="">Select a User</option> {/* Placeholder option */}
+        <option value="">Select a User</option>
         {users.map((user) => (
           <option key={user.id} value={user.id}>
             {user.email}
           </option>
         ))}
       </select>
+
+      <label
+        htmlFor="projectSelector"
+        className="block text-sm font-medium text-gray-700 my-2"
+      >
+        Select a Project:
+      </label>
       <select
         id="projectSelector"
         value={selectedProject || ""}
         onChange={(e) => setSelectedProject(e.target.value)}
-        className="w-full p-2 mt-2 border rounded text-black"
+        className="w-full p-2 border border-gray-300 rounded text-black"
       >
         <option value="">Select a Project</option>
         {projects.map((project) => (
@@ -171,20 +185,38 @@ const TotalTimeSpent: React.FC = () => {
           </option>
         ))}
       </select>
-      <label htmlFor="datePicker">Select a date:</label>
+
+      <label
+        htmlFor="startDatePicker"
+        className="block text-sm font-medium text-gray-700 my-2"
+      >
+        Start Date:
+      </label>
       <input
         type="date"
         id="startDatePicker"
         value={startDate}
         onChange={(e) => setStartDate(e.target.value)}
+        className="w-full p-2 border border-gray-300 rounded text-black my-2"
       />
+
+      <label
+        htmlFor="endDatePicker"
+        className="block text-sm font-medium text-gray-700 my-2"
+      >
+        End Date:
+      </label>
       <input
         type="date"
         id="endDatePicker"
         value={endDate}
         onChange={(e) => setEndDate(e.target.value)}
+        className="w-full p-2 border border-gray-300 rounded text-black my-2"
       />
-      <p>Total Time: {formatMilliseconds(totalTime)}</p>
+
+      <p className="text-lg font-medium mt-4">
+        Total Time: {formatMilliseconds(totalTime)}
+      </p>
     </div>
   );
 };

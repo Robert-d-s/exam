@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
+  const router = useRouter();
   const handleLogin = async () => {
     try {
       const response = await fetch("http://localhost:8080/auth/login", {
@@ -23,7 +24,8 @@ const Login: React.FC = () => {
       if (data && data.access_token) {
         // Store the JWT token in local storage (or elsewhere if preferred)
         localStorage.setItem("token", data.access_token);
-        alert("Logged in successfully!");
+        // alert("Logged in successfully!");
+        router.push("/dashboard");
       } else if (data && data.error) {
         // Handle any error messages sent from the server
         setErrorMessage(data.error);
@@ -60,16 +62,6 @@ const Login: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
           />
-
-          <div className="flex justify-between items-center mb-4">
-            <label className="flex items-center">
-              <input type="checkbox" className="mr-2" />
-              <span className="text-gray-600">Remember me</span>
-            </label>
-            <span className="text-blue-500 cursor-pointer underline">
-              Forgot Password?
-            </span>
-          </div>
 
           <button
             type="submit"
