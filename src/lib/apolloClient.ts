@@ -1,20 +1,17 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  createHttpLink,
+  from,
+  gql,
+} from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { onError } from "@apollo/client/link/error";
 
-const httpLink = createHttpLink({
-  uri: "http://localhost:8080/graphql",
-});
-
-const linearLink = createHttpLink({
-  uri: "https://api.linear.app/graphql",
-});
+import { makeVar } from "@apollo/client";
 
 const authLink = setContext((_, { headers }) => {
-  // Access the token based on the specific context of the operation
   const token = localStorage.getItem("token");
-  // console.log("Token for Auth Link:", token);
-
-  // Set the appropriate headers
   return {
     headers: {
       ...headers,
@@ -23,19 +20,60 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
-const link = createHttpLink({
-  uri: (operation) =>
-    operation.getContext().useLinearApi
-      ? "https://api.linear.app/graphql"
-      : "http://localhost:8080/graphql",
-  fetchOptions: {
-    method: "POST",
-  },
-});
+const errorLink = onError(
+  ({ graphQLErrors, networkError, forward, operation }) => {
+    if (graphQLErrors) {
+      graphQLErrors.forEach(({ message, extensions }) => {
+        if (message.includes("Invalid or expired token")) {
+          localStorage.removeItem("token");
+          window.location.href = "/login";
+        } else if (extensions?.code === "FORBIDDEN") {
+          isForbiddenVar(true); // Update the reactive variable on forbidden error
+        }
+      });
+    }
+    if (networkError) {
+      console.log(`[Network error]: ${networkError}`);
+    }
+    return forward(operation);
+  }
+);
+
+export const isForbiddenVar = makeVar(false);
 
 const client = new ApolloClient({
-  link: authLink.concat(link),
-  cache: new InMemoryCache(),
+  link: from([
+    errorLink,
+    authLink,
+    createHttpLink({
+      uri: (operation) =>
+        operation.getContext().useLinearApi
+          ? "https://api.linear.app/graphql"
+          : "http://localhost:8080/graphql",
+      fetchOptions: {
+        method: "POST",
+      },
+    }),
+  ]),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          isForbidden: {
+            read() {
+              return isForbiddenVar();
+            },
+          },
+        },
+      },
+    },
+  }),
 });
 
 export default client;
+
+export const logout = () => {
+  localStorage.removeItem("token");
+  client.resetStore();
+  window.location.href = "/login";
+};

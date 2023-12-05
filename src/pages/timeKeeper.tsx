@@ -81,20 +81,6 @@ const DELETE_TIME_MUTATION = gql`
   }
 `;
 
-// const TIMES_QUERY = gql`
-//   query GetTimes($projectId: String!) {
-//     times(projectId: $projectId) {
-//       id
-//       startTime
-//       endTime
-//       userId
-//       projectId
-//       rateId
-//       totalElapsedTime
-//     }
-//   }
-// `;
-
 const TOTAL_TIME_PER_USER_PROJECT_QUERY = gql`
   query GetTotalTimeForUserProject($userId: Float!, $projectId: String!) {
     getTotalTimeForUserProject(userId: $userId, projectId: $projectId)

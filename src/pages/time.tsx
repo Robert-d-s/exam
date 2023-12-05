@@ -58,16 +58,38 @@ const TotalTimeSpent: React.FC = () => {
           },
           body: JSON.stringify({ query }),
         });
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
         const data = await response.json();
         console.log("Debug: Dropdown options fetched:", data);
+        if (data.errors) {
+          console.error("Error: ", data.errors[0].message);
+          setError(data.errors[0].message);
+          return;
+        }
+
+        if (!data.data || !data.data.users || !data.data.projects) {
+          console.error("Error: Invalid response data", data);
+          setError("Invalid response data");
+          return;
+        }
 
         setUsers(data.data.users);
         setProjects(data.data.projects);
-        setLoading(false);
+        // setLoading(false);
       } catch (e: any) {
-        console.error("Error: Failed to fetch dropdown options", e);
-        setError("Failed to fetch dropdown options");
+        // console.error("Error: Failed to fetch dropdown options", e);
+        // setError("Failed to fetch dropdown options");
+        if (e instanceof TypeError) {
+          setError("Failed to fetch data. Check network connection.");
+        } else {
+          setError("An unexpected error occurred.");
+        }
+        console.error("Error fetching dropdown options:", e);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -107,26 +129,49 @@ const TotalTimeSpent: React.FC = () => {
           },
           body: JSON.stringify({ query, variables }),
         });
-
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
         const data = await response.json();
 
         console.log("Debug: Total time fetched:", data);
 
+        //     if (data.errors) {
+        //       console.error("Error: ", data.errors[0].message);
+        //       setError(data.errors[0].message);
+        //     } else {
+        //       setTotalTime(data.data.getTotalTimeSpent);
+        //     }
+        //   } catch (e) {
+        //     console.error("Error: Failed to fetch total time", e);
+        //     setError("Failed to fetch total time");
+        //   } finally {
+        //     setLoading(false);
+        //   }
+        // };
         if (data.errors) {
-          console.error("Error: ", data.errors[0].message);
-          setError(data.errors[0].message);
+          const message = data.errors[0].message;
+          if (message.includes("Forbidden")) {
+            setError("You don't have permission to view this data.");
+          } else {
+            setError(message); // General GraphQL error message
+          }
         } else {
           setTotalTime(data.data.getTotalTimeSpent);
         }
-      } catch (e) {
-        console.error("Error: Failed to fetch total time", e);
-        setError("Failed to fetch total time");
+      } catch (e: any) {
+        if (e.message.startsWith("HTTP error")) {
+          setError("Network error: Failed to fetch data.");
+        } else {
+          setError("An unexpected error occurred.");
+        }
       } finally {
         setLoading(false);
       }
     };
-
-    fetchTotalTime();
+    if (selectedUser && selectedProject) {
+      fetchTotalTime();
+    }
   }, [selectedUser, selectedProject, startDate, endDate]);
 
   if (loading) return <p>Loading...</p>;
@@ -145,7 +190,16 @@ const TotalTimeSpent: React.FC = () => {
   return (
     <div className="relative max-w-lg mx-auto p-6 bg-gray-200 rounded shadow-md flex flex-col">
       <h3 className="text-lg font-bold mb-4">Total Time Spent on Project</h3>
-
+      {/* Error Message */}
+      {error && (
+        <div
+          className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4"
+          role="alert"
+        >
+          <p className="font-bold">Error</p>
+          <p>{error}</p>
+        </div>
+      )}
       <label
         htmlFor="userSelector"
         className="block text-sm font-medium text-gray-700 my-2"
@@ -165,7 +219,6 @@ const TotalTimeSpent: React.FC = () => {
           </option>
         ))}
       </select>
-
       <label
         htmlFor="projectSelector"
         className="block text-sm font-medium text-gray-700 my-2"
@@ -185,7 +238,6 @@ const TotalTimeSpent: React.FC = () => {
           </option>
         ))}
       </select>
-
       <label
         htmlFor="startDatePicker"
         className="block text-sm font-medium text-gray-700 my-2"
@@ -199,7 +251,6 @@ const TotalTimeSpent: React.FC = () => {
         onChange={(e) => setStartDate(e.target.value)}
         className="w-full p-2 border border-gray-300 rounded text-black my-2"
       />
-
       <label
         htmlFor="endDatePicker"
         className="block text-sm font-medium text-gray-700 my-2"
@@ -213,7 +264,6 @@ const TotalTimeSpent: React.FC = () => {
         onChange={(e) => setEndDate(e.target.value)}
         className="w-full p-2 border border-gray-300 rounded text-black my-2"
       />
-
       <p className="text-lg font-medium mt-4">
         Total Time: {formatMilliseconds(totalTime)}
       </p>
