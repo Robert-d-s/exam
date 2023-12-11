@@ -1,5 +1,5 @@
 import { useQuery, useMutation, gql } from "@apollo/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ApolloError } from "@apollo/client";
 import { logout } from "../lib/apolloClient";
 
@@ -10,28 +10,42 @@ enum UserRole {
   PENDING = "PENDING",
 }
 
-// User type
 type User = {
   id: number;
   email: string;
   role: UserRole;
-  teams: { teamId: string; team: { name: string } }[];
+  teams: {
+    id: string;
+    name: string;
+  }[];
 };
 
 type Team = {
-  teamId: string;
-  team: {
-    name: string;
-  };
+  id: string;
+  name: string;
 };
 
-// GraphQL Queries and Mutations
 const GET_USERS = gql`
   query GetUsers {
     users {
       id
       email
       role
+      teams {
+        id
+        name
+      }
+    }
+  }
+`;
+
+const GET_TEAMS = gql`
+  query FetchTeamsFromLinear {
+    fetchTeamsFromLinear {
+      nodes {
+        id
+        name
+      }
     }
   }
 `;
@@ -50,12 +64,6 @@ const ADD_USER_TO_TEAM = gql`
     addUserToTeam(userId: $userId, teamId: $teamId) {
       id
       email
-      teams {
-        teamId
-        team {
-          name
-        }
-      }
     }
   }
 `;
@@ -66,19 +74,6 @@ const REMOVE_USER_FROM_TEAM = gql`
       id
       email
       teams {
-        teamId
-        team {
-          name
-        }
-      }
-    }
-  }
-`;
-
-const GET_TEAMS = gql`
-  query FetchTeamsFromLinear {
-    fetchTeamsFromLinear {
-      nodes {
         id
         name
       }
@@ -86,23 +81,58 @@ const GET_TEAMS = gql`
   }
 `;
 
-// Admin Page Component
 const AdminPage = () => {
-  const { loading, error, data } = useQuery(GET_USERS);
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedTeam, setSelectedTeam] = useState<{
+    [userId: number]: string;
+  }>({});
+
+  const {
+    loading: loadingUsers,
+    error: errorUsers,
+    data: dataUsers,
+    refetch: refetchUsers,
+  } = useQuery(GET_USERS, {
+    fetchPolicy: "network-only",
+  });
+  const { loading: loadingTeams, data: dataTeams } = useQuery(GET_TEAMS, {
+    fetchPolicy: "network-only",
+  });
+
   const [updateUserRole] = useMutation(UPDATE_USER_ROLE);
+  const [addUserToTeam] = useMutation(ADD_USER_TO_TEAM, {
+    onCompleted: () => refetchUsers(),
+  });
+
+  const [removeUserFromTeam, { error }] = useMutation(REMOVE_USER_FROM_TEAM, {
+    onCompleted: () => refetchUsers(),
+    onError: (error) => {
+      // Handle error
+      console.error("Error removing user from team:", error);
+      // Potentially set an error state here
+    },
+  });
+
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { data: dataTeams } = useQuery(GET_TEAMS);
+  useEffect(() => {
+    if (dataUsers) {
+      const usersWithTeams = dataUsers.users.map((user: User) => ({
+        ...user,
+        teams: user.teams || [],
+      }));
+      setUsers(usersWithTeams);
+    }
+  }, [dataUsers]);
 
-  const [addUserToTeam] = useMutation(ADD_USER_TO_TEAM);
-  const [removeUserFromTeam] = useMutation(REMOVE_USER_FROM_TEAM);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) {
-    const graphQLError = error.graphQLErrors[0];
+  console.log("user data: ", dataUsers);
+  console.log("error data: ", errorUsers);
+  if (loadingUsers || loadingTeams) return <p>Loading...</p>;
+  if (errorUsers) {
+    const graphQLError = errorUsers.graphQLErrors[0];
     const message = graphQLError
       ? graphQLError.message
-      : error.networkError
+      : errorUsers.networkError
       ? "Network error, please try again."
       : "An error occurred.";
 
@@ -121,25 +151,33 @@ const AdminPage = () => {
 
     return <p>Error: {message}</p>;
   }
+  const handleAddUserToTeam = (userId: number) => () => {
+    console.log(`Adding user ${userId} to team`);
+    console.log(`Selected team for user ${userId}: ${selectedTeam[userId]}`);
 
-  const handleAddUserToTeam = async (userId: number, teamId: string) => {
-    try {
-      await addUserToTeam({ variables: { userId, teamId } });
-      // Refresh the user list or display success message
-    } catch (error) {
-      console.error("Error adding user to team:", error);
-      // Handle error
+    const teamId = selectedTeam[userId];
+    console.log(`Attempting to add user ${userId} to team ${teamId}`);
+    if (!teamId) {
+      console.error("No team selected for user:", userId);
+      return;
     }
+
+    addUserToTeam({ variables: { userId, teamId } })
+      .then(() => refetchUsers())
+      .catch((error) => console.error("Error adding user to team:", error));
   };
 
-  const handleRemoveUserFromTeam = async (userId: number, teamId: string) => {
-    try {
-      await removeUserFromTeam({ variables: { userId, teamId } });
-      // Refresh the user list or display success message
-    } catch (error) {
-      console.error("Error removing user from team:", error);
-      // Handle error
-    }
+  const handleTeamSelection = (userId: number, teamId: string) => {
+    console.log(`Selected team for user ${userId}: ${teamId}`);
+    setSelectedTeam((prev) => ({ ...prev, [userId]: teamId }));
+  };
+
+  const handleRemoveUserFromTeam = (userId: number, teamId: string) => {
+    removeUserFromTeam({
+      variables: { userId, teamId },
+    })
+      .then(() => refetchUsers())
+      .catch((error) => console.error("Error removing user from team:", error));
   };
 
   const handleRoleChange = async (userId: number, newRole: UserRole) => {
@@ -163,120 +201,236 @@ const AdminPage = () => {
   const handleLogout = () => {
     logout();
   };
+  if (loadingUsers || loadingTeams) return <p>Loading...</p>;
+  if (errorUsers) return <p>Error: {handleError(errorUsers)}</p>;
 
-  // return (
-  //   <div>
-  //     <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-  //     <button onClick={handleLogout}>Logout</button>
-  //     <table className="min-w-full">
-  //       <thead>
-  //         <tr>
-  //           <th>Email</th>
-  //           <th>Role</th>
-  //           <th>Actions</th>
-  //         </tr>
-  //       </thead>
-  //       <tbody>
-  //         {data.users.map((user: User) => (
-  //           <tr key={user.id}>
-  //             <td>{user.email}</td>
-  //             <td>
-  //               <select
-  //                 value={user.role}
-  //                 onChange={(e) =>
-  //                   handleRoleChange(user.id, e.target.value as UserRole)
-  //                 }
-  //                 className="form-select"
-  //               >
-  //                 {Object.values(UserRole).map((role) => (
-  //                   <option key={role} value={role}>
-  //                     {role}
-  //                   </option>
-  //                 ))}
-  //               </select>
-  //             </td>
-  //           </tr>
-  //         ))}
-  //       </tbody>
-  //     </table>
-  //     {errorMessage && (
-  //       <p className="text-red-500 text-sm my-2">{errorMessage}</p>
-  //     )}
-  //   </div>
-  // );
+  //   return (
+  //     <div>
+  //       <UserTable
+  //         users={users}
+  //         teams={dataTeams?.fetchTeamsFromLinear.nodes}
+  //         onTeamSelect={handleTeamSelection}
+  //         onAddToTeam={(userId) => handleAddUserToTeam(userId)()}
+  //         onRemoveFromTeam={handleRemoveUserFromTeam}
+  //         onRoleChange={handleRoleChange}
+  //       />
+  //       {errorMessage && <p>{errorMessage}</p>}
+  //       <button onClick={handleLogout}>Logout</button>
+  //     </div>
+  //   );
+  // };
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-      <button onClick={handleLogout}>Logout</button>
-      <table className="min-w-full">
-        <thead>
-          <tr>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Teams</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.users.map((user: User) => (
-            <tr key={user.id}>
-              <td>{user.email}</td>
-              <td>
-                <select
-                  value={user.role}
-                  onChange={(e) =>
-                    handleRoleChange(user.id, e.target.value as UserRole)
-                  }
-                  className="form-select"
-                >
-                  {Object.values(UserRole).map((role) => (
-                    <option key={role} value={role}>
-                      {role}
-                    </option>
-                  ))}
-                </select>
-              </td>
-              <td>
-                {/* Teams list */}
-                <ul>
-                  {user.teams.map((team: Team) => (
-                    <li key={team.teamId}>
-                      {team.team.name}
-                      <button
-                        onClick={() =>
-                          handleRemoveUserFromTeam(user.id, team.teamId)
-                        }
-                      >
-                        Remove
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </td>
-              <td>
-                {/* Add to team dropdown */}
-                <select
-                  onChange={(e) => handleAddUserToTeam(user.id, e.target.value)}
-                  className="form-select"
-                >
-                  <option value="">Add to team...</option>
-                  {dataTeams?.teams.map((team: any) => (
-                    <option key={team.id} value={team.id}>
-                      {team.name}
-                    </option>
-                  ))}
-                </select>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {errorMessage && (
-        <p className="text-red-500 text-sm my-2">{errorMessage}</p>
-      )}
+    <div className="container mx-auto p-4">
+      <UserTable
+        users={users}
+        teams={dataTeams?.fetchTeamsFromLinear.nodes}
+        onTeamSelect={handleTeamSelection}
+        onAddToTeam={(userId) => handleAddUserToTeam(userId)()}
+        onRemoveFromTeam={handleRemoveUserFromTeam}
+        onRoleChange={handleRoleChange}
+      />
+      {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+      <button
+        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        onClick={handleLogout}
+      >
+        Logout
+      </button>
     </div>
   );
+};
+type UserTableProps = {
+  users: User[];
+  teams: Team[];
+  onTeamSelect: (userId: number, teamId: string) => void;
+  onAddToTeam: (userId: number) => void;
+  onRemoveFromTeam: (userId: number, teamId: string) => void;
+  onRoleChange: (userId: number, newRole: UserRole) => void;
+};
+
+const UserTable: React.FC<UserTableProps> = ({
+  users,
+  teams,
+  onTeamSelect,
+  onAddToTeam,
+  onRemoveFromTeam,
+  onRoleChange,
+}) => (
+  <table className="min-w-full table-auto">
+    <thead className="bg-gray-200">
+      <tr>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Email
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Teams
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Actions
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Role
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {users.map((user: User) => (
+        <UserRow
+          key={user.id}
+          user={user}
+          teams={teams}
+          onTeamSelect={onTeamSelect}
+          onAddToTeam={onAddToTeam}
+          onRemoveFromTeam={onRemoveFromTeam}
+          onRoleChange={onRoleChange}
+        />
+      ))}
+    </tbody>
+  </table>
+);
+type UserRowProps = {
+  user: User;
+  teams: Team[];
+  onTeamSelect: (userId: number, teamId: string) => void;
+  onAddToTeam: (userId: number) => void;
+  onRemoveFromTeam: (userId: number, teamId: string) => void;
+  onRoleChange: (userId: number, newRole: UserRole) => void;
+};
+const UserRow: React.FC<UserRowProps> = ({
+  user,
+  teams,
+  onTeamSelect,
+  onAddToTeam,
+  onRemoveFromTeam,
+  onRoleChange,
+}) => {
+  console.log("Teams for user:", user.id, user.teams);
+
+  return (
+    <tr>
+      <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
+      <td className="px-6 py-4 whitespace-nowrap">
+        <TeamSelect
+          teams={teams}
+          onTeamSelect={(teamId) => onTeamSelect(user.id, teamId)}
+        />
+        <button
+          className="ml-2 bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded"
+          onClick={() => onAddToTeam(user.id)}
+        >
+          Add to Team
+        </button>
+      </td>
+      {/* <td>
+        <UserTeams teams={user.teams} />
+      </td> */}
+      <td className="px-6 py-4 whitespace-nowrap">
+        {user.teams && user.teams.length > 0 ? (
+          <ul className="list-disc list-inside space-y-2">
+            {user.teams.map((team) => (
+              <li key={team.id} className="flex items-center justify-between">
+                {team.name}
+                <button
+                  onClick={() => onRemoveFromTeam(user.id, team.id)}
+                  className="ml-4 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                >
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No teams assigned</p>
+        )}
+      </td>
+      <td>
+        <UserRoleSelect
+          currentRole={user.role}
+          onRoleChange={(newRole) => onRoleChange(user.id, newRole)}
+        />
+        {/* {user.teams.map((team) => (
+          <button
+            key={team.id}
+            onClick={() => onRemoveFromTeam(user.id, team.id)}
+          >
+            Remove from {team.name}
+          </button>
+        ))} */}
+      </td>
+    </tr>
+  );
+};
+
+type TeamSelectProps = {
+  teams: Team[];
+  onTeamSelect: (teamId: string) => void;
+};
+const TeamSelect: React.FC<TeamSelectProps> = ({ teams, onTeamSelect }) => (
+  <select onChange={(e) => onTeamSelect(e.target.value)}>
+    <option value="">Select team...</option>
+    {teams.map((team: Team) => (
+      <option key={team.id} value={team.id}>
+        {team.name}
+      </option>
+    ))}
+  </select>
+);
+
+type UserTeamsProps = {
+  teams: {
+    id: string;
+    name: string;
+  }[];
+};
+
+const UserTeams: React.FC<UserTeamsProps> = ({ teams }) => {
+  console.log("Teams prop in UserTeams:", teams);
+  return teams.length > 0 ? (
+    <ul>
+      {teams.map((team) => {
+        console.log("Mapping team:", team);
+
+        // Use team.id and team.name directly
+        if (team && team.id && team.name) {
+          return <li key={team.id}>{team.name}</li>;
+        } else {
+          console.log("Invalid team object for team:", team);
+          return null;
+        }
+      })}
+    </ul>
+  ) : (
+    <p>No teams assigned</p>
+  );
+};
+type UserRoleSelectProps = {
+  currentRole: UserRole;
+  onRoleChange: (newRole: UserRole) => void;
+};
+const UserRoleSelect: React.FC<UserRoleSelectProps> = ({
+  currentRole,
+  onRoleChange,
+}) => (
+  <select
+    defaultValue={currentRole}
+    onChange={(e) => onRoleChange(e.target.value as UserRole)}
+  >
+    {Object.values(UserRole).map((role) => (
+      <option key={role} value={role}>
+        {role}
+      </option>
+    ))}
+  </select>
+);
+
+const handleError = (error: ApolloError) => {
+  const graphQLError = error.graphQLErrors[0];
+  return graphQLError
+    ? graphQLError.message
+    : error.networkError
+    ? "Network error, please try again."
+    : "An error occurred.";
 };
 
 export default AdminPage;

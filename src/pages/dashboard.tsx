@@ -1,6 +1,6 @@
 import React from "react";
 import TimeKeeper from "./timeKeeper";
-import TotalTimeSpent from "./time2";
+import TotalTimeSpent from "./time";
 import RatesManager from "./ratesManager";
 import IssuesComponent from "./issues";
 import OrganizationComponent from "./organizationData";
