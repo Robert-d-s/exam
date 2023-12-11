@@ -1,5 +1,5 @@
 import { useQuery, useMutation, gql } from "@apollo/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ApolloError } from "@apollo/client";
 import { logout } from "../lib/apolloClient";
 
@@ -14,7 +14,7 @@ type User = {
   id: number;
   email: string;
   role: UserRole;
-  //   teams: { teamId: string; team: { name: string } }[];
+  teams: { teamId: string; team: { name: string } }[];
 };
 
 type Team = {
@@ -28,6 +28,10 @@ const GET_USERS = gql`
       id
       email
       role
+      teams {
+        id
+        name
+      }
     }
   }
 `;
@@ -76,16 +80,43 @@ const REMOVE_USER_FROM_TEAM = gql`
   }
 `;
 const AdminPage = () => {
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedTeam, setSelectedTeam] = useState<{
+    [userId: number]: string;
+  }>({});
+
   const {
     loading: loadingUsers,
     error: errorUsers,
     data: dataUsers,
+    refetch: refetchUsers,
   } = useQuery(GET_USERS);
   const { loading: loadingTeams, data: dataTeams } = useQuery(GET_TEAMS);
   const [updateUserRole] = useMutation(UPDATE_USER_ROLE);
-  const [addUserToTeam] = useMutation(ADD_USER_TO_TEAM);
+  //   const [addUserToTeam] = useMutation(ADD_USER_TO_TEAM);
   const [removeUserFromTeam] = useMutation(REMOVE_USER_FROM_TEAM);
   const [errorMessage, setErrorMessage] = useState("");
+
+  const [addUserToTeam] = useMutation(ADD_USER_TO_TEAM, {
+    onCompleted: () => refetchUsers(), // Refetch users to update UI with new team associations
+  });
+
+  //   useEffect(() => {
+  //     if (dataUsers) {
+  //       setUsers(dataUsers.users);
+  //     }
+  //   }, [dataUsers]);
+  useEffect(() => {
+    if (dataUsers) {
+      console.log("Fetched users with teams:", dataUsers);
+      const usersWithTeams = dataUsers.users.map((user: User) => ({
+        ...user,
+        teams: user.teams || [], // Ensure teams is an array
+      }));
+      setUsers(usersWithTeams);
+    }
+  }, [dataUsers]);
+
   console.log("user data: ", dataUsers);
   console.log("error data: ", errorUsers);
   if (loadingUsers || loadingTeams) return <p>Loading...</p>;
@@ -113,14 +144,29 @@ const AdminPage = () => {
     return <p>Error: {message}</p>;
   }
 
-  const handleAddUserToTeam = async (userId: number, teamId: string) => {
-    try {
-      await addUserToTeam({ variables: { userId, teamId } });
-      // Refresh the user list or display success message
-    } catch (error) {
-      console.error("Error adding user to team:", error);
-      // Handle error
+  //   const handleAddUserToTeam = async (userId: number, teamId: string) => {
+  //     try {
+  //       await addUserToTeam({ variables: { userId, teamId } });
+  //       // Refresh the user list or display success message
+  //     } catch (error) {
+  //       console.error("Error adding user to team:", error);
+  //       // Handle error
+  //     }
+  //   };
+
+  const handleAddUserToTeam = async (userId: number) => {
+    const teamId = selectedTeam[userId];
+    if (teamId) {
+      try {
+        await addUserToTeam({ variables: { userId, teamId } });
+      } catch (error) {
+        console.error("Error adding user to team:", error);
+      }
     }
+  };
+
+  const handleTeamSelection = (userId: number, teamId: string) => {
+    setSelectedTeam((prev) => ({ ...prev, [userId]: teamId }));
   };
 
   const handleRemoveUserFromTeam = async (userId: number, teamId: string) => {
@@ -155,27 +201,85 @@ const AdminPage = () => {
     logout();
   };
 
+  //   return (
+  //     <div>
+  //       <table>
+  //         <thead>
+  //           <tr>
+  //             <th>Email</th>
+  //             <th>Team</th>
+  //             <th>Role</th>
+  //             <th>Actions</th>
+  //           </tr>
+  //         </thead>
+  //         <tbody>
+  //           {users.map((user) => (
+  //             <tr key={user.id}>
+  //               <td>{user.email}</td>
+  //               <td>
+  //                 <select
+  //                   onChange={(e) => handleAddUserToTeam(user.id, e.target.value)}
+  //                 >
+  //                   <option value="">Select team...</option>
+  //                   {dataTeams?.fetchTeamsFromLinear.nodes.map((team: Team) => (
+  //                     <option key={team.id} value={team.id}>
+  //                       {team.name}
+  //                     </option>
+  //                   ))}
+  //                 </select>
+  //               </td>
+  //               <td>
+  //                 <select
+  //                   defaultValue={user.role}
+  //                   onChange={(e) =>
+  //                     handleRoleChange(user.id, e.target.value as UserRole)
+  //                   }
+  //                 >
+  //                   {Object.values(UserRole).map((role) => (
+  //                     <option key={role} value={role}>
+  //                       {role}
+  //                     </option>
+  //                   ))}
+  //                 </select>
+  //               </td>
+  //               <td>
+  //                 <button
+  //                   onClick={() =>
+  //                     handleRemoveUserFromTeam(user.id /* teamId here */)
+  //                   }
+  //                 >
+  //                   Remove from Team
+  //                 </button>
+  //               </td>
+  //             </tr>
+  //           ))}
+  //         </tbody>
+  //       </table>
+  //       {errorMessage && <p>{errorMessage}</p>}
+  //     </div>
+  //   );
+
   return (
     <div>
       <table>
+        {/* ... other table elements */}
         <tbody>
-          {dataUsers?.users.map((user: User) => (
+          {users.map((user) => (
             <tr key={user.id}>
               <td>{user.email}</td>
+              <td>{/* ... team selection dropdown and add button */}</td>
               <td>
-                <select
-                  onChange={(e) => handleAddUserToTeam(user.id, e.target.value)}
-                >
-                  <option value="">Add to team...</option>
-                  {dataTeams?.fetchTeamsFromLinear.nodes.map((team: Team) => (
-                    <option key={team.id} value={team.id}>
-                      {team.name}
-                    </option>
-                  ))}
-                </select>
+                {user.teams && user.teams.length > 0 ? (
+                  <ul>
+                    {user.teams.map((team) => (
+                      <li key={team.teamId}>{team.team.name}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No teams assigned</p>
+                )}
               </td>
-              <td>{/* Role dropdown logic here */}</td>
-              {/* Additional columns as needed */}
+              {/* ... other columns */}
             </tr>
           ))}
         </tbody>
