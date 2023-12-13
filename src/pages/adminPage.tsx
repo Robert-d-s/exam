@@ -95,10 +95,11 @@ const AdminPage = () => {
   } = useQuery(GET_USERS, {
     fetchPolicy: "network-only",
   });
+  // console.log("Datausers", dataUsers);
   const { loading: loadingTeams, data: dataTeams } = useQuery(GET_TEAMS, {
     fetchPolicy: "network-only",
   });
-
+  // console.log("DataTeams", dataTeams);
   const [updateUserRole] = useMutation(UPDATE_USER_ROLE);
   const [addUserToTeam] = useMutation(ADD_USER_TO_TEAM, {
     onCompleted: () => refetchUsers(),
@@ -204,22 +205,6 @@ const AdminPage = () => {
   if (loadingUsers || loadingTeams) return <p>Loading...</p>;
   if (errorUsers) return <p>Error: {handleError(errorUsers)}</p>;
 
-  //   return (
-  //     <div>
-  //       <UserTable
-  //         users={users}
-  //         teams={dataTeams?.fetchTeamsFromLinear.nodes}
-  //         onTeamSelect={handleTeamSelection}
-  //         onAddToTeam={(userId) => handleAddUserToTeam(userId)()}
-  //         onRemoveFromTeam={handleRemoveUserFromTeam}
-  //         onRoleChange={handleRoleChange}
-  //       />
-  //       {errorMessage && <p>{errorMessage}</p>}
-  //       <button onClick={handleLogout}>Logout</button>
-  //     </div>
-  //   );
-  // };
-
   return (
     <div className="container mx-auto p-4">
       <UserTable
@@ -322,9 +307,6 @@ const UserRow: React.FC<UserRowProps> = ({
           Add to Team
         </button>
       </td>
-      {/* <td>
-        <UserTeams teams={user.teams} />
-      </td> */}
       <td className="px-6 py-4 whitespace-nowrap">
         {user.teams && user.teams.length > 0 ? (
           <ul className="list-disc list-inside space-y-2">
@@ -349,14 +331,6 @@ const UserRow: React.FC<UserRowProps> = ({
           currentRole={user.role}
           onRoleChange={(newRole) => onRoleChange(user.id, newRole)}
         />
-        {/* {user.teams.map((team) => (
-          <button
-            key={team.id}
-            onClick={() => onRemoveFromTeam(user.id, team.id)}
-          >
-            Remove from {team.name}
-          </button>
-        ))} */}
       </td>
     </tr>
   );

@@ -11,7 +11,7 @@ import { onError } from "@apollo/client/link/error";
 import { makeVar } from "@apollo/client";
 
 const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem("token");
+  const token: string | null = localStorage.getItem("token");
   return {
     headers: {
       ...headers,

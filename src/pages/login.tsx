@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import useStore from "../lib/store";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -22,12 +23,10 @@ const Login: React.FC = () => {
 
       const data = await response.json();
       if (data && data.access_token) {
-        // Store the JWT token in local storage (or elsewhere if preferred)
         localStorage.setItem("token", data.access_token);
-        // alert("Logged in successfully!");
+
         router.push("/dashboard");
       } else if (data && data.error) {
-        // Handle any error messages sent from the server
         setErrorMessage(data.error);
       }
     } catch (error) {
@@ -35,6 +34,34 @@ const Login: React.FC = () => {
       setErrorMessage("An error occurred while logging in. Please try again.");
     }
   };
+
+  // const fetchUserProfile = async (token: String) => {
+  //   try {
+  //     const response = await fetch("http://localhost:8080/auth/profile", {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
+  //     const data = await response.json();
+  //     console.log("fetchuserprofile data", data);
+  //     if (response.ok) {
+  //       return data;
+  //     } else {
+  //       throw new Error(data.message || "Failed to fetch user profile.");
+  //     }
+  //   } catch (error) {
+  //     if (error instanceof Error) {
+  //       setErrorMessage(
+  //         "An error occurred while logging in. Please try again: " +
+  //           error.message
+  //       );
+  //     } else {
+  //       setErrorMessage(
+  //         "An unexpected error occurred while logging in. Please try again."
+  //       );
+  //     }
+  //   }
+  // };
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">

@@ -1,7 +1,7 @@
 import React from "react";
 
 type ProjectSelectorProps = {
-  projects: { id: string; name: string; teamId: string }[];
+  projects: { id: string; name: string; teamName: string }[];
   selectedProject: string;
   onProjectChange: (projectId: string) => void;
 };
@@ -22,7 +22,7 @@ const ProjectSelector: React.FC<ProjectSelectorProps> = ({
       </option>
       {projects.map((project) => (
         <option key={project.id} value={project.id}>
-          {project.name}
+          {project.name} (Team: {project.teamName})
         </option>
       ))}
     </select>
