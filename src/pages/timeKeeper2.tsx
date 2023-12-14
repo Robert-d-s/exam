@@ -16,9 +16,10 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 import useStore from "../lib/store";
-// import UserSelector from "../components/UserSelector";
 import ProjectSelector from "../components/ProjectSelector";
 import RateSelector from "../components/RateSelector";
+import NavigationBar from "../components/NavigationBar";
+import { currentUserVar } from "../lib/apolloClient";
 
 // GraphQL Queries
 const USERS_QUERY = gql`
@@ -86,20 +87,6 @@ const TOTAL_TIME_PER_USER_PROJECT_QUERY = gql`
     getTotalTimeForUserProject(userId: $userId, projectId: $projectId)
   }
 `;
-// const GET_USER_PROJECTS = gql`
-//   query GetUserProjects {
-//     users {
-//       id
-//       email
-//       teams {
-//         projects {
-//           id
-//           name
-//         }
-//       }
-//     }
-//   }
-// `;
 
 const GET_USER_PROJECTS = gql`
   query GetUserProjects {
@@ -115,11 +102,6 @@ const GET_USER_PROJECTS = gql`
     }
   }
 `;
-
-type User = {
-  id: string;
-  email: string;
-};
 
 const TimeKeeper: React.FC = () => {
   // Zustand store state and setters
@@ -140,8 +122,7 @@ const TimeKeeper: React.FC = () => {
   } = useStore();
 
   const [userProjects, setUserProjects] = useState<any[]>([]);
-
-  const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
+  const loggedInUser = currentUserVar();
   const [error, setError] = useState(null);
   console.log("LoggedinUser", loggedInUser);
   // Apollo GraphQL hooks
@@ -170,33 +151,6 @@ const TimeKeeper: React.FC = () => {
   const timerIntervalRef = useRef<number | null>(null);
 
   const accumulatedTimeRef = useRef(0);
-
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          throw new Error("No token found");
-        }
-        const response = await fetch("/api/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch user profile.");
-        }
-
-        const userData: User = await response.json();
-        setLoggedInUser(userData);
-      } catch (err: any) {
-        setError(err.message);
-      }
-    };
-
-    fetchUserProfile();
-  }, []);
 
   // Fetch all users and their projects
   const {
@@ -443,106 +397,64 @@ const TimeKeeper: React.FC = () => {
   };
 
   return (
-    <div className="relative max-w-lg mx-auto p-6 bg-gray-200 rounded shadow-md flex flex-col">
-      <div className="feedback-messages">
-        {submissionSuccess && (
-          <div className="absolute top-5 right-5 md:top-10 md:right-10 transform translate-x-0 translate-y-0 z-50 bg-green-100 text-green-800 text-sm font-semibold px-4 py-2 rounded-lg shadow-lg mt-2 transition ease-out duration-300">
-            Time entry saved!
-          </div>
-        )}
-        {submissionError && (
-          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-red-100 text-red-800 text-sm font-semibold px-4 py-2 rounded-lg shadow-lg mt-2 transition ease-out duration-300">
-            {submissionError}
-          </div>
-        )}
-        {resetMessage && (
-          <div className="absolute top-7 right-4 md:top-10 md:right-10 transform translate-x-0 translate-y-0 z-50 bg-yellow-500 text-blue-800 text-sm font-semibold px-4 py-2 rounded-lg shadow-lg mt-2 transition ease-out duration-300">
-            Timer reset!
-          </div>
-        )}
-      </div>
+    <>
+      <NavigationBar />
+      <div className="relative max-w-6xl mx-auto p-6  rounded  flex flex-col">
+        <div className="feedback-messages">
+          {submissionSuccess && (
+            <div className="absolute top-5 right-5 md:top-10 md:right-10 transform translate-x-0 translate-y-0 z-50 bg-green-100 text-green-800 text-sm font-semibold px-4 py-2 rounded-lg shadow-lg mt-2 transition ease-out duration-300">
+              Time entry saved!
+            </div>
+          )}
+          {submissionError && (
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-full bg-red-100 text-red-800 text-sm font-semibold px-4 py-2 rounded-lg shadow-lg mt-2 transition ease-out duration-300">
+              {submissionError}
+            </div>
+          )}
+          {resetMessage && (
+            <div className="absolute top-7 right-4 md:top-10 md:right-10 transform translate-x-0 translate-y-0 z-50 bg-yellow-500 text-blue-800 text-sm font-semibold px-4 py-2 rounded-lg shadow-lg mt-2 transition ease-out duration-300">
+              Timer reset!
+            </div>
+          )}
+        </div>
 
-      <div className="flex items-center justify-center space-x-4 mb-4">
-        <h2 className="text-2xl  text-black flex items-center justify-center">
-          Track Time
-        </h2>
-        <div
-          className={` clock-icon h-6 w-6  ${
-            isRunning ? "animate-spin" : ""
-          }text-gray-500`}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        <div className="flex flex-col items-center justify-center ">
+          <div
+            className={` clock-icon h-6 w-6  ${
+              isRunning ? "animate-spin" : ""
+            }text-gray-500`}
           >
-            <circle cx="12" cy="12" r="10"></circle>
-            <line
-              x1="12"
-              y1="12"
-              x2="12"
-              y2="8"
-              className="hour-hand"
-            ></line>{" "}
-            {/* Short hand */}
-            <line
-              x1="12"
-              y1="12"
-              x2="16"
-              y2="12"
-              className={`minute-hand ${isRunning ? "animate-spin" : ""}`}
-            ></line>{" "}
-            {/* Long hand that spins */}
-          </svg>
-        </div>
-        <div className="text-xl  text-black flex items-center justify-center">
-          {displayTime}{" "}
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit} className="mt-6">
-        <div className="flex flex-wrap justify-between -mx-3">
-          <div className="w-full md:w-1/2 px-3 mb-4 md:mb-0">
-            <div className="mb-4"></div>
-            <div className="text-lg mb-4">
-              {loggedInUser ? (
-                <div>
-                  <h2>Welcome, {loggedInUser.email}</h2>
-                </div>
-              ) : (
-                <p>Loading user data...</p>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <ProjectSelector
-                projects={userProjects}
-                selectedProject={selectedProject}
-                onProjectChange={setSelectedProject}
-              />
-            </div>
-            <RateSelector
-              rates={rates}
-              selectedRate={selectedRate}
-              onRateChange={setSelectedRate}
-            />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <line
+                x1="12"
+                y1="12"
+                x2="12"
+                y2="8"
+                className="hour-hand"
+              ></line>{" "}
+              {/* Short hand */}
+              <line
+                x1="12"
+                y1="12"
+                x2="16"
+                y2="12"
+                className={`minute-hand ${isRunning ? "animate-spin" : ""}`}
+              ></line>{" "}
+              {/* Long hand that spins */}
+            </svg>
           </div>
-          <div className="flex justify-center px-3 mb-4">
-            <DatePicker
-              id="startDate"
-              selected={startDate}
-              onChange={handleDateChange}
-              showTimeSelect
-              dateFormat="Pp"
-              className="form-input block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
+          <div className="text-6xl  text-black flex items-center justify-center">
+            {displayTime}{" "}
           </div>
-        </div>
-        <div className="py-6">
           <div className="mb-2">
             Started at:{" "}
             {startTime
@@ -551,51 +463,81 @@ const TimeKeeper: React.FC = () => {
                 formatTimeFromISOString(formatISO(startTime))
               : "Not Started"}
           </div>
-          <div>
-            {totalTimeLoading ? (
-              <p>Loading total time...</p>
-            ) : totalTimeError ? (
-              <p>Error loading total time: {totalTimeError.message}</p>
-            ) : (
-              <p>
-                Your Total Time Spent:{" "}
-                {formatTimeFromMilliseconds(
-                  totalTimeData?.getTotalTimeForUserProject || 0
-                )}
-              </p>
-            )}
+          <div className="flex justify-center ">
+            <DatePicker
+              inline
+              id="startDate"
+              selected={startDate}
+              onChange={handleDateChange}
+              showTimeSelect
+              dateFormat="MMMM d, yyyy HH:mm"
+              timeIntervals={10} // Minute-by-minute time selection
+              className="form-input block w-52 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
           </div>
         </div>
 
-        <div className="flex justify-between mt-auto py-6">
-          <button
-            type="button"
-            onClick={handleStartStop}
-            className={`px-4 py-2 ${
-              isRunning ? "bg-red-500" : "bg-green-500"
-            } text-white rounded`}
-            disabled={!selectedProject || !selectedRate}
-          >
-            {isRunning ? "Pause" : "Start"}
-          </button>
-          <button
-            type="button"
-            onClick={handleReset}
-            className="px-4 py-2 bg-yellow-500 text-white rounded"
-            disabled={!startTime}
-          >
-            Reset
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded"
-            disabled={isRunning || !startTime}
-          >
-            Submit Time
-          </button>
-        </div>
-      </form>
-    </div>
+        <form onSubmit={handleSubmit}>
+          <div className="flex justify-center mt-auto py-6">
+            <button
+              type="button"
+              onClick={handleStartStop}
+              className={`px-6 py-6 ${
+                isRunning ? "bg-red-500" : "bg-green-500"
+              } text-white text-2xl rounded-full`}
+              disabled={!selectedProject || !selectedRate}
+            >
+              {isRunning ? "Pause" : "Start"}
+            </button>
+            <button
+              type="button"
+              onClick={handleReset}
+              className="px-6 py-8  bg-yellow-500 text-white text-2xl rounded-full ml-4"
+              disabled={!startTime}
+            >
+              Reset
+            </button>
+            <button
+              type="submit"
+              className="px-3 py-8  bg-blue-500 text-white text-2xl rounded-full ml-4"
+              disabled={isRunning || !startTime}
+            >
+              Submit
+            </button>
+          </div>
+          <div className="flex flex-col justify-center -mx-3">
+            <div className="w-1/2 mx-auto px-3 mb-4">
+              <ProjectSelector
+                projects={userProjects}
+                selectedProject={selectedProject}
+                onProjectChange={setSelectedProject}
+              />
+            </div>
+            <div className="w-1/2 mx-auto px-3 mb-4">
+              <RateSelector
+                rates={rates}
+                selectedRate={selectedRate}
+                onRateChange={setSelectedRate}
+              />
+            </div>
+            <div className="w-1/2 mx-auto px-3 mb-4">
+              {totalTimeLoading ? (
+                <p>Loading total time...</p>
+              ) : totalTimeError ? (
+                <p>Error loading total time: {totalTimeError.message}</p>
+              ) : (
+                <p>
+                  Acumulated time on project:{" "}
+                  {formatTimeFromMilliseconds(
+                    totalTimeData?.getTotalTimeForUserProject || 0
+                  )}
+                </p>
+              )}
+            </div>
+          </div>
+        </form>
+      </div>
+    </>
   );
 };
 

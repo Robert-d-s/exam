@@ -4,14 +4,21 @@ import {
   createHttpLink,
   from,
   gql,
+  makeVar,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 
-import { makeVar } from "@apollo/client";
+interface User {
+  id: string;
+  email: string;
+}
 
 const authLink = setContext((_, { headers }) => {
   const token: string | null = localStorage.getItem("token");
+  if (token) {
+    fetchUserProfile(token);
+  }
   return {
     headers: {
       ...headers,
@@ -40,6 +47,7 @@ const errorLink = onError(
 );
 
 export const isForbiddenVar = makeVar(false);
+export const currentUserVar = makeVar<User | null>(null);
 
 const client = new ApolloClient({
   link: from([
@@ -71,6 +79,20 @@ const client = new ApolloClient({
 });
 
 export default client;
+
+export const fetchUserProfile = async (token: string) => {
+  try {
+    const response = await fetch("/api/profile", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!response.ok) throw new Error("Failed to fetch user data");
+    const userData: User = await response.json();
+    currentUserVar(userData); // Update the reactive variable
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    // Handle error appropriately
+  }
+};
 
 export const logout = () => {
   localStorage.removeItem("token");

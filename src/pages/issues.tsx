@@ -64,19 +64,12 @@ const IssuesComponent: React.FC = () => {
 
   if (loading) return <p>Loading issues...</p>;
   if (error) {
-    console.error("Error loading issues:", error); // Detailed error log
+    console.error("Error loading issues:", error);
     return <p>Error loading issues: {error.message}</p>;
   }
 
   return (
     <div className="container mx-auto p-4">
-      {/* <h1 className="text-2xl font-bold mb-4">Issues</h1>
-      <button
-        onClick={handleRefresh}
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        Refresh
-      </button> */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Issues</h1>
         <button

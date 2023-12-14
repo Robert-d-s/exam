@@ -1,6 +1,7 @@
 // src/lib/store.ts
 import { create } from "zustand";
 
+type User = { id: string; email: string };
 type Store = {
   users: any[];
   projects: any[];
@@ -17,6 +18,9 @@ type Store = {
 
   teamId: string | null;
   setTeamId: (teamId: string | null) => void;
+
+  loggedInUser: User | null;
+  setLoggedInUser: (user: User | null) => void;
 };
 
 const useStore = create<Store>((set) => ({
@@ -35,6 +39,9 @@ const useStore = create<Store>((set) => ({
 
   teamId: null,
   setTeamId: (teamId) => set({ teamId }),
+
+  loggedInUser: null,
+  setLoggedInUser: (user) => set({ loggedInUser: user }),
 }));
 
 export default useStore;

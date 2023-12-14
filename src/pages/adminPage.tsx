@@ -2,6 +2,8 @@ import { useQuery, useMutation, gql } from "@apollo/client";
 import { useState, useEffect } from "react";
 import { ApolloError } from "@apollo/client";
 import { logout } from "../lib/apolloClient";
+import useStore from "../lib/store";
+import NavigationBar from "../components/NavigationBar";
 
 enum UserRole {
   ADMIN = "ADMIN",
@@ -82,6 +84,7 @@ const REMOVE_USER_FROM_TEAM = gql`
 `;
 
 const AdminPage = () => {
+  const { loggedInUser } = useStore();
   const [users, setUsers] = useState<User[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<{
     [userId: number]: string;
@@ -206,22 +209,26 @@ const AdminPage = () => {
   if (errorUsers) return <p>Error: {handleError(errorUsers)}</p>;
 
   return (
-    <div className="container mx-auto p-4">
-      <UserTable
-        users={users}
-        teams={dataTeams?.fetchTeamsFromLinear.nodes}
-        onTeamSelect={handleTeamSelection}
-        onAddToTeam={(userId) => handleAddUserToTeam(userId)()}
-        onRemoveFromTeam={handleRemoveUserFromTeam}
-        onRoleChange={handleRoleChange}
-      />
-      {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-      <button
-        className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        onClick={handleLogout}
-      >
-        Logout
-      </button>
+    <div>
+      <NavigationBar />
+
+      <div className="container mx-auto p-4">
+        <UserTable
+          users={users}
+          teams={dataTeams?.fetchTeamsFromLinear.nodes}
+          onTeamSelect={handleTeamSelection}
+          onAddToTeam={(userId) => handleAddUserToTeam(userId)()}
+          onRemoveFromTeam={handleRemoveUserFromTeam}
+          onRoleChange={handleRoleChange}
+        />
+        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+        <button
+          className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
+      </div>
     </div>
   );
 };

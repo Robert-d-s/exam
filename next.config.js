@@ -7,7 +7,7 @@ const nextConfig = {
 
 module.exports = {
   images: {
-    domains: ["public.linear.app"],
+    domains: ["public.linear.app", "localhost"],
   },
   nextConfig,
 };

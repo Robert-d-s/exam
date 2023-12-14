@@ -91,3 +91,7 @@
   animation: spin 2s linear infinite;
   transform-origin: 12px 12px;
 }
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
