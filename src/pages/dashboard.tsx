@@ -5,7 +5,6 @@ import RatesManager from "./ratesManager";
 import IssuesComponent from "./issues";
 import OrganizationComponent from "./organizationData";
 import { logout } from "../lib/apolloClient";
-import NavigationBar from "../components/NavigationBar";
 
 const handleLogout = () => {
   logout();

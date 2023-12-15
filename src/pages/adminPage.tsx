@@ -84,7 +84,7 @@ const REMOVE_USER_FROM_TEAM = gql`
 `;
 
 const AdminPage = () => {
-  const { loggedInUser } = useStore();
+  // const { loggedInUser } = useStore();
   const [users, setUsers] = useState<User[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<{
     [userId: number]: string;

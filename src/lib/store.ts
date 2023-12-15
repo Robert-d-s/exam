@@ -18,10 +18,10 @@ type Store = {
 
   teamId: string | null;
   setTeamId: (teamId: string | null) => void;
-
-  loggedInUser: User | null;
-  setLoggedInUser: (user: User | null) => void;
 };
+
+// loggedInUser: User | null;
+// setLoggedInUser: (user: User | null) => void;
 
 const useStore = create<Store>((set) => ({
   users: [],
@@ -39,9 +39,9 @@ const useStore = create<Store>((set) => ({
 
   teamId: null,
   setTeamId: (teamId) => set({ teamId }),
-
-  loggedInUser: null,
-  setLoggedInUser: (user) => set({ loggedInUser: user }),
 }));
+
+// loggedInUser: null,
+//   setLoggedInUser: (user) => set({ loggedInUser: user }),
 
 export default useStore;
