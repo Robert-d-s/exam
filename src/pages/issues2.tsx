@@ -63,6 +63,12 @@ const IssuesComponent: React.FC = () => {
   );
   const [selectedTeam, setSelectedTeam] = useState<string | null>(null);
 
+  const handleSelectTeam = (team: string) => {
+    setSelectedTeam(team);
+  };
+  const handleClearTeamFilter = () => {
+    setSelectedTeam(null);
+  };
   const uniqueTeams = useMemo(() => {
     const teams = new Set<string>();
     data?.issues.forEach((issue) => teams.add(issue.teamName));
@@ -80,14 +86,14 @@ const IssuesComponent: React.FC = () => {
 
   const groupedIssues: GroupedIssues = useMemo(() => {
     const groups: GroupedIssues = {};
-    data?.issues.forEach((issue) => {
+    filteredIssues.forEach((issue) => {
       if (!groups[issue.state]) {
         groups[issue.state] = [];
       }
       groups[issue.state].push(issue);
     });
     return groups;
-  }, [data?.issues]);
+  }, [filteredIssues]);
 
   console.log("GraphQL Response:", { loading, error, data });
 
@@ -121,55 +127,72 @@ const IssuesComponent: React.FC = () => {
             <path d="M21 6c0-1.654-1.346-3-3-3H7.161l1.6 2H18c.551 0 1 .448 1 1v10h2V6zM3 18c0 1.654 1.346 3 3 3h10.839l-1.6-2H6c-.551 0-1-.448-1-1V8H3V18z"></path>
           </svg>
         </button>
+        {/* Team selection buttons */}
+        <div className="flex flex-wrap mb-4">
+          {uniqueTeams.map((team) => (
+            <button
+              key={team}
+              onClick={() => handleSelectTeam(team)}
+              className={`p-2 m-1 ${
+                selectedTeam === team ? "bg-green-500" : "bg-blue-500"
+              } text-white rounded hover:bg-blue-600`}
+            >
+              {team}
+            </button>
+          ))}
+          <button
+            onClick={handleClearTeamFilter}
+            className="p-2 m-1 bg-gray-300 text-black rounded hover:bg-gray-400"
+          >
+            Clear Filter
+          </button>
+        </div>
       </div>
       {Object.keys(groupedIssues).length > 0 ? (
-        Object.entries(groupedIssues).map(([state, issues]) => (
-          <div key={state}>
-            <h2 className="text-2xl font-bold mb-4">{state}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {issues.map((issue) => (
-                <div
-                  key={issue.id}
-                  className="border border-gray-200 rounded p-4"
-                >
-                  <h3 className="text-xl font-semibold">{issue.title}</h3>
-                  <p className="text-sm text-gray-500">
-                    Project: {issue.projectName}
-                  </p>
-                  <div className="flex flex-wrap mt-2">
-                    {issue.labels.map((label) => (
-                      <span
-                        key={label.id}
-                        style={{ backgroundColor: label.color }}
-                        className="text-white text-xs font-semibold mr-2 mb-2 px-2 py-1 rounded"
-                      >
-                        {label.name}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="mt-2 text-sm text-gray-500">
-                    {/* Other issue details */}
-                    {/* <p>Due Date: {issue.dueDate}</p>
-                    <p>
-                      Created At:{" "}
-                      {formatDateForDisplay(new Date(issue.createdAt))}
+        Object.entries(groupedIssues)
+          .filter(([state, issues]) => {
+            if (selectedTeam) {
+              return issues.some((issue) => issue.teamName === selectedTeam);
+            }
+            return true;
+          })
+          .map(([state, issues]) => (
+            <div key={state}>
+              <h2 className="text-2xl font-bold mb-4">{state}</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {issues.map((issue) => (
+                  <div
+                    key={issue.id}
+                    className="border border-gray-200 rounded p-4"
+                  >
+                    <h3 className="text-xl font-semibold">{issue.title}</h3>
+                    <p className="text-sm text-gray-500">
+                      Project: {issue.projectName}
                     </p>
-                    <p>
-                      Updated At:{" "}
-                      {formatDateForDisplay(new Date(issue.updatedAt))}
-                    </p> */}
-                    <p>Priority: {issue.priorityLabel}</p>
-                    <p>State: {issue.state}</p>
-                    <p>Team Key: {issue.teamKey}</p>
-                    <p>Team: {issue.teamName}</p>
-                    <p>Assignee: {issue.assigneeName}</p>
-                    <p>Identifier: {issue.identifier}</p>
+                    <div className="flex flex-wrap mt-2">
+                      {issue.labels.map((label) => (
+                        <span
+                          key={label.id}
+                          style={{ backgroundColor: label.color }}
+                          className="text-white text-xs font-semibold mr-2 mb-2 px-2 py-1 rounded"
+                        >
+                          {label.name}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="mt-2 text-sm text-gray-500">
+                      <p>Priority: {issue.priorityLabel}</p>
+                      <p>State: {issue.state}</p>
+                      <p>Team Key: {issue.teamKey}</p>
+                      <p>Team: {issue.teamName}</p>
+                      <p>Assignee: {issue.assigneeName}</p>
+                      <p>Identifier: {issue.identifier}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        ))
+          ))
       ) : (
         <div>No issues found.</div>
       )}
