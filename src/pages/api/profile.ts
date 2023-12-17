@@ -8,11 +8,14 @@ export default async function handler(
 
   try {
     // Assuming the endpoint to fetch user profile is at /auth/profile
-    const backendResponse = await fetch("http://localhost:8080/auth/profile", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const backendResponse = await fetch(
+      "${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/profile",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (!backendResponse.ok) {
       throw new Error("Failed to fetch user profile.");

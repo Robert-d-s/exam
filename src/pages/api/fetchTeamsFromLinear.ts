@@ -25,14 +25,17 @@ export default async function handler(
   `;
 
   try {
-    const backendResponse = await fetch("http://localhost:8080/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ query }), // Sending the query in the request body
-    });
+    const backendResponse = await fetch(
+      "${process.env.NEXT_PUBLIC_BACKEND_URL}/graphql",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ query }), // Sending the query in the request body
+      }
+    );
 
     const data = await backendResponse.json();
     res.status(200).json(data);

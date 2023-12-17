@@ -57,7 +57,7 @@ const client = new ApolloClient({
       uri: (operation) =>
         operation.getContext().useLinearApi
           ? "https://api.linear.app/graphql"
-          : "http://localhost:8080/graphql",
+          : "${process.env.NEXT_PUBLIC_BACKEND_URL}/graphql",
       fetchOptions: {
         method: "POST",
       },
