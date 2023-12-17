@@ -26,7 +26,7 @@ export default async function handler(
 
   try {
     const backendResponse = await fetch(
-      "${process.env.NEXT_PUBLIC_BACKEND_URL}/graphql",
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/graphql`,
       {
         method: "POST",
         headers: {

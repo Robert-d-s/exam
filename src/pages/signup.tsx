@@ -44,7 +44,7 @@ const Signup: React.FC = () => {
 
     try {
       const response = await fetch(
-        "${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/signup",
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/signup`,
         {
           method: "POST",
           headers: {

@@ -29,7 +29,7 @@ const TeamSyncAndFetch: React.FC = () => {
 
     try {
       const response = await fetch(
-        "${process.env.NEXT_PUBLIC_BACKEND_URL}/team-synchronize/teams",
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/team-synchronize/teams`,
         {
           method: "GET",
           headers: {

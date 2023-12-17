@@ -4,12 +4,13 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  console.log("NEXT_PUBLIC_BACKEND_URL:", process.env.NEXT_PUBLIC_BACKEND_URL);
   const token = req.headers.authorization?.split(" ")[1] || ""; // Extract JWT token from incoming header
 
   try {
     // Assuming the endpoint to fetch user profile is at /auth/profile
     const backendResponse = await fetch(
-      "${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/profile",
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/profile`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

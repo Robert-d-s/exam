@@ -9,7 +9,7 @@ const Projects: FC = () => {
 
       try {
         const response = await fetch(
-          "${process.env.NEXT_PUBLIC_BACKEND_URL}/graphql",
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/graphql`,
           {
             method: "POST",
             headers: {

@@ -56,8 +56,8 @@ const client = new ApolloClient({
     createHttpLink({
       uri: (operation) =>
         operation.getContext().useLinearApi
-          ? "https://api.linear.app/graphql"
-          : "${process.env.NEXT_PUBLIC_BACKEND_URL}/graphql",
+          ? `https://api.linear.app/graphql`
+          : `${process.env.NEXT_PUBLIC_BACKEND_URL}/graphql`,
       fetchOptions: {
         method: "POST",
       },
