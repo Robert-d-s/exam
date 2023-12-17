@@ -22,6 +22,8 @@ const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
+      "content-type": "application/json",
+      "x-apollo-operation-name": "GraphQLQueriesAndMutations",
       authorization: token ? `Bearer ${token}` : "",
     },
   };
