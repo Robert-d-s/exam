@@ -1,17 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import gql from "graphql-tag";
-
-type User = {
-  id: string;
-  name: string;
-  email: string;
-};
-
-type Project = {
-  id: string;
-  name: string;
-};
+import { currentUserVar } from "../lib/apolloClient";
 
 const GET_DROPDOWN_OPTIONS = gql`
   query {
@@ -42,14 +32,39 @@ const GET_TOTAL_TIME_SPENT = gql`
   }
 `;
 
+const GET_USER_PROJECTS = gql`
+  query GetUserProjects {
+    users {
+      id
+      teams {
+        name
+        projects {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
 const getCurrentDate = () => new Date().toISOString().split("T")[0];
 
 const TotalTimeSpent: React.FC = () => {
   const [totalTime, setTotalTime] = useState(0);
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
   const [selectedProject, setSelectedProject] = useState<string | null>(null);
   const [startDate, setStartDate] = useState(getCurrentDate());
   const [endDate, setEndDate] = useState(getCurrentDate());
+
+  const loggedInUser = currentUserVar();
+  const [userProjects, setUserProjects] = useState<any[]>([]);
+
+  const {
+    loading: loadingUserProjects,
+    error: errorUserProjects,
+    data: userProjectsData,
+  } = useQuery(GET_USER_PROJECTS, {
+    skip: !loggedInUser,
+  });
 
   const {
     loading: loadingOptions,
@@ -63,19 +78,37 @@ const TotalTimeSpent: React.FC = () => {
     refetch,
   } = useQuery(GET_TOTAL_TIME_SPENT, {
     variables: {
-      userId: parseFloat(selectedUser ?? ""),
+      userId: loggedInUser ? parseFloat(loggedInUser.id) : null,
       projectId: selectedProject,
       startDate,
       endDate,
     },
-    skip: !selectedUser || !selectedProject,
+    skip: !loggedInUser || !selectedProject,
   });
 
   useEffect(() => {
-    if (selectedUser && selectedProject) {
+    if (userProjectsData && loggedInUser) {
+      const userWithProjects = userProjectsData.users.find(
+        (user: any) => user.id === loggedInUser.id
+      );
+      if (userWithProjects) {
+        const projectsWithTeamName = userWithProjects.teams.flatMap(
+          (team: any) =>
+            team.projects.map((project: any) => ({
+              ...project,
+              teamName: team.name,
+            }))
+        );
+        setUserProjects(projectsWithTeamName);
+      }
+    }
+  }, [userProjectsData, loggedInUser]);
+
+  useEffect(() => {
+    if (selectedProject) {
       refetch();
     }
-  }, [selectedUser, selectedProject, startDate, endDate, refetch]);
+  }, [selectedProject, startDate, endDate, refetch]);
 
   useEffect(() => {
     if (timeData) {
@@ -92,7 +125,7 @@ const TotalTimeSpent: React.FC = () => {
       .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
   };
 
-  if (loadingOptions || loadingTime) return <p>Loading...</p>;
+  if (loadingTime) return <p>Loading...</p>;
   if (errorOptions || errorTime?.message) {
     const errorMessage = errorOptions
       ? errorOptions.message
@@ -101,7 +134,6 @@ const TotalTimeSpent: React.FC = () => {
       <div className="bg-red-50 border-l-8 border-red-400 p-4 mb-4">
         <div className="flex">
           <div className="flex-shrink-0">
-            {/* Icon: You can use an SVG icon here */}
             <svg
               className="h-5 w-5 text-red-400"
               xmlns="http://www.w3.org/2000/svg"
@@ -128,40 +160,11 @@ const TotalTimeSpent: React.FC = () => {
   }
 
   return (
-    <div className="relative max-w-lg mx-auto p-6 bg-gray-200 rounded shadow-md flex flex-col">
-      <h3 className="text-lg font-bold mb-4">Total Time Spent on Project</h3>
-
-      {/* User Selector */}
-      <div className="mb-4">
-        <label
-          htmlFor="userSelector"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Select a User:
-        </label>
-        <select
-          id="userSelector"
-          value={selectedUser || ""}
-          onChange={(e) => setSelectedUser(e.target.value)}
-          className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-        >
-          <option value="">Select a User</option>
-          {optionsData?.users.map((user: User) => (
-            <option key={user.id} value={user.id}>
-              {user.email}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Project Selector */}
-      <div className="mb-4">
-        <label
-          htmlFor="projectSelector"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Select a Project:
-        </label>
+    <div className="p-6 bg-black shadow-md flex flex-row justify-between items-center">
+      <h3 className="text-lg font-bold text-white">
+        Get Time Spent on Project
+      </h3>
+      <div>
         <select
           id="projectSelector"
           value={selectedProject || ""}
@@ -169,16 +172,16 @@ const TotalTimeSpent: React.FC = () => {
           className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
         >
           <option value="">Select a Project</option>
-          {optionsData?.projects.map((project: Project) => (
+          {userProjects.map((project: any) => (
             <option key={project.id} value={project.id}>
-              {project.name}
+              {project.name} (Team: {project.teamName})
             </option>
           ))}
         </select>
       </div>
 
       {/* Date Pickers */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <input
           type="date"
           id="startDatePicker"
@@ -196,7 +199,7 @@ const TotalTimeSpent: React.FC = () => {
       </div>
 
       {/* Total Time Display */}
-      <p className="text-lg font-medium mt-4">
+      <p className="text-lg font-medium text-white">
         Total Time: {formatMilliseconds(totalTime)}
       </p>
     </div>

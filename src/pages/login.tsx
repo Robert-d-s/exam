@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import Image from "next/image";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -23,7 +24,7 @@ const Login: React.FC = () => {
       const data = await response.json();
       if (data && data.access_token) {
         localStorage.setItem("token", data.access_token);
-        router.push("/dashboard");
+        router.push("/timeKeeper2");
       } else if (data && data.error) {
         setErrorMessage(data.error);
       }
@@ -36,8 +37,10 @@ const Login: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       <div className="p-8 bg-white rounded shadow-md w-96">
-        <p className="text-gray-600 mb-1">WELCOME BACK</p>
-        <h1 className="text-2xl font-bold mb-4">Log In to your Account</h1>
+        <p className="text-gray-600 mb-1 text-center">WELCOME BACK</p>
+        <h1 className="text-center text-2xl font-bold mb-4">
+          Log In To Your Account
+        </h1>
 
         <form
           onSubmit={(e) => {
@@ -68,14 +71,24 @@ const Login: React.FC = () => {
           </button>
 
           <div className="text-center">
-            <span className="text-gray-600 mb-4">Or</span>
-            <p className="text-blue-500 cursor-pointer underline">
-              New User? <Link href="/signup">SIGN UP HERE</Link>
+            <p className=" cursor-pointer ">
+              New User ?{" "}
+              <Link href="/signup" className="text-blue-500">
+                SIGN UP HERE
+              </Link>
             </p>
           </div>
 
           {errorMessage && <p className="mt-4 text-red-500">{errorMessage}</p>}
         </form>
+        <div className="flex justify-end items-end mt-20">
+          <Image
+            src="/logo.svg"
+            alt="Enablment-tt Logo"
+            width={150}
+            height={40}
+          />
+        </div>
       </div>
     </div>
   );

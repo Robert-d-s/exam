@@ -2,8 +2,10 @@ import { useQuery, useMutation, gql } from "@apollo/client";
 import { useState, useEffect } from "react";
 import { ApolloError } from "@apollo/client";
 import { logout } from "../lib/apolloClient";
-import useStore from "../lib/store";
 import NavigationBar from "../components/NavigationBar";
+import TotalTimeSpent from "./time";
+import RatesManager from "./ratesManager";
+import TeamSyncAndFetch from "./teamSync";
 
 enum UserRole {
   ADMIN = "ADMIN",
@@ -84,7 +86,6 @@ const REMOVE_USER_FROM_TEAM = gql`
 `;
 
 const AdminPage = () => {
-  // const { loggedInUser } = useStore();
   const [users, setUsers] = useState<User[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<{
     [userId: number]: string;
@@ -96,11 +97,11 @@ const AdminPage = () => {
     data: dataUsers,
     refetch: refetchUsers,
   } = useQuery(GET_USERS, {
-    fetchPolicy: "network-only",
+    // fetchPolicy: "network-only",
   });
   // console.log("Datausers", dataUsers);
   const { loading: loadingTeams, data: dataTeams } = useQuery(GET_TEAMS, {
-    fetchPolicy: "network-only",
+    // fetchPolicy: "network-only",
   });
   // console.log("DataTeams", dataTeams);
   const [updateUserRole] = useMutation(UPDATE_USER_ROLE);
@@ -202,9 +203,6 @@ const AdminPage = () => {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-  };
   if (loadingUsers || loadingTeams) return <p>Loading...</p>;
   if (errorUsers) return <p>Error: {handleError(errorUsers)}</p>;
 
@@ -212,22 +210,27 @@ const AdminPage = () => {
     <div>
       <NavigationBar />
 
-      <div className="container mx-auto p-4">
-        <UserTable
-          users={users}
-          teams={dataTeams?.fetchTeamsFromLinear.nodes}
-          onTeamSelect={handleTeamSelection}
-          onAddToTeam={(userId) => handleAddUserToTeam(userId)()}
-          onRemoveFromTeam={handleRemoveUserFromTeam}
-          onRoleChange={handleRoleChange}
-        />
-        {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-        <button
-          className="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
+      <div className="container mx-auto p-4 ">
+        <div className="mb-3">
+          <UserTable
+            users={users}
+            teams={dataTeams?.fetchTeamsFromLinear.nodes}
+            onTeamSelect={handleTeamSelection}
+            onAddToTeam={(userId) => handleAddUserToTeam(userId)()}
+            onRemoveFromTeam={handleRemoveUserFromTeam}
+            onRoleChange={handleRoleChange}
+          />
+          {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+        </div>
+        <div className="mb-3 shadow-md">
+          <TotalTimeSpent />
+        </div>
+        <div className="shadow-md">
+          <RatesManager />
+        </div>
+        <div className="mt-3 float-right">
+          <TeamSyncAndFetch />
+        </div>
       </div>
     </div>
   );
@@ -250,18 +253,18 @@ const UserTable: React.FC<UserTableProps> = ({
   onRoleChange,
 }) => (
   <table className="min-w-full table-auto">
-    <thead className="bg-gray-200">
+    <thead className="bg-black">
       <tr>
-        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          Email
+        <th className="px-6 py-3 text-left text-lg font-medium text-white uppercase tracking-wider">
+          User
         </th>
-        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th className="px-6 py-3 text-left text-lg font-medium text-white uppercase tracking-wider">
           Teams
         </th>
-        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-          Actions
+        <th className="px-6 py-3 text-left text-lg font-medium text-white uppercase tracking-wider">
+          Assigned
         </th>
-        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+        <th className="px-6 py-3 text-left text-lg font-medium text-white uppercase tracking-wider">
           Role
         </th>
       </tr>
@@ -301,28 +304,33 @@ const UserRow: React.FC<UserRowProps> = ({
 
   return (
     <tr>
-      <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200 shadow-md">
+        {user.email}
+      </td>
+      <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200 shadow-md">
         <TeamSelect
           teams={teams}
           onTeamSelect={(teamId) => onTeamSelect(user.id, teamId)}
         />
         <button
-          className="ml-2 bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded"
+          className="ml-20 bg-black hover:bg-green-700 text-white font-bold py-1 px-2 rounded"
           onClick={() => onAddToTeam(user.id)}
         >
           Add to Team
         </button>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap">
+      <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200 shadow-md">
         {user.teams && user.teams.length > 0 ? (
           <ul className="list-disc list-inside space-y-2">
             {user.teams.map((team) => (
-              <li key={team.id} className="flex items-center justify-between">
+              <li
+                key={team.id}
+                className="flex items-center justify-between border-b border-gray-200"
+              >
                 {team.name}
                 <button
                   onClick={() => onRemoveFromTeam(user.id, team.id)}
-                  className="ml-4 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                  className="ml-4 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded border-b border-gray-200"
                 >
                   Remove
                 </button>
@@ -333,7 +341,7 @@ const UserRow: React.FC<UserRowProps> = ({
           <p>No teams assigned</p>
         )}
       </td>
-      <td>
+      <td className="border-b border-gray-200 shadow-md">
         <UserRoleSelect
           currentRole={user.role}
           onRoleChange={(newRole) => onRoleChange(user.id, newRole)}
@@ -358,33 +366,6 @@ const TeamSelect: React.FC<TeamSelectProps> = ({ teams, onTeamSelect }) => (
   </select>
 );
 
-type UserTeamsProps = {
-  teams: {
-    id: string;
-    name: string;
-  }[];
-};
-
-const UserTeams: React.FC<UserTeamsProps> = ({ teams }) => {
-  console.log("Teams prop in UserTeams:", teams);
-  return teams.length > 0 ? (
-    <ul>
-      {teams.map((team) => {
-        console.log("Mapping team:", team);
-
-        // Use team.id and team.name directly
-        if (team && team.id && team.name) {
-          return <li key={team.id}>{team.name}</li>;
-        } else {
-          console.log("Invalid team object for team:", team);
-          return null;
-        }
-      })}
-    </ul>
-  ) : (
-    <p>No teams assigned</p>
-  );
-};
 type UserRoleSelectProps = {
   currentRole: UserRole;
   onRoleChange: (newRole: UserRole) => void;

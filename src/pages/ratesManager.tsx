@@ -111,15 +111,10 @@ const RatesManager = () => {
     return <p>No data available.</p>;
 
   return (
-    <div className="relative max-w-lg mx-auto p-6 bg-gray-200 rounded shadow-md flex flex-col">
-      <div className="mb-4">
-        <h3 className="font-bold text-lg">Manage Rates</h3>
-      </div>
+    <div className="p-6 bg-black shadow-md flex flex-row justify-between items-center">
+      <h3 className="font-bold text-lg text-white">Manage Rates</h3>
 
-      <div className="mb-4">
-        <label htmlFor="teamSelector" className="block font-medium">
-          Select a Team:
-        </label>
+      <div>
         <select
           id="teamSelector"
           className="w-full p-2 mt-1 border border-gray-300 rounded"
@@ -135,10 +130,7 @@ const RatesManager = () => {
         </select>
       </div>
 
-      <div className="mb-4">
-        <label htmlFor="rateName" className="block font-medium">
-          Rate Name:
-        </label>
+      <div>
         <input
           type="text"
           id="rateName"
@@ -149,10 +141,7 @@ const RatesManager = () => {
         />
       </div>
 
-      <div className="mb-4">
-        <label htmlFor="rateValue" className="block font-medium">
-          Amount:
-        </label>
+      <div>
         <input
           type="number"
           id="rateValue"
@@ -163,9 +152,9 @@ const RatesManager = () => {
         />
       </div>
 
-      <div className="mb-4">
+      <div>
         <button
-          className="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="w-full p-2 bg-white text-black rounded hover:bg-blue-600 font-bold"
           onClick={handleCreateRate}
         >
           Create Rate
@@ -177,9 +166,9 @@ const RatesManager = () => {
           ratesData.rates.map((rate: Rate) => (
             <div
               key={rate.id}
-              className="flex justify-between items-center p-2 bg-gray-100 border border-gray-200 rounded mb-2"
+              className="flex justify-between items-center p-1 bg-gray-100 border border-gray-200 rounded m-2"
             >
-              <span className="font-semibold">
+              <span className="font-semibold mr-2">
                 {rate.name} - {rate.rate}
               </span>
               <button

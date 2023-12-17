@@ -106,14 +106,11 @@ const GET_USER_PROJECTS = gql`
 const TimeKeeper: React.FC = () => {
   // Zustand store state and setters
   const {
-    // users,
     setUsers,
     projects,
     setProjects,
     rates,
     setRates,
-    selectedUser,
-    setSelectedUser,
     selectedProject,
     setSelectedProject,
     selectedRate,
@@ -527,7 +524,7 @@ const TimeKeeper: React.FC = () => {
                 <p>Error loading total time: {totalTimeError.message}</p>
               ) : (
                 <p>
-                  Acumulated time on project:{" "}
+                  Your time on project so far:{" "}
                   {formatTimeFromMilliseconds(
                     totalTimeData?.getTotalTimeForUserProject || 0
                   )}
