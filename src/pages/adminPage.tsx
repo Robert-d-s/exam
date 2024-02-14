@@ -7,6 +7,7 @@ import TotalTimeSpent from "./time";
 import RatesManager from "./ratesManager";
 import TeamSyncAndFetch from "./teamSync";
 import InvoiceDashboard from "./invoice";
+import { useRouter } from "next/router";
 
 enum UserRole {
   ADMIN = "ADMIN",
@@ -101,6 +102,7 @@ const AdminPage = () => {
     [userId: number]: string;
   }>({});
   const [errorMessage, setErrorMessage] = useState("");
+  const router = useRouter();
 
   const {
     loading: loadingUsers,
@@ -166,7 +168,35 @@ const AdminPage = () => {
       return;
     }
 
-    return <p>Error: {message}</p>;
+    // return <p>Error: {message}</p>;
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
+          <strong className="font-bold">Permission Denied!</strong>
+          <span className="block sm:inline mr-8">
+            {" "}
+            You do not have permission to view this resource.
+          </span>
+          <button
+            onClick={() => router.push("/login")} // Use router from 'next/router' to navigate
+            className="absolute top-0 bottom-0 right-0 px-4 py-3"
+          >
+            <svg
+              className="fill-current h-6 w-6 text-red-500"
+              role="button"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+            >
+              <title>Close</title>
+              <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 12.196 7.349 14.849a1.2 1.2 0 1 1-1.697-1.697L8.196 10 5.652 7.349a1.2 1.2 0 1 1 1.697-1.697L10 7.804l2.651-2.652a1.2 1.2 0 1 1 1.697 1.697L11.804 10l2.544 2.651a1.2 1.2 0 0 1 0 1.698z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    );
   }
   const handleAddUserToTeam = (userId: number) => () => {
     console.log(`Adding user ${userId} to team`);
@@ -228,36 +258,37 @@ const AdminPage = () => {
   if (errorUsers) return <p>Error: {handleError(errorUsers)}</p>;
 
   return (
-    <div className="container mx-auto p-4 font-roboto-condensed">
+    <>
       <NavigationBar />
-
       <div className="container mx-auto p-4 font-roboto-condensed">
-        <div className="mb-3">
-          <UserTable
-            users={users}
-            // teams={dataTeams?.fetchTeamsFromLinear.nodes}
-            teams={dataTeams?.getAllSimpleTeams}
-            onTeamSelect={handleTeamSelection}
-            onAddToTeam={(userId) => handleAddUserToTeam(userId)()}
-            onRemoveFromTeam={handleRemoveUserFromTeam}
-            onRoleChange={handleRoleChange}
-          />
-          {errorMessage && <p className="text-red-500">{errorMessage}</p>}
-        </div>
-        <div className="mb-3 shadow-md">
-          <TotalTimeSpent />
-        </div>
-        <div className="mb-3 shadow-md">
-          <RatesManager />
-        </div>
-        <div className="shadow-md">
-          <InvoiceDashboard />
-        </div>
-        <div className="mt-3 float-right">
-          <TeamSyncAndFetch />
+        <div className="container mx-auto p-4 font-roboto-condensed">
+          <div className="mb-3">
+            <UserTable
+              users={users}
+              // teams={dataTeams?.fetchTeamsFromLinear.nodes}
+              teams={dataTeams?.getAllSimpleTeams}
+              onTeamSelect={handleTeamSelection}
+              onAddToTeam={(userId) => handleAddUserToTeam(userId)()}
+              onRemoveFromTeam={handleRemoveUserFromTeam}
+              onRoleChange={handleRoleChange}
+            />
+            {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+          </div>
+          <div className="mb-3 shadow-md">
+            <TotalTimeSpent />
+          </div>
+          <div className="mb-3 shadow-md">
+            <RatesManager />
+          </div>
+          <div className="shadow-md">
+            <InvoiceDashboard />
+          </div>
+          <div className="mt-3 float-right">
+            <TeamSyncAndFetch />
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

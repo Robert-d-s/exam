@@ -53,41 +53,6 @@ const errorLink = onError(
   }
 );
 
-// const httpLink = createHttpLink({
-//   uri: "http://localhost:8080/graphql", // Your GraphQL HTTP endpoint
-// });
-
-// const wsClient = createClient({
-//   url: "ws://localhost:8080/graphql",
-//   connectionParams: () => {
-//     // This function will be called whenever a new WebSocket connection is established,
-//     // which ensures that localStorage is accessed only in a client-side context.
-//     const token =
-//       typeof window !== "undefined" ? localStorage.getItem("token") : "";
-//     console.log("WebSocket authToken being sent:", token);
-//     return {
-//       authToken: token,
-//     };
-//   },
-// });
-
-// const wsLink = new GraphQLWsLink(wsClient);
-// console.log("WebSocket Link:", wsLink);
-
-// const splitLink = split(
-//   ({ query }) => {
-//     const definition = getMainDefinition(query);
-//     return (
-//       definition.kind === "OperationDefinition" &&
-//       definition.operation === "subscription"
-//     );
-//   },
-//   wsLink,
-//   authLink.concat(httpLink)
-// );
-
-// console.log("Apollo Client Link:", splitLink);
-
 export const isForbiddenVar = makeVar(false);
 export const currentUserVar = makeVar<User | null>(null);
 
