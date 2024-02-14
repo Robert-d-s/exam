@@ -6,6 +6,7 @@ import NavigationBar from "../components/NavigationBar";
 import TotalTimeSpent from "./time";
 import RatesManager from "./ratesManager";
 import TeamSyncAndFetch from "./teamSync";
+import InvoiceDashboard from "./invoice";
 
 enum UserRole {
   ADMIN = "ADMIN",
@@ -43,13 +44,22 @@ const GET_USERS = gql`
   }
 `;
 
-const GET_TEAMS = gql`
-  query FetchTeamsFromLinear {
-    fetchTeamsFromLinear {
-      nodes {
-        id
-        name
-      }
+// const GET_TEAMS = gql`
+//   query FetchTeamsFromLinear {
+//     fetchTeamsFromLinear {
+//       nodes {
+//         id
+//         name
+//       }
+//     }
+//   }
+// `;
+
+const GET_SIMPLE_TEAMS = gql`
+  query GetAllSimpleTeams {
+    getAllSimpleTeams {
+      id
+      name
     }
   }
 `;
@@ -90,6 +100,7 @@ const AdminPage = () => {
   const [selectedTeam, setSelectedTeam] = useState<{
     [userId: number]: string;
   }>({});
+  const [errorMessage, setErrorMessage] = useState("");
 
   const {
     loading: loadingUsers,
@@ -100,10 +111,13 @@ const AdminPage = () => {
     // fetchPolicy: "network-only",
   });
   // console.log("Datausers", dataUsers);
-  const { loading: loadingTeams, data: dataTeams } = useQuery(GET_TEAMS, {
-    // fetchPolicy: "network-only",
-  });
-  // console.log("DataTeams", dataTeams);
+  const { loading: loadingTeams, data: dataTeams } = useQuery(
+    GET_SIMPLE_TEAMS,
+    {
+      // fetchPolicy: "network-only",
+    }
+  );
+  console.log("DataTeams", dataTeams);
   const [updateUserRole] = useMutation(UPDATE_USER_ROLE);
   const [addUserToTeam] = useMutation(ADD_USER_TO_TEAM, {
     onCompleted: () => refetchUsers(),
@@ -117,8 +131,6 @@ const AdminPage = () => {
       // Potentially set an error state here
     },
   });
-
-  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (dataUsers) {
@@ -172,17 +184,17 @@ const AdminPage = () => {
       .catch((error) => console.error("Error adding user to team:", error));
   };
 
-  const handleTeamSelection = (userId: number, teamId: string) => {
-    console.log(`Selected team for user ${userId}: ${teamId}`);
-    setSelectedTeam((prev) => ({ ...prev, [userId]: teamId }));
-  };
-
   const handleRemoveUserFromTeam = (userId: number, teamId: string) => {
     removeUserFromTeam({
       variables: { userId, teamId },
     })
       .then(() => refetchUsers())
       .catch((error) => console.error("Error removing user from team:", error));
+  };
+
+  const handleTeamSelection = (userId: number, teamId: string) => {
+    console.log(`Selected team for user ${userId}: ${teamId}`);
+    setSelectedTeam((prev) => ({ ...prev, [userId]: teamId }));
   };
 
   const handleRoleChange = async (userId: number, newRole: UserRole) => {
@@ -203,18 +215,28 @@ const AdminPage = () => {
     }
   };
 
+  const handleError = (error: ApolloError) => {
+    const graphQLError = error.graphQLErrors[0];
+    return graphQLError
+      ? graphQLError.message
+      : error.networkError
+      ? "Network error, please try again."
+      : "An error occurred.";
+  };
+
   if (loadingUsers || loadingTeams) return <p>Loading...</p>;
   if (errorUsers) return <p>Error: {handleError(errorUsers)}</p>;
 
   return (
-    <div>
+    <div className="container mx-auto p-4 font-roboto-condensed">
       <NavigationBar />
 
-      <div className="container mx-auto p-4 ">
+      <div className="container mx-auto p-4 font-roboto-condensed">
         <div className="mb-3">
           <UserTable
             users={users}
-            teams={dataTeams?.fetchTeamsFromLinear.nodes}
+            // teams={dataTeams?.fetchTeamsFromLinear.nodes}
+            teams={dataTeams?.getAllSimpleTeams}
             onTeamSelect={handleTeamSelection}
             onAddToTeam={(userId) => handleAddUserToTeam(userId)()}
             onRemoveFromTeam={handleRemoveUserFromTeam}
@@ -225,8 +247,11 @@ const AdminPage = () => {
         <div className="mb-3 shadow-md">
           <TotalTimeSpent />
         </div>
-        <div className="shadow-md">
+        <div className="mb-3 shadow-md">
           <RatesManager />
+        </div>
+        <div className="shadow-md">
+          <InvoiceDashboard />
         </div>
         <div className="mt-3 float-right">
           <TeamSyncAndFetch />
@@ -235,6 +260,7 @@ const AdminPage = () => {
     </div>
   );
 };
+
 type UserTableProps = {
   users: User[];
   teams: Team[];
@@ -301,6 +327,7 @@ const UserRow: React.FC<UserRowProps> = ({
   onRoleChange,
 }) => {
   console.log("Teams for user:", user.id, user.teams);
+  const safeTeams = teams || [];
 
   return (
     <tr>
@@ -309,7 +336,7 @@ const UserRow: React.FC<UserRowProps> = ({
       </td>
       <td className="px-6 py-4 whitespace-nowrap border-b border-gray-200 shadow-md">
         <TeamSelect
-          teams={teams}
+          teams={safeTeams}
           onTeamSelect={(teamId) => onTeamSelect(user.id, teamId)}
         />
         <button
@@ -385,14 +412,5 @@ const UserRoleSelect: React.FC<UserRoleSelectProps> = ({
     ))}
   </select>
 );
-
-const handleError = (error: ApolloError) => {
-  const graphQLError = error.graphQLErrors[0];
-  return graphQLError
-    ? graphQLError.message
-    : error.networkError
-    ? "Network error, please try again."
-    : "An error occurred.";
-};
 
 export default AdminPage;

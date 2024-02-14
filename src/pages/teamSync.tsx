@@ -1,35 +1,35 @@
 import React, { useState, useEffect } from "react";
 
-interface User {
-  id: string;
-  name: string;
-}
+// interface User {
+//   id: string;
+//   name: string;
+// }
 
-interface Team {
-  id: string;
-  name: string;
-  createdAt: string;
-  timezone: string;
-  members: User[];
-}
+// interface Team {
+//   id: string;
+//   name: string;
+//   createdAt: string;
+//   timezone: string;
+//   members: User[];
+// }
 
-interface FetchTeamsFromLinearResponse {
-  data: {
-    fetchTeamsFromLinear: {
-      nodes: Team[];
-    };
-  };
-}
+// interface FetchTeamsFromLinearResponse {
+//   data: {
+//     fetchTeamsFromLinear: {
+//       nodes: Team[];
+//     };
+//   };
+// }
 
 const TeamSyncAndFetch: React.FC = () => {
-  const [teams, setTeams] = useState<Team[]>([]);
+  // const [teams, setTeams] = useState<Team[]>([]);
 
   const syncTeams = async () => {
     const token = localStorage.getItem("token");
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/team-synchronize/teams`,
+        `http://localhost:8080/team-synchronize/teams`,
         {
           method: "GET",
           headers: {
@@ -46,32 +46,32 @@ const TeamSyncAndFetch: React.FC = () => {
     }
   };
 
-  const fetchTeams = async () => {
-    const token = localStorage.getItem("token");
+  // const fetchTeams = async () => {
+  //   const token = localStorage.getItem("token");
 
-    try {
-      const response = await fetch("/api/fetchTeamsFromLinear", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  //   try {
+  //     const response = await fetch("/api/fetchTeamsFromLinear", {
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
 
-      const data: FetchTeamsFromLinearResponse = await response.json();
+  //     const data: FetchTeamsFromLinearResponse = await response.json();
 
-      if (data && data.data && data.data.fetchTeamsFromLinear) {
-        setTeams(data.data.fetchTeamsFromLinear.nodes);
-      } else {
-        console.error("Unexpected data structure", data);
-      }
-    } catch (error) {
-      console.error("An error occurred while fetching data:", error);
-    }
-  };
+  //     if (data && data.data && data.data.fetchTeamsFromLinear) {
+  //       setTeams(data.data.fetchTeamsFromLinear.nodes);
+  //     } else {
+  //       console.error("Unexpected data structure", data);
+  //     }
+  //   } catch (error) {
+  //     console.error("An error occurred while fetching data:", error);
+  //   }
+  // };
 
   useEffect(() => {
     const fetchDataAndSync = async () => {
       await syncTeams();
-      await fetchTeams();
+      // await fetchTeams();
     };
 
     fetchDataAndSync();

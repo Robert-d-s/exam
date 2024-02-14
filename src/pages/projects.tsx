@@ -8,16 +8,14 @@ const Projects: FC = () => {
       const token = localStorage.getItem("token");
 
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/graphql`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              query: `
+        const response = await fetch(`http://localhost:8080/graphql`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            query: `
               query {
                 projects {
                   id
@@ -26,9 +24,8 @@ const Projects: FC = () => {
                 }
               }
             `,
-            }),
-          }
-        );
+          }),
+        });
 
         if (response.status !== 200) {
           throw new Error(`HTTP error! Status: ${response.status}`);

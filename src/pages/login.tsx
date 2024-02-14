@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import Image from "next/image";
+import { fetchUserProfile } from "@/lib/apolloClient";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>("");
@@ -10,23 +11,21 @@ const Login: React.FC = () => {
   const router = useRouter();
   const handleLogin = async () => {
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-            password,
-          }),
-        }
-      );
+      const response = await fetch(`http://localhost:8080/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
 
       const data = await response.json();
       if (data && data.access_token) {
         localStorage.setItem("token", data.access_token);
+        await fetchUserProfile(data.access_token);
         router.push("/timeKeeper2");
       } else if (data && data.error) {
         setErrorMessage(data.error);

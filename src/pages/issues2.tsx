@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
-import { gql } from "@apollo/client";
-import { useQuery } from "@apollo/client";
+import React, { useMemo, useState, useEffect } from "react";
+import { gql, useQuery, useSubscription } from "@apollo/client";
+// import { useQuery } from "@apollo/client";
 import NavigationBar from "../components/NavigationBar";
 import { formatDateForDisplay } from "../utils/timeUtils";
 
@@ -58,9 +58,38 @@ const GET_ISSUES = gql`
   }
 `;
 
+const ISSUE_UPDATED_SUBSCRIPTION = gql`
+  subscription OnIssueUpdated {
+    issueUpdated {
+      id
+      createdAt
+      updatedAt
+      title
+      dueDate
+      projectId
+      priorityLabel
+      identifier
+      assigneeName
+      projectName
+      state
+      teamKey
+      teamName
+      labels {
+        id
+        name
+        color
+        parentId
+      }
+    }
+  }
+`;
+
 const IssuesComponent: React.FC = () => {
   const { loading, error, data, refetch } = useQuery<{ issues: Issue[] }>(
     GET_ISSUES
+  );
+  const { data: subscriptionData, error: subscriptionError } = useSubscription(
+    ISSUE_UPDATED_SUBSCRIPTION
   );
 
   const [selectedAssignee, setSelectedAssignee] = useState<string | null>(null);
@@ -113,6 +142,16 @@ const IssuesComponent: React.FC = () => {
     return groups;
   }, [filteredIssues]);
 
+  useEffect(() => {
+    if (subscriptionData) {
+      console.log("Subscription data received:", subscriptionData);
+      refetch();
+    }
+    if (subscriptionError) {
+      console.error("Subscription error:", subscriptionError);
+    }
+  }, [subscriptionData, subscriptionError, refetch]);
+
   //   console.log("GraphQL Response:", { loading, error, data });
 
   if (loading) return <p>Loading issues...</p>;
@@ -126,7 +165,7 @@ const IssuesComponent: React.FC = () => {
   return (
     <>
       <NavigationBar />
-      <div className="container mx-auto p-4">
+      <div className="container mx-auto p-4 font-roboto-condensed">
         <div className="flex">
           <div>
             <div className="flex flex-wrap mb-1">
@@ -134,7 +173,7 @@ const IssuesComponent: React.FC = () => {
                 <button
                   key={team}
                   onClick={() => handleSelectTeam(team)}
-                  className={`p-1 m-1 ${
+                  className={`p-1 m-1 uppercase ${
                     selectedTeam === team ? "bg-green-500" : "bg-black"
                   } text-white rounded hover:bg-gray-800`}
                   style={{ fontSize: "12px" }}
@@ -148,7 +187,7 @@ const IssuesComponent: React.FC = () => {
                 <button
                   key={assignee}
                   onClick={() => handleSelectAssignee(assignee)}
-                  className={`p-1 m-1 ${
+                  className={`p-1 m-1 uppercase ${
                     selectedAssignee === assignee ? "bg-green-500" : "bg-black"
                   } text-white rounded hover:bg-gray-800`}
                   style={{ fontSize: "12px" }}

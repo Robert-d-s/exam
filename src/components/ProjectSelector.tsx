@@ -4,6 +4,7 @@ type ProjectSelectorProps = {
   projects: { id: string; name: string; teamName: string }[];
   selectedProject: string;
   onProjectChange: (projectId: string) => void;
+  className?: string;
 };
 
 const ProjectSelector: React.FC<ProjectSelectorProps> = ({

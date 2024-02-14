@@ -3,17 +3,21 @@ import {
   InMemoryCache,
   createHttpLink,
   from,
-  gql,
   makeVar,
+  split,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
+// import { createClient } from "graphql-ws";
+// import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+// import { getMainDefinition } from "@apollo/client/utilities";
 
 interface User {
   id: string;
   email: string;
 }
 
+// Authentication link for setting headers
 const authLink = setContext((_, { headers }) => {
   const token: string | null = localStorage.getItem("token");
   if (token) {
@@ -29,6 +33,7 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
+// Error handling link
 const errorLink = onError(
   ({ graphQLErrors, networkError, forward, operation }) => {
     if (graphQLErrors) {
@@ -48,8 +53,45 @@ const errorLink = onError(
   }
 );
 
+// const httpLink = createHttpLink({
+//   uri: "http://localhost:8080/graphql", // Your GraphQL HTTP endpoint
+// });
+
+// const wsClient = createClient({
+//   url: "ws://localhost:8080/graphql",
+//   connectionParams: () => {
+//     // This function will be called whenever a new WebSocket connection is established,
+//     // which ensures that localStorage is accessed only in a client-side context.
+//     const token =
+//       typeof window !== "undefined" ? localStorage.getItem("token") : "";
+//     console.log("WebSocket authToken being sent:", token);
+//     return {
+//       authToken: token,
+//     };
+//   },
+// });
+
+// const wsLink = new GraphQLWsLink(wsClient);
+// console.log("WebSocket Link:", wsLink);
+
+// const splitLink = split(
+//   ({ query }) => {
+//     const definition = getMainDefinition(query);
+//     return (
+//       definition.kind === "OperationDefinition" &&
+//       definition.operation === "subscription"
+//     );
+//   },
+//   wsLink,
+//   authLink.concat(httpLink)
+// );
+
+// console.log("Apollo Client Link:", splitLink);
+
 export const isForbiddenVar = makeVar(false);
 export const currentUserVar = makeVar<User | null>(null);
+
+// `${process.env.NEXT_PUBLIC_BACKEND_URL}/graphql`
 
 const client = new ApolloClient({
   link: from([
@@ -59,7 +101,7 @@ const client = new ApolloClient({
       uri: (operation) =>
         operation.getContext().useLinearApi
           ? `https://api.linear.app/graphql`
-          : `${process.env.NEXT_PUBLIC_BACKEND_URL}/graphql`,
+          : `http://localhost:8080/graphql`,
       fetchOptions: {
         method: "POST",
       },
@@ -79,6 +121,11 @@ const client = new ApolloClient({
     },
   }),
 });
+
+// const client = new ApolloClient({
+//   link: from([errorLink, splitLink]),
+//   cache: new InMemoryCache(),
+// });
 
 export default client;
 

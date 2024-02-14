@@ -11,7 +11,7 @@ const NavigationBar: React.FC = () => {
     logout();
   };
   return (
-    <nav className="flex items-center justify-between p-4 bg-white shadow">
+    <nav className="flex items-center justify-between p-4 bg-white shadow font-roboto-condensed uppercase">
       <div className="flex items-center">
         <Image
           src="/logo.svg"
@@ -19,7 +19,7 @@ const NavigationBar: React.FC = () => {
           width={200}
           height={40}
         />
-        <div className="ml-4">
+        <div className="ml-4 font-semibold text-lg ">
           <Link href="/issues2" className="mr-4">
             Issues
           </Link>
@@ -33,17 +33,17 @@ const NavigationBar: React.FC = () => {
         <div>
           {loggedInUser ? (
             <h2
-              className="text-lg bg-gray-800 text-white px-4  m-1 rounded"
-              style={{ fontSize: "16px" }}
+              className="bg-gray-800 text-white px-4  m-1 rounded"
+              // style={{ fontSize: "16px" }}
             >
-              Welcome, {loggedInUser.email}
+              {loggedInUser.email}
             </h2>
           ) : (
             <p className="text-md text-gray-500">Loading user data...</p>
           )}
         </div>
         <button
-          className="bg-black text-white rounded hover:bg-gray-800 font-bold py-1 px-4 float-right"
+          className="bg-black text-white rounded hover:bg-gray-800 font-bold py-1 px-4 float-right font-roboto-condensed uppercase"
           style={{ fontSize: "12px" }}
           onClick={handleLogout}
         >
