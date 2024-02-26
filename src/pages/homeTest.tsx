@@ -67,20 +67,29 @@ const Home: NextPage = () => {
         />
         <div className="sections-container flex flex-col; ">
           <AnimatePresence>
-            {sections.map((section, index) => (
-              <Section
-                key={section}
-                id={section}
-                content={section}
-                isActive={activeSection === section}
-                zIndex={
-                  activeSection === section
-                    ? sections.length
-                    : sections.length - index
-                }
-                color={sectionColors[index % sectionColors.length]}
-              />
-            ))}
+            {sections.map((section, index) => {
+              // Determine the videoSrc based on the section name
+              let videoSrc;
+              if (section === "Home") {
+                videoSrc = "/video/136259 (1080p).mp4";
+              }
+
+              return (
+                <Section
+                  key={section}
+                  id={section}
+                  content={section}
+                  isActive={activeSection === section}
+                  zIndex={
+                    activeSection === section
+                      ? sections.length
+                      : sections.length - index
+                  }
+                  color={sectionColors[index % sectionColors.length]}
+                  videoSrc={videoSrc}
+                />
+              );
+            })}
           </AnimatePresence>
         </div>
       </div>

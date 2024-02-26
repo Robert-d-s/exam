@@ -8,6 +8,7 @@ interface SectionProps {
   isActive: boolean;
   color: string;
   zIndex: number;
+  videoSrc?: string;
 }
 
 const Section: React.FC<SectionProps> = ({
@@ -16,6 +17,7 @@ const Section: React.FC<SectionProps> = ({
   isActive,
   color,
   zIndex,
+  videoSrc,
 }) => {
   const controls = useAnimation();
 
@@ -76,13 +78,26 @@ const Section: React.FC<SectionProps> = ({
         boxSizing: "border-box",
       }}
     >
-      <ContentWrapper isActive={isActive}>
-        <h2 className="text-2xl font-bold mb-4">{content}</h2>
-        <p className="text-gray-700">
-          Placeholder content for the {content} section. Replace this with any
-          content you like.
-        </p>
-      </ContentWrapper>
+      {videoSrc ? (
+        <video
+          className="video w-full rounded-lg overflow-hidden"
+          autoPlay
+          loop
+          muted
+          playsInline
+        >
+          <source src={videoSrc} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      ) : (
+        <ContentWrapper isActive={isActive}>
+          <h2 className="text-2xl font-bold mb-4">{content}</h2>
+          <p className="text-gray-700">
+            Placeholder content for the {content} section. Replace this with any
+            content you like.
+          </p>
+        </ContentWrapper>
+      )}
     </motion.div>
   );
 };
