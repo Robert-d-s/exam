@@ -3,7 +3,6 @@ import TimeKeeper from "./timeKeeper2";
 import TotalTimeSpent from "./time";
 import RatesManager from "./ratesManager";
 import IssuesComponent from "./issues";
-// import OrganizationComponent from "./organizationData";
 import { logout } from "../lib/apolloClient";
 
 const handleLogout = () => {
@@ -28,7 +27,6 @@ export default function Dashboard() {
         </div>
         <div className="flex flex-col gap-4">
           <IssuesComponent />
-          {/* <OrganizationComponent /> */}
         </div>
       </div>
     </div>
