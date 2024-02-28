@@ -2,6 +2,7 @@ import { motion, useAnimation } from "framer-motion";
 import React, { useEffect } from "react";
 import { ContentWrapper } from "./contentWrapper";
 import PeopleSection from "./people";
+import AboutComponent from "./about";
 
 interface SectionProps {
   id: string;

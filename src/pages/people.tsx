@@ -65,28 +65,36 @@ interface PersonCardProps {
   person: Person;
 }
 
+// Define the type for the mapping object
+type RoleIconMappingType = {
+  [roleName: string]: string;
+};
+
+// Define the mapping from role names to icon filenames
+const roleIconMapping: RoleIconMappingType = {
+  CEO: "ceo.svg",
+  "Co-Founder": "founder.svg",
+  "Front-end": "front.svg",
+  Mobile: "mobile.svg",
+  "Back-end": "back.svg",
+  Design: "design.svg",
+};
+
+// Function to return the icon path based on the role, with a fallback
+const getIconPath = (role: string): string => {
+  return `/icons/${roleIconMapping[role] || "default-icon.svg"}`;
+};
+
 const PersonCard: React.FC<PersonCardProps> = ({ person }) => {
-  const [hover, setHover] = React.useState(false);
   const [isHovered, setIsHovered] = React.useState(false);
 
   return (
     <div
-      className="person-card cursor-pointer overflow-hidden relative w-full h-auto"
-      // onMouseEnter={() => setHover(true)}
-      // onMouseLeave={() => setHover(false)}
+      className="person-card cursor-pointer overflow-hidden relative w-full h-auto "
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* <Image
-        src={hover ? person.images[1] : person.images[0]}
-        alt={person.name}
-        layout="responsive" // This can help if your containers have a fixed aspect ratio
-        width={342} // Image's natural width
-        height={512} // Image's natural height
-        className="rounded-lg transition-all duration-700 ease-in-out"
-      /> */}
-      <div className="relative w-full h-full">
-        {/* Base Image */}
+      <div className="relative w-full h-full ">
         <Image
           src={person.images[0]}
           alt={`${person.name} - Base`}
@@ -97,7 +105,6 @@ const PersonCard: React.FC<PersonCardProps> = ({ person }) => {
             isHovered ? "opacity-0" : "opacity-100"
           }`}
         />
-        {/* Hover Image */}
         <div className="absolute inset-0 flex justify-center items-center">
           <Image
             src={person.images[1]}
@@ -111,12 +118,28 @@ const PersonCard: React.FC<PersonCardProps> = ({ person }) => {
           />
         </div>
       </div>
-      <div className="absolute inset-0 flex flex-col justify-end p-4  bg-opacity-50 rounded-lg">
-        <h3 className="text-white text-xl font-bold">{person.name}</h3>
+      <div className="absolute inset-0 flex flex-col justify-end p-4  rounded-lg">
+        <div
+          style={{ width: "fit-content" }}
+          className="bg-black bg-opacity-20 p-2"
+        >
+          <h3 className="text-white text-xl font-bold">{person.name}</h3>
+        </div>
         {person.roles.map((role, index) => (
-          <p key={index} className="text-white text-md">
-            {role}
-          </p>
+          <div key={index} style={{ width: "fit-content" }}>
+            <div className="bg-black bg-opacity-20 flex items-center">
+              <div className="w-8 h-8 mr-2 flex justify-center items-center relative">
+                <Image
+                  src={getIconPath(role)}
+                  alt={`${role} icon`}
+                  layout="fill"
+                  objectFit="contain"
+                  className="filter invert"
+                />
+              </div>
+              <span className="text-white text-lg mr-2">{role}</span>
+            </div>
+          </div>
         ))}
       </div>
     </div>
