@@ -64,11 +64,11 @@ const Section: React.FC<SectionProps> = ({
     <motion.div
       layoutId={id}
       variants={sectionVariants}
-      initial="initial" // Use 'initial' for the entering animation
+      initial="initial"
       animate={controls}
       exit="inactive"
       transition={{ duration: 0.5, type: "easeOut" }}
-      className={`section p-10  rounded-3xl shadow-lg ${color} `}
+      className={`section p-10 border-2 border-gray-400 rounded-tl-3xl rounded-tr-3xl shadow-lg ${color} `}
       style={{
         position: "absolute",
         width: "75%",
@@ -79,16 +79,31 @@ const Section: React.FC<SectionProps> = ({
       }}
     >
       {videoSrc ? (
-        <video
-          className="video w-full rounded-lg overflow-hidden"
-          autoPlay
-          loop
-          muted
-          playsInline
-        >
-          <source src={videoSrc} type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        <div className="relative w-full h-full">
+          <video
+            className="video w-full rounded-lg overflow-hidden"
+            autoPlay
+            loop
+            muted
+            playsInline
+          >
+            <source src={videoSrc} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <div
+            style={{
+              position: "absolute",
+              bottom: "12vh",
+              left: "0",
+              padding: "1rem",
+            }}
+          >
+            <h2 className="text-4xl font-bold text-white p-4 bg-black bg-opacity-50 rounded-lg">
+              We enable Collaborators
+              <br /> to create delightful technical solutions
+            </h2>
+          </div>
+        </div>
       ) : (
         <ContentWrapper isActive={isActive}>
           <h2 className="text-2xl font-bold mb-4">{content}</h2>

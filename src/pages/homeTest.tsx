@@ -6,7 +6,14 @@ import Section from "./sectionTest";
 import { BackgroundBeams } from "../components/ui/background-beams";
 
 const Home: NextPage = () => {
-  const sections = ["Home", "About", "Services", "People", "Contact"];
+  const sections = [
+    "Home",
+    "About",
+    "Services",
+    "People",
+    "Contact",
+    "Internal",
+  ];
   // const [activeSection, setActiveSection] = useState<string>("Home");
   const [activeSection, setActiveSection] = useState<string>(sections[0]);
 
