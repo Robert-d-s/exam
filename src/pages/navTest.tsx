@@ -8,7 +8,7 @@ interface NavbarProps {
 }
 
 const Navbar: React.FC<NavbarProps> = ({
-  sections,
+  sections = [],
   setActiveSection,
   activeSection,
 }) => {
