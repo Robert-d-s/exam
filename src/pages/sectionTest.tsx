@@ -62,6 +62,8 @@ const Section: React.FC<SectionProps> = ({
     },
   };
 
+  const videoSrcConditional = isActive ? videoSrc : "";
+
   return (
     <motion.div
       layoutId={id}
@@ -87,6 +89,8 @@ const Section: React.FC<SectionProps> = ({
         >
           <PeopleSection isActive={isActive} />
         </div>
+      ) : id === "About" ? (
+        <AboutComponent />
       ) : videoSrc ? (
         <div className="relative w-full h-full">
           <video

@@ -77,6 +77,19 @@ const AboutComponent: React.FC = () => {
             <source src="/video/transparancy.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
+          {/* <div className="md:w-1/2 flex justify-center">
+            <iframe
+              width="1280"
+              height="315"
+              src="https://www.youtube.com/embed/YKsigwzUNjU?playlist=YKsigwzUNjU&loop=1&autoplay=1&controls=0&showinfo=0&rel=0&modestbranding=1&mute=1"
+              title="YouTube video player"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              loading="lazy"
+              className="rounded-lg"
+              style={{ pointerEvents: "none" }}
+            ></iframe>
+          </div> */}
         </div>
       </section>
 
