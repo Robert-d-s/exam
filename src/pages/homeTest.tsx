@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Navbar from "./navTest";
 import Section from "./sectionTest";
 import { BackgroundBeams } from "../components/ui/background-beams";
+import PeopleSection from "./people";
 
 const Home: NextPage = () => {
   const sections = [

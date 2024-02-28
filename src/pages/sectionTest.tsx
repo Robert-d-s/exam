@@ -1,6 +1,7 @@
 import { motion, useAnimation } from "framer-motion";
 import React, { useEffect } from "react";
 import { ContentWrapper } from "./contentWrapper";
+import PeopleSection from "./people";
 
 interface SectionProps {
   id: string;
@@ -78,7 +79,14 @@ const Section: React.FC<SectionProps> = ({
         boxSizing: "border-box",
       }}
     >
-      {videoSrc ? (
+      {id === "People" ? (
+        <div
+          className="overflow-y-auto"
+          style={{ maxHeight: "calc(100vh - 200px)" }}
+        >
+          <PeopleSection isActive={isActive} />
+        </div>
+      ) : videoSrc ? (
         <div className="relative w-full h-full">
           <video
             className="video w-full rounded-lg overflow-hidden"
@@ -108,8 +116,7 @@ const Section: React.FC<SectionProps> = ({
         <ContentWrapper isActive={isActive}>
           <h2 className="text-2xl font-bold mb-4">{content}</h2>
           <p className="text-gray-700">
-            Placeholder content for the {content} section. Replace this with any
-            content you like.
+            Placeholder content for the {content} section.
           </p>
         </ContentWrapper>
       )}

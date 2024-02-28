@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router";
 
 interface NavbarProps {
   sections: string[];
@@ -12,6 +13,16 @@ const Navbar: React.FC<NavbarProps> = ({
   activeSection,
 }) => {
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleSectionClick = (section: string) => {
+    if (section === "Internal") {
+      // If the section is 'Internal', navigate to the login route
+      router.push("/login");
+    } else {
+      setActiveSection(section);
+    }
+  };
 
   return (
     <nav className="flex justify-center space-x-4 p-4">
@@ -31,11 +42,13 @@ const Navbar: React.FC<NavbarProps> = ({
                 ? "bg-gray-500"
                 : "bg-transparent border-2 border-black"
             }`}
-            onClick={() => setActiveSection(section)}
+            // onClick={() => setActiveSection(section)}
+            onClick={() => handleSectionClick(section)}
           />
           <button
             className="text-black py-2 px-4"
-            onClick={() => setActiveSection(section)}
+            // onClick={() => setActiveSection(section)}
+            onClick={() => handleSectionClick(section)}
           >
             {section}
           </button>
