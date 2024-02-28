@@ -2,7 +2,7 @@ import React from "react";
 import TimeKeeper from "./timeKeeper2";
 import TotalTimeSpent from "./time";
 import RatesManager from "./ratesManager";
-import IssuesComponent from "./issues";
+import IssuesComponent from "./issues2";
 import { logout } from "../lib/apolloClient";
 
 const handleLogout = () => {
