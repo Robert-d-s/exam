@@ -43,80 +43,73 @@ const AboutComponent: React.FC = () => {
   return (
     <div className="space-y-8 p-6">
       <h2 className="text-3xl font-bold mb-4">About Enablment</h2>
+      <div
+        className=""
+        style={{ maxHeight: "calc(100vh - 300px)", overflowY: "auto" }}
+      >
+        <section>
+          <h3 className="text-2xl font-semibold mb-2">Definitions</h3>
+          {aboutContent.definitions.map((def, index) => (
+            <div key={index} className="mb-3">
+              <p className="text-lg">
+                <span className="font-bold">{def.term}:</span> {def.description}
+              </p>
+            </div>
+          ))}
+        </section>
 
-      <section>
-        <h3 className="text-2xl font-semibold mb-2">Definitions</h3>
-        {aboutContent.definitions.map((def, index) => (
-          <div key={index} className="mb-3">
-            <p className="text-lg">
-              <span className="font-bold">{def.term}:</span> {def.description}
-            </p>
+        <section className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
+          <div className="md:w-1/2">
+            <h3 className="text-2xl font-semibold mb-2">Transparency</h3>
+            {aboutContent.transparency.map((item, index) => (
+              <div key={index} className="mb-3">
+                <p className="text-lg">{item}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </section>
+          <div className="md:w-1/2 flex justify-center">
+            <video
+              width="100%"
+              height="auto"
+              className="rounded-lg lazy"
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+            >
+              <source src="/video/transparancy.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </section>
 
-      <section className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
-        <div className="md:w-1/2">
-          <h3 className="text-2xl font-semibold mb-2">Transparency</h3>
-          {aboutContent.transparency.map((item, index) => (
-            <div key={index} className="mb-3">
-              <p className="text-lg">{item}</p>
-            </div>
-          ))}
-        </div>
-        <div className="md:w-1/2 flex justify-center">
-          <video
-            width="100%"
-            height="auto"
-            className="rounded-lg"
-            autoPlay
-            loop
-            muted
-            playsInline
-          >
-            <source src="/video/transparancy.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-          {/* <div className="md:w-1/2 flex justify-center">
-            <iframe
-              width="1280"
-              height="315"
-              src="https://www.youtube.com/embed/YKsigwzUNjU?playlist=YKsigwzUNjU&loop=1&autoplay=1&controls=0&showinfo=0&rel=0&modestbranding=1&mute=1"
-              title="YouTube video player"
-              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              loading="lazy"
-              className="rounded-lg"
-              style={{ pointerEvents: "none" }}
-            ></iframe>
-          </div> */}
-        </div>
-      </section>
-
-      <section className="flex flex-col md:flex-row-reverse items-center space-y-4 md:space-y-0 md:space-x-reverse md:space-x-4">
-        <div className="md:w-1/2">
-          <h3 className="text-2xl font-semibold mb-2">Organization</h3>
-          {aboutContent.organization.map((item, index) => (
-            <div key={index} className="mb-3">
-              <p className="text-lg">{item}</p>
-            </div>
-          ))}
-        </div>
-        <div className="md:w-1/2 flex justify-center">
-          <video
-            width="100%"
-            height="auto"
-            className="rounded-lg"
-            autoPlay
-            loop
-            muted
-            playsInline
-          >
-            <source src="/video/meeting.mp4" type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
-        </div>
-      </section>
+        <section className="flex flex-col md:flex-row-reverse items-center space-y-4 md:space-y-0 md:space-x-reverse md:space-x-4">
+          <div className="md:w-1/2">
+            <h3 className="text-2xl font-semibold mb-2">Organization</h3>
+            {aboutContent.organization.map((item, index) => (
+              <div key={index} className="mb-3">
+                <p className="text-lg">{item}</p>
+              </div>
+            ))}
+          </div>
+          <div className="md:w-1/2 flex justify-center">
+            <video
+              width="100%"
+              height="auto"
+              className="rounded-lg lazy"
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+            >
+              <source src="/video/meeting.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </section>
+      </div>
     </div>
   );
 };

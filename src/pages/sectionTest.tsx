@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import { ContentWrapper } from "../components/contentWrapper";
 import PeopleSection from "./people";
 import AboutComponent from "./about";
+import ServicesComponent from "./services";
 
 interface SectionProps {
   id: string;
@@ -91,6 +92,8 @@ const Section: React.FC<SectionProps> = ({
         </div>
       ) : id === "About" ? (
         <AboutComponent />
+      ) : id === "Services" ? (
+        <ServicesComponent />
       ) : videoSrc ? (
         <div className="relative w-full h-full">
           <video

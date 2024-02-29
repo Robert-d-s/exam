@@ -50,14 +50,16 @@ interface PeopleSectionProps {
 }
 
 const PeopleSection: React.FC<PeopleSectionProps> = ({ isActive }) => {
-  if (!isActive) return null; // Render nothing if not active
-
+  if (!isActive) return null;
   return (
-    <div className="people-section grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
-      {peopleData.map((person, index) => (
-        <PersonCard key={index} person={person} />
-      ))}
-    </div>
+    <>
+      <h2 className="text-3xl font-bold mb-1 mx-4">People</h2>
+      <div className="people-section grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+        {peopleData.map((person, index) => (
+          <PersonCard key={index} person={person} />
+        ))}
+      </div>
+    </>
   );
 };
 
@@ -121,13 +123,13 @@ const PersonCard: React.FC<PersonCardProps> = ({ person }) => {
       <div className="absolute inset-0 flex flex-col justify-end p-4  rounded-lg">
         <div
           style={{ width: "fit-content" }}
-          className="bg-black bg-opacity-20 p-2"
+          className="bg-black bg-opacity-40 p-2"
         >
           <h3 className="text-white text-xl font-bold">{person.name}</h3>
         </div>
         {person.roles.map((role, index) => (
           <div key={index} style={{ width: "fit-content" }}>
-            <div className="bg-black bg-opacity-20 flex items-center">
+            <div className="bg-black bg-opacity-40 flex items-center">
               <div className="w-8 h-8 mr-2 flex justify-center items-center relative">
                 <Image
                   src={getIconPath(role)}
