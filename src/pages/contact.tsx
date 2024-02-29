@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Image from "next/image";
 
 interface ContactFormProps {
   onSubmit: (data: { name: string; email: string; message: string }) => void;
@@ -24,88 +25,171 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSubmit }) => {
 
   return (
     <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center">
-      <div className="bg-white flex gap-4 rounded-lg shadow-lg p-8 m-4 max-w-xl max-h-full overflow-y-auto">
+      <div className="bg-white flex gap-4 rounded-lg shadow-lg p-8 m-4 w-1/2 max-h-full overflow-y-auto">
         <div>
-          <div></div>
-          <div className="text-sm mt-4">
-            <p>Bernhard Bangs Allé 25</p>
-            <p>2000 Frederiksberg</p>
-            <p>CVR: 25121198</p>
-            <a href="#" className="text-blue-600 hover:underline">
-              Cookie policy
-            </a>{" "}
-            •{" "}
-            <a href="#" className="text-blue-600 hover:underline">
-              Privacy policy
-            </a>
-          </div>
-          <div className="flex justify-around mt-4">
-            {/* Replace these with actual icons */}
-            <span>🔵</span>
-            <span>📘</span>
-            <span>🐦</span>
-          </div>
-          <div className="flex justify-between mt-4 text-sm">
-            <span className="text-green-600">(+45) 3816 0000</span>
-            <span className="text-green-600">kontakt@dwarf.dk</span>
+          <video
+            width="100%"
+            height="auto"
+            className="rounded-lg lazy"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+          >
+            <source src="/video/email.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <div className="flex justify-between">
+            <div className="text-sm mt-4">
+              <p>Øster Allé 56 6. sal</p>
+              <p>2100 København Ø</p>
+              <p>CVR: 42309648</p>
+              <div className="mt-2">
+                <a href="#" className="text-blue-600 hover:underline">
+                  Cookie policy
+                </a>{" "}
+                •{" "}
+                <a href="#" className="text-blue-600 hover:underline">
+                  Privacy policy
+                </a>
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-2">
+              <div className="flex mt-4">
+                <span className="mr-3">
+                  <Image
+                    src="/icons/instagram.svg"
+                    alt="instagram"
+                    width={24}
+                    height={24}
+                  />
+                </span>
+                <span className="mr-3">
+                  <Image
+                    src="/icons/facebook.svg"
+                    alt="facebook"
+                    width={24}
+                    height={24}
+                  />
+                </span>
+                <span className="mr-4">
+                  <Image
+                    src="/icons/linkedin.svg"
+                    alt="linkedin"
+                    width={24}
+                    height={24}
+                  />
+                </span>
+                <span>
+                  <Image
+                    src="/icons/twitter.svg"
+                    alt="twitter"
+                    width={24}
+                    height={24}
+                  />
+                </span>
+              </div>
+              <div className="flex gap-1 items-center">
+                <span className="text-green-600">(+45) 22 92 67 80</span>
+                <Image
+                  src="/icons/phone.svg"
+                  alt="call"
+                  width={24}
+                  height={24}
+                  className="align-middle"
+                />
+              </div>
+              <div className="flex gap-1 items-center">
+                <span className="text-green-600 mb-1">gd@enablment.com</span>
+                <Image
+                  src="/icons/mail.svg"
+                  alt="email"
+                  width={24}
+                  height={24}
+                  className="align-middle"
+                />
+              </div>
+            </div>
           </div>
         </div>
         <div>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg text-gray-900">
-              To: <span className="text-green-500">Dwarf</span>
-            </h2>
-            <button
-              onClick={() => {
-                /* Close modal function */
-              }}
-            >
-              ✕
-            </button>
-          </div>
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              name="name"
-              placeholder="Name"
-              className="w-full mb-4 p-2 border border-gray-300 rounded"
-              onChange={handleChange}
-              required
-            />
-            <input
-              type="email"
-              name="email"
-              placeholder="E-mail"
-              className="w-full mb-4 p-2 border border-gray-300 rounded"
-              onChange={handleChange}
-              required
-            />
-            <textarea
-              name="message"
-              placeholder="Your message"
-              className="w-full mb-4 p-2 border border-gray-300 rounded"
-              onChange={handleChange}
-              required
-            />
-            <button
-              type="submit"
-              className="w-full bg-black text-white p-2 rounded"
-            >
-              Send
-            </button>
-          </form>
-          <div className="text-xs text-gray-400 mt-4">
-            This site is protected by reCAPTCHA and the Google
-            <a href="#" className="text-blue-600 hover:underline">
-              {" "}
-              Privacy Policy
-            </a>{" "}
-            and
-            <a href="#" className="text-blue-600 hover:underline">
-              {" "}
-              Terms of Service
-            </a>{" "}
-            apply.
+          <div className="flex flex-col justify-between h-full">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg text-gray-900">
+                To: <span className="text-green-500">Enablment</span>
+              </h2>
+              <button
+                className="flex-none  w-12 h-12 bg-black text-xl text-white rounded-full"
+                onClick={() => {
+                  /* Close modal function */
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            <form onSubmit={handleSubmit} className="flex flex-col flex-grow">
+              <div className="flex-grow">
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Name"
+                  className="w-full mb-4 p-2 border border-gray-300 rounded"
+                  onChange={handleChange}
+                  required
+                />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="E-mail"
+                  className="w-full mb-4 p-2 border border-gray-300 rounded"
+                  onChange={handleChange}
+                  required
+                />
+                <textarea
+                  name="message"
+                  placeholder="Your message"
+                  className="w-full mb-4 p-2 border border-gray-300 rounded"
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+              <div className="flex items-center mt-4">
+                <div className="text-xs text-gray-400 flex-grow">
+                  This site is protected by reCAPTCHA and the Google
+                  <a href="#" className="text-blue-600 hover:underline">
+                    {" "}
+                    Privacy Policy
+                  </a>{" "}
+                  and
+                  <a href="#" className="text-blue-600 hover:underline">
+                    {" "}
+                    Terms of Service
+                  </a>{" "}
+                  apply.
+                </div>
+                <button
+                  type="submit"
+                  className="flex-none flex items-center justify-center w-12 h-12 bg-black text-white p-2 rounded-full"
+                  aria-label="Send"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="w-6 h-6 text-white"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M14 5l7 7m0 0l-7 7m7-7H3"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
