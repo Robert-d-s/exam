@@ -1,10 +1,10 @@
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import type { NextPage } from "next";
 import { useState, useEffect } from "react";
 import Navbar from "./navTest";
 import Section from "./sectionTest";
 import { BackgroundBeams } from "../components/ui/background-beams";
-import PeopleSection from "./people";
+import ContactForm from "./contact";
 
 const Home: NextPage = () => {
   const sections = [
@@ -15,8 +15,16 @@ const Home: NextPage = () => {
     "Contact",
     "Internal",
   ];
-  // const [activeSection, setActiveSection] = useState<string>("Home");
+
   const [activeSection, setActiveSection] = useState<string>(sections[0]);
+  const isContactActive = activeSection === "Contact";
+  const backgroundFadeVariants = {
+    hidden: { opacity: 1 },
+    visible: { opacity: 0.5 },
+  };
+  const closeContactForm = () => {
+    setActiveSection("Home");
+  };
 
   // Initialize sectionProps with all sections and their default properties
   interface SectionProps {
@@ -64,6 +72,19 @@ const Home: NextPage = () => {
     });
   }, [activeSection]);
 
+  const handleFormSubmit = (data: {
+    name: string;
+    email: string;
+    message: string;
+  }) => {
+    console.log("Form Data:", data);
+    // Here you would typically send the data to your server or handle it as needed
+    // For now, just log it to the console
+
+    // Optionally, close the contact form after submission by changing the active section
+    setActiveSection("Home"); // or any other section you want to show after form submission
+  };
+
   return (
     <>
       <BackgroundBeams />
@@ -75,29 +96,56 @@ const Home: NextPage = () => {
         />
         <div className="sections-container flex flex-col; ">
           <AnimatePresence>
-            {sections.map((section, index) => {
-              // Determine the videoSrc based on the section name
-              let videoSrc;
-              if (section === "Home") {
-                videoSrc = "/video/136259 (1080p).mp4";
-              }
+            {isContactActive && (
+              <>
+                {/* Backdrop with opacity */}
+                <motion.div
+                  className="fixed inset-0 z-40 bg-black bg-opacity-50"
+                  variants={backgroundFadeVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                ></motion.div>
+                {/* Contact Form without inheriting opacity */}
+                <motion.div
+                  className="fixed inset-0 z-50 flex justify-center items-center"
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                >
+                  <ContactForm
+                    onSubmit={handleFormSubmit}
+                    onClose={closeContactForm}
+                  />
+                </motion.div>
+              </>
+            )}
 
-              return (
-                <Section
-                  key={section}
-                  id={section}
-                  content={section}
-                  isActive={activeSection === section}
-                  zIndex={
-                    activeSection === section
-                      ? sections.length
-                      : sections.length - index
-                  }
-                  color={sectionColors[index % sectionColors.length]}
-                  videoSrc={videoSrc}
-                />
-              );
-            })}
+            {sections
+              .filter((section) => section !== "Contact")
+              .map((section, index) => {
+                // Determine the videoSrc based on the section name
+                let videoSrc;
+                if (section === "Home") {
+                  videoSrc = "/video/136259 (1080p).mp4";
+                }
+
+                return (
+                  <Section
+                    key={section}
+                    id={section}
+                    content={section}
+                    isActive={activeSection === section}
+                    zIndex={
+                      activeSection === section
+                        ? sections.length
+                        : sections.length - index
+                    }
+                    color={sectionColors[index % sectionColors.length]}
+                    videoSrc={videoSrc}
+                  />
+                );
+              })}
           </AnimatePresence>
         </div>
       </div>

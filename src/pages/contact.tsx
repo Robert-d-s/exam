@@ -3,9 +3,15 @@ import Image from "next/image";
 
 interface ContactFormProps {
   onSubmit: (data: { name: string; email: string; message: string }) => void;
+  onClose: () => void;
+  className?: string;
 }
 
-const ContactForm: React.FC<ContactFormProps> = ({ onSubmit }) => {
+const ContactForm: React.FC<ContactFormProps> = ({
+  onSubmit,
+  onClose,
+  className,
+}) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -24,7 +30,9 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSubmit }) => {
   };
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center">
+    <div
+      className={`fixed inset-0 flex justify-center items-center ${className}`}
+    >
       <div className="bg-white flex gap-4 rounded-lg shadow-lg p-8 m-4 w-1/2 max-h-full overflow-y-auto">
         <div>
           <video
@@ -121,9 +129,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSubmit }) => {
               </h2>
               <button
                 className="flex-none  w-12 h-12 bg-black text-xl text-white rounded-full"
-                onClick={() => {
-                  /* Close modal function */
-                }}
+                onClick={onClose}
               >
                 ✕
               </button>
