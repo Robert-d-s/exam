@@ -78,11 +78,14 @@ const Home: NextPage = () => {
     message: string;
   }) => {
     console.log("Form Data:", data);
-    // Here you would typically send the data to your server or handle it as needed
-    // For now, just log it to the console
 
-    // Optionally, close the contact form after submission by changing the active section
-    setActiveSection("Home"); // or any other section you want to show after form submission
+    setActiveSection("Home");
+  };
+  const isActiveSectionCorrectlySet = (section: string) => {
+    if (isContactActive) {
+      return activeSection === section;
+    }
+    return activeSection === section;
   };
 
   return (
@@ -122,7 +125,10 @@ const Home: NextPage = () => {
             )}
 
             {sections
-              .filter((section) => section !== "Contact")
+              .filter(
+                (section) =>
+                  section !== "Contact" && isActiveSectionCorrectlySet(section)
+              )
               .map((section, index) => {
                 // Determine the videoSrc based on the section name
                 let videoSrc;
@@ -143,6 +149,7 @@ const Home: NextPage = () => {
                     }
                     color={sectionColors[index % sectionColors.length]}
                     videoSrc={videoSrc}
+                    isContactFormActive={isContactActive}
                   />
                 );
               })}

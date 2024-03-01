@@ -12,7 +12,50 @@ interface SectionProps {
   color: string;
   zIndex: number;
   videoSrc?: string;
+  isContactFormActive: boolean;
 }
+
+const getSectionVariants = (isContactFormActive: boolean) => ({
+  inactive: isContactFormActive
+    ? {
+        opacity: 1,
+        scale: 1,
+        y: 0,
+        zIndex: 6,
+      }
+    : {
+        y: -40,
+        opacity: 0.7,
+        scale: 0.95,
+        zIndex: 6,
+        transition: {
+          duration: 0.5,
+          ease: "easeInOut",
+        },
+      },
+  active: {
+    y: 0,
+    opacity: 1,
+    scale: 1,
+    zIndex: 6,
+    transition: {
+      y: {
+        duration: 0.2,
+        type: "spring",
+        from: "40vh",
+        stiffness: 70,
+        damping: 15,
+      },
+      opacity: { duration: 0.2 },
+      scale: { duration: 0.2 },
+    },
+  },
+  exit: {
+    y: 50,
+    opacity: 0,
+    transition: { duration: 0.5 },
+  },
+});
 
 const Section: React.FC<SectionProps> = ({
   id,
@@ -21,50 +64,17 @@ const Section: React.FC<SectionProps> = ({
   color,
   zIndex,
   videoSrc,
+  isContactFormActive,
 }) => {
   const controls = useAnimation();
+  const sectionVariants = getSectionVariants(isContactFormActive);
 
   useEffect(() => {
     controls.start(isActive ? "active" : "inactive");
-  }, [isActive, controls]);
-
-  const sectionVariants = {
-    inactive: {
-      y: -40,
-      opacity: 0.7,
-      scale: 0.95,
-      zIndex: zIndex,
-      transition: {
-        duration: 0.5,
-        ease: "easeInOut",
-      },
-    },
-    active: {
-      y: 0,
-      opacity: 1,
-      scale: 1,
-      zIndex: zIndex,
-      transition: {
-        y: {
-          duration: 0.2,
-          type: "spring",
-          from: "40vh",
-          stiffness: 70,
-          damping: 15,
-        },
-        opacity: { duration: 0.2 },
-        scale: { duration: 0.2 },
-      },
-    },
-    exit: {
-      y: 50,
-      opacity: 0,
-      transition: { duration: 0.5 },
-    },
-  };
+  }, [isActive, controls, isContactFormActive]);
 
   const videoSrcConditional = isActive ? videoSrc : "";
-
+  // console.log(color);
   return (
     <motion.div
       layoutId={id}
@@ -81,6 +91,7 @@ const Section: React.FC<SectionProps> = ({
         right: 0,
         bottom: 0,
         boxSizing: "border-box",
+        zIndex: zIndex,
       }}
     >
       {id === "People" ? (
