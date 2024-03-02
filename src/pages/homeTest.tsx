@@ -5,6 +5,7 @@ import Navbar from "./navTest";
 import Section from "./sectionTest";
 import { BackgroundBeams } from "../components/ui/background-beams";
 import ContactForm from "./contact";
+import ServiceTable from "./table";
 
 const Home: NextPage = () => {
   const sections = [
@@ -41,12 +42,7 @@ const Home: NextPage = () => {
     }, {} as SectionProps)
   );
 
-  const sectionColors = [
-    "bg-red-200",
-    "bg-green-200",
-    "bg-blue-200",
-    "bg-yellow-200",
-  ];
+  const sectionColors = ["bg-gray-200"];
 
   useEffect(() => {
     console.log("Component re-rendered");
@@ -97,7 +93,8 @@ const Home: NextPage = () => {
           setActiveSection={setActiveSection}
           activeSection={activeSection}
         />
-        <div className="sections-container flex flex-col; ">
+
+        <div className="sections-container flex flex-col;">
           <AnimatePresence>
             {isContactActive && (
               <>
@@ -123,36 +120,44 @@ const Home: NextPage = () => {
                 </motion.div>
               </>
             )}
+            <div className="flex pt-10">
+              {activeSection === "Home" && (
+                <div className="flex justify-center items-start ">
+                  <ServiceTable />
+                </div>
+              )}
 
-            {sections
-              .filter(
-                (section) =>
-                  section !== "Contact" && isActiveSectionCorrectlySet(section)
-              )
-              .map((section, index) => {
-                // Determine the videoSrc based on the section name
-                let videoSrc;
-                if (section === "Home") {
-                  videoSrc = "/video/136259 (1080p).mp4";
-                }
+              {sections
+                .filter(
+                  (section) =>
+                    section !== "Contact" &&
+                    isActiveSectionCorrectlySet(section)
+                )
+                .map((section, index) => {
+                  // Determine the videoSrc based on the section name
+                  let videoSrc;
+                  if (section === "Home") {
+                    videoSrc = "/video/136259 (1080p).mp4";
+                  }
 
-                return (
-                  <Section
-                    key={section}
-                    id={section}
-                    content={section}
-                    isActive={activeSection === section}
-                    zIndex={
-                      activeSection === section
-                        ? sections.length
-                        : sections.length - index
-                    }
-                    color={sectionColors[index % sectionColors.length]}
-                    videoSrc={videoSrc}
-                    isContactFormActive={isContactActive}
-                  />
-                );
-              })}
+                  return (
+                    <Section
+                      key={section}
+                      id={section}
+                      content={section}
+                      isActive={activeSection === section}
+                      zIndex={
+                        activeSection === section
+                          ? sections.length
+                          : sections.length - index
+                      }
+                      color={sectionColors[index % sectionColors.length]}
+                      videoSrc={videoSrc}
+                      isContactFormActive={isContactActive}
+                    />
+                  );
+                })}
+            </div>
           </AnimatePresence>
         </div>
       </div>

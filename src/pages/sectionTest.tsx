@@ -13,6 +13,7 @@ interface SectionProps {
   zIndex: number;
   videoSrc?: string;
   isContactFormActive: boolean;
+  // children?: React.ReactNode;
 }
 
 const getSectionVariants = (isContactFormActive: boolean) => ({
@@ -74,7 +75,7 @@ const Section: React.FC<SectionProps> = ({
   }, [isActive, controls, isContactFormActive]);
 
   const videoSrcConditional = isActive ? videoSrc : "";
-  // console.log(color);
+
   return (
     <motion.div
       layoutId={id}
