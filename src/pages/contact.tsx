@@ -53,7 +53,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
               <p>Øster Allé 56 6. sal</p>
               <p>2100 København Ø</p>
               <p>CVR: 42309648</p>
-              <div className="mt-2">
+              <div className="mt-6">
                 <a href="#" className="text-blue-600 hover:underline">
                   Cookie policy
                 </a>{" "}
@@ -98,7 +98,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
                   />
                 </span>
               </div>
-              <div className="flex gap-1 items-center">
+              <div className="flex gap-1 items-center mt-2">
                 <span className="text-green-600">(+45) 22 92 67 80</span>
                 <Image
                   src="/icons/phone.svg"
@@ -108,7 +108,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
                   className="align-middle"
                 />
               </div>
-              <div className="flex gap-1 items-center">
+              <div className="flex gap-1 items-center mt-2">
                 <span className="text-green-600 mb-1">gd@enablment.com</span>
                 <Image
                   src="/icons/mail.svg"

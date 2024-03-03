@@ -129,12 +129,12 @@ const ServicesComponent: React.FC = () => {
         {servicesData.map((service, index) => (
           <div key={index} className="mb-6">
             <div className="flex items-center space-x-4">
-              <div className="">
+              <div className="shadow-lg rounded-lg overflow-hidden">
                 <Image
                   src={service.imageUrl}
                   alt={`${service.title}`}
-                  width={500} // Adjust width as needed
-                  height={500} // Adjust height as needed
+                  width={500}
+                  height={500}
                   objectFit="cover"
                 />
               </div>
