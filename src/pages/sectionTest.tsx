@@ -84,7 +84,7 @@ const Section: React.FC<SectionProps> = ({
       animate={controls}
       exit="inactive"
       transition={{ duration: 0.5, type: "easeOut" }}
-      className={`section p-10 border-2 border-gray-400 rounded-tl-3xl rounded-tr-3xl shadow-lg ${color} `}
+      className={`section p-10 border-2 border-gray-400 rounded-tl-3xl rounded-tr-3xl shadow-lg ${color} responsive-section`}
       style={{
         position: "absolute",
         width: "75%",
@@ -119,6 +119,7 @@ const Section: React.FC<SectionProps> = ({
             Your browser does not support the video tag.
           </video>
           <div
+            className="overlay-text"
             style={{
               position: "absolute",
               bottom: "12vh",
@@ -126,7 +127,7 @@ const Section: React.FC<SectionProps> = ({
               padding: "1rem",
             }}
           >
-            <h2 className="text-4xl font-bold text-white p-4 bg-black bg-opacity-50 rounded-lg">
+            <h2 className="text-4xl font-bold text-white p-4 bg-black bg-opacity-50 rounded-lg ">
               We enable Collaborators
               <br /> to create delightful technical solutions
             </h2>

@@ -94,7 +94,7 @@ const Home: NextPage = () => {
           activeSection={activeSection}
         />
 
-        <div className="sections-container flex flex-col;">
+        <div className="sections-container flex flex-col; st-top">
           <AnimatePresence>
             {isContactActive && (
               <>
@@ -120,7 +120,7 @@ const Home: NextPage = () => {
                 </motion.div>
               </>
             )}
-            <div className="flex pt-10">
+            <div className="flex pt-10 ">
               {activeSection === "Home" && (
                 <div className="flex justify-center items-start ">
                   <ServiceTable />

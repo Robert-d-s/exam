@@ -29,40 +29,8 @@ const tableData: ClientServiceData[] = [
 
 // The React component
 const ServiceTable: React.FC = () => {
-  //   return (
-  //     <div className="overflow-x-auto">
-  //       <table className="min-w-full table-auto text-left text-gray-800">
-  //         <thead className="bg-gray-100">
-  //           <tr>
-  //             <th className="px-4 py-2 border-b-2 border-gray-200 md:px-4 sm:px-2 text-sm sm:text-base">
-  //               CLIENT
-  //             </th>
-  //             {/* <th className="px-4 py-2 border-b-2 border-gray-200">YEAR</th> */}
-  //             <th className="px-4 py-2 border-b-2 border-gray-200 md:px-4 sm:px-2 text-sm sm:text-base">
-  //               SERVICES
-  //             </th>
-  //           </tr>
-  //         </thead>
-  //         <tbody>
-  //           {tableData.map((item, index) => (
-  //             <tr key={index} className="hover:bg-gray-50">
-  //               <td className="px-4 py-2 border-b border-gray-200 md:px-4 sm:px-2 text-sm sm:text-base">
-  //                 {item.client}
-  //               </td>
-  //               {/* <td className="px-4 py-2 border-b border-gray-200">
-  //                 {item.year}
-  //               </td> */}
-  //               <td className="px-4 py-2 border-b border-gray-200 md:px-4 sm:px-2 text-sm sm:text-base">
-  //                 {item.services}
-  //               </td>
-  //             </tr>
-  //           ))}
-  //         </tbody>
-  //       </table>
-  //     </div>
-  //   );
   return (
-    <div className="flex flex-col mx-4">
+    <div className="flex flex-col mx-4 st">
       <p className="text-3xl font-bold">Our Happy Clients</p>
       {tableData.map((item, index) => (
         <div key={index} className="w-full pb-2">

@@ -113,3 +113,31 @@
   aspect-ratio: 16 / 9;
   box-shadow: 0 4px 6px rgba(0, 0.3, 0, 0.6);
 }
+
+@media (max-width: 812px) {
+  .responsive-section {
+    width: 90% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+  }
+  .overlay-text {
+    position: relative !important;
+  }
+  .overlay-text h2 {
+    font-size: 1rem;
+    line-height: 1.5rem;
+    display: inline-block;
+    padding: 0.5rem;
+  }
+  .st-top {
+    display: flex;
+    justify-content: center;
+  }
+  .st {
+    z-index: 10;
+    margin-top: 26rem;
+    position: relative;
+    text-align: center;
+    width: 100%;
+  }
+}
