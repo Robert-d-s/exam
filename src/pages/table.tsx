@@ -20,10 +20,10 @@ const tableData: ClientServiceData[] = [
   { client: "B93", year: 2023, services: "Website, UI & UX" },
   {
     client: "B:A:M",
-    year: 2023,
+    year: 2024,
     services: "Video Streaming Platform and Mobil App",
   },
-  { client: "H5", year: 2023, services: "Website" },
+  { client: "H5", year: 2024, services: "Website" },
   // ... other data objects
 ];
 
@@ -31,7 +31,7 @@ const tableData: ClientServiceData[] = [
 const ServiceTable: React.FC = () => {
   return (
     <div className="flex flex-col mx-4 st">
-      <p className="text-3xl font-bold">Our Happy Clients</p>
+      <p className="text-3xl font-bold">Our Happy Collaborators</p>
       {tableData.map((item, index) => (
         <div key={index} className="w-full pb-2">
           <div className="bg-white shadow rounded-lg p-1">
