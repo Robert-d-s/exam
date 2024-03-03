@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { logout } from "../lib/apolloClient";
 import { currentUserVar } from "../lib/apolloClient";
+import { useRouter } from "next/router";
 
 // NavigationBar component
 const NavigationBar: React.FC = () => {
@@ -13,12 +14,21 @@ const NavigationBar: React.FC = () => {
   return (
     <nav className="flex items-center justify-between p-4 bg-white shadow font-roboto-condensed uppercase">
       <div className="flex items-center">
-        <Image
+        {/* <Image
           src="/logo.svg"
           alt="Enablment-tt Logo"
           width={200}
           height={40}
-        />
+        /> */}
+        <Link href="/">
+          <Image
+            src="/logo.svg"
+            alt="Enablment-tt Logo"
+            width={200}
+            height={40}
+            style={{ cursor: "pointer" }} // This style may not be applied due to <Image> restrictions
+          />
+        </Link>
         <div className="ml-4 font-semibold text-lg ">
           <Link href="/issues2" className="mr-4">
             Issues

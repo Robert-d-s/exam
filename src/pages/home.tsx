@@ -1,8 +1,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import type { NextPage } from "next";
 import { useState, useEffect } from "react";
-import Navbar from "./navTest";
-import Section from "./sectionTest";
+import Navbar from "./nav";
+import Section from "./section";
 import { BackgroundBeams } from "../components/ui/background-beams";
 import ContactForm from "./contact";
 import ServiceTable from "./table";
