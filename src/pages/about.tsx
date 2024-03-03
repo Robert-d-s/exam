@@ -39,20 +39,47 @@ const aboutContent: IAboutContent = {
   ],
 };
 
+// Function to insert line breaks in text to ensure each line does not exceed the max length
+const formatText = (text: string, maxLength: number): JSX.Element[] => {
+  const words = text.split(" ");
+  const formattedLines: JSX.Element[] = [];
+  let currentLine = "";
+
+  words.forEach((word, index) => {
+    if ((currentLine + word).length > maxLength) {
+      formattedLines.push(
+        <span key={index}>
+          {currentLine.trim()}
+          <br />
+        </span>
+      );
+      currentLine = word + " ";
+    } else {
+      currentLine += word + " ";
+    }
+  });
+
+  // Add the last line
+  if (currentLine) {
+    formattedLines.push(<span key={words.length}>{currentLine.trim()}</span>);
+  }
+
+  return formattedLines;
+};
+
+// Your AboutComponent, modified to render formatted text
 const AboutComponent: React.FC = () => {
   return (
     <div className="space-y-8 p-6">
       <h2 className="text-3xl font-bold mb-4">About Enablment</h2>
-      <div
-        className=""
-        style={{ maxHeight: "calc(100vh - 300px)", overflowY: "auto" }}
-      >
+      <div style={{ maxHeight: "calc(100vh - 300px)", overflowY: "auto" }}>
         <section>
           <h3 className="text-2xl font-semibold mb-2">Definitions</h3>
           {aboutContent.definitions.map((def, index) => (
             <div key={index} className="mb-3">
               <p className="text-lg">
-                <span className="font-bold">{def.term}:</span> {def.description}
+                <span className="font-bold">{def.term}:</span>{" "}
+                {formatText(def.description, 75)}
               </p>
             </div>
           ))}
@@ -63,7 +90,7 @@ const AboutComponent: React.FC = () => {
             <h3 className="text-2xl font-semibold mb-2">Transparency</h3>
             {aboutContent.transparency.map((item, index) => (
               <div key={index} className="mb-3">
-                <p className="text-lg">{item}</p>
+                <p className="text-lg">{formatText(item, 75)}</p>
               </div>
             ))}
           </div>
@@ -84,12 +111,12 @@ const AboutComponent: React.FC = () => {
           </div>
         </section>
 
-        <section className="flex flex-col md:flex-row-reverse items-center space-y-4 md:space-y-0 md:space-x-reverse md:space-x-4">
-          <div className="md:w-1/2">
+        <section className="flex flex-col md:flex-row-reverse mt-6 items-center space-y-4 md:space-y-0 md:space-x-reverse md:space-x-4">
+          <div className="md:w-1/2 mt-6">
             <h3 className="text-2xl font-semibold mb-2">Organization</h3>
             {aboutContent.organization.map((item, index) => (
               <div key={index} className="mb-3">
-                <p className="text-lg">{item}</p>
+                <p className="text-lg">{formatText(item, 75)}</p>
               </div>
             ))}
           </div>

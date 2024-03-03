@@ -11,17 +11,10 @@ interface IService {
   description: string[];
   icon: string;
   features?: IFeature[];
+  imageUrl: string;
 }
 
 const servicesData: IService[] = [
-  {
-    title: "Climate Reporting",
-    description: [
-      "Searching for the right data? Preparing to report scope 1, 2 or 3? Or are you looking for internal tracking to make data-driven decisions to lower your climate footprint?",
-      "At Enablment, we have the technical skills to integrate with the correct data sources and align that data for trustworthy reporting. We can set up automated reporting flows from multiple data sources for internal tracking.",
-    ],
-    icon: "/icons/climate.svg",
-  },
   {
     title: "Digital Product Development",
     description: [
@@ -31,6 +24,7 @@ const servicesData: IService[] = [
       "Let us enable you to balance both.",
     ],
     icon: "/icons/digital.svg",
+    imageUrl: "/images/dpd.jpg",
     features: [
       {
         name: "E-commerce & Websites",
@@ -47,12 +41,22 @@ const servicesData: IService[] = [
     ],
   },
   {
+    title: "Climate Reporting",
+    description: [
+      "Searching for the right data? Preparing to report scope 1, 2 or 3? Or are you looking for internal tracking to make data-driven decisions to lower your climate footprint?",
+      "At Enablment, we have the technical skills to integrate with the correct data sources and align that data for trustworthy reporting. We can set up automated reporting flows from multiple data sources for internal tracking.",
+    ],
+    icon: "/icons/climate.svg",
+    imageUrl: "/images/climate.jpg",
+  },
+  {
     title: "Insights through Data",
     description: [
       "On the journey of digitalization, automating and optimizing processes and data collection create the best fundamentals for an effective digital solution.",
       "Luckily, we are more than stoked to help you with following.",
     ],
     icon: "/icons/data.svg",
+    imageUrl: "/images/data.jpg",
   },
   {
     title: "Data Consolidation (Cloud)",
@@ -61,6 +65,7 @@ const servicesData: IService[] = [
       "This is the first step within data analytics and all companies will inevitably go through this transformation at some point. Once implemented there will be a consistent and reliable data foundation for all data analysis. Plus a setup like this is fully automated.",
     ],
     icon: "/icons/cloud.svg",
+    imageUrl: "/images/cloud.jpg",
   },
   {
     title: "Business Intelligence (BI)",
@@ -69,6 +74,7 @@ const servicesData: IService[] = [
       "This is Business Intelligence. We conduct a data analysis and transform your data, then we create dashboards to visualize the insight.",
     ],
     icon: "/icons/bi.svg",
+    imageUrl: "/images/bi.jpg",
   },
   {
     title: "Machine Learning & Artificial Intelligence (ML & AI)",
@@ -77,49 +83,98 @@ const servicesData: IService[] = [
       "Certain trends and causalities that might not be visible to the human eye or the data input is simply too big. This is when you move from the descriptive to the prescriptive data analysis. A machine learning model can highlight causalities and forecast development.",
     ],
     icon: "/icons/ai.svg",
+    imageUrl: "/images/AI-ML.jpg",
   },
 ];
+const formatText = (text: string, maxLength: number): JSX.Element[] => {
+  const words = text.split(" ");
+  const formattedLines: JSX.Element[] = [];
+  let currentLine = "";
 
+  words.forEach((word, index) => {
+    if ((currentLine + word).length > maxLength) {
+      formattedLines.push(
+        <span key={index}>
+          {currentLine.trim()}
+          <br />
+        </span>
+      );
+      currentLine = word + " ";
+    } else {
+      currentLine += word + " ";
+    }
+  });
+
+  // Add the last line
+  if (currentLine) {
+    formattedLines.push(<span key={words.length}>{currentLine.trim()}</span>);
+  }
+
+  return formattedLines;
+};
 const ServicesComponent: React.FC = () => {
   return (
     <div className="space-y-8 p-6">
       <h2 className="text-3xl font-bold mb-4">Services</h2>
       <div
         className=""
-        style={{ maxHeight: "calc(100vh - 300px)", overflowY: "auto" }}
+        // style={{ maxHeight: "calc(100vh - 300px)", overflowY: "auto" }}
+        style={{
+          display: "grid",
+          placeItems: "center", // This centers the content both horizontally and vertically
+          maxHeight: "calc(100vh - 300px)",
+          overflowY: "auto",
+        }}
       >
         {servicesData.map((service, index) => (
           <div key={index} className="mb-6">
-            <div className="flex items-center space-x-2">
-              <Image
-                src={service.icon}
-                alt={`${service.title} Icon`}
-                width={24}
-                height={24}
-                //   className="filter invert"
-              />
-              <h3 className="text-2xl font-semibold mb-2">{service.title}</h3>
-            </div>
-            {service.description.map((paragraph, pIndex) => (
-              <p key={pIndex} className="text-lg mb-4">
-                {paragraph}
-              </p>
-            ))}
-            {service.features && (
-              <div className="flex flex-col space-y-2 mt-4">
-                {service.features.map((feature, fIndex) => (
-                  <div key={fIndex} className="flex items-center space-x-2">
-                    <Image
-                      src={feature.icon}
-                      alt={`${feature.name} Icon`}
-                      width={20}
-                      height={20}
-                    />
-                    <span className="text-lg">{feature.name}</span>
-                  </div>
-                ))}
+            <div className="flex items-center space-x-4">
+              <div className="">
+                <Image
+                  src={service.imageUrl}
+                  alt={`${service.title}`}
+                  width={500} // Adjust width as needed
+                  height={500} // Adjust height as needed
+                  objectFit="cover"
+                />
               </div>
-            )}
+              {/* Rest of the Content */}
+              <div className="">
+                {" "}
+                {/* Let the content grow to fill the space */}
+                <div className="flex items-center space-x-2">
+                  <Image
+                    src={service.icon}
+                    alt={`${service.title} Icon`}
+                    width={24}
+                    height={24}
+                  />
+                  <h3 className="text-2xl font-semibold mb-2">
+                    {service.title}
+                  </h3>
+                </div>
+                {service.description.map((paragraph, pIndex) => (
+                  <p key={pIndex} className="text-lg mb-4">
+                    {formatText(paragraph, 75)}
+                  </p>
+                ))}
+                {service.features && (
+                  <div className="flex flex-col space-y-2 mt-4">
+                    {service.features.map((feature, fIndex) => (
+                      <div key={fIndex} className="flex items-center space-x-2">
+                        <Image
+                          src={feature.icon}
+                          alt={`${feature.name} Icon`}
+                          width={20}
+                          height={20}
+                        />
+                        <span className="text-lg">{feature.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         ))}
       </div>
