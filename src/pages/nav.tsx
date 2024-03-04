@@ -46,7 +46,7 @@ const Navbar: React.FC<NavbarProps> = ({
             <div
               className={`h-4 w-4 rounded-full  cursor-pointer transition duration-800 ease-in-out ${
                 activeSection === section
-                  ? "bg-black"
+                  ? "bg-green-500"
                   : hoveredSection === section
                   ? "bg-gray-500"
                   : "bg-transparent border-2 border-black"

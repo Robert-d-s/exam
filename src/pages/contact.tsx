@@ -128,7 +128,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
                 To: <span className="text-green-500">Enablment</span>
               </h2>
               <button
-                className="flex-none w-12 h-12 bg-black text-xl text-white rounded-full hover:bg-gray-500 hover:scale-105 transition transform duration-200 ease-in-out"
+                className="flex-none w-12 h-12 bg-black text-xl text-white rounded-full hover:bg-red-500 hover:scale-105 transition transform duration-200 ease-in-out"
                 onClick={onClose}
               >
                 ✕
