@@ -83,6 +83,9 @@ const Home: NextPage = () => {
     }
     return activeSection === section;
   };
+  const handleContactClick = () => {
+    console.log("Contact button clicked");
+  };
 
   return (
     <>
@@ -123,7 +126,7 @@ const Home: NextPage = () => {
             <div className="flex pt-10 ">
               {activeSection === "Home" && (
                 <div className="flex justify-center items-start ">
-                  <ServiceTable />
+                  <ServiceTable onContactClick={handleContactClick} />
                 </div>
               )}
 
