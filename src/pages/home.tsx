@@ -42,7 +42,7 @@ const Home: NextPage = () => {
     }, {} as SectionProps)
   );
 
-  const sectionColors = ["bg-gray-200"];
+  const sectionColors = ["bg-gray-900", "bg-gray-800", "bg-gray-700"];
 
   useEffect(() => {
     console.log("Component re-rendered");
@@ -123,7 +123,10 @@ const Home: NextPage = () => {
             <div className="flex pt-10 ">
               {activeSection === "Home" && (
                 <div className="flex justify-center items-start ">
-                  <ServiceTable />
+                  {/* <ServiceTable /> */}
+                  <ServiceTable
+                    onContactClick={() => setActiveSection("Contact")}
+                  />
                 </div>
               )}
 

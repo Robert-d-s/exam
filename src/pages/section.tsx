@@ -127,7 +127,7 @@ const Section: React.FC<SectionProps> = ({
               padding: "1rem",
             }}
           >
-            <h2 className="text-4xl font-bold text-white p-4 bg-black bg-opacity-50 rounded-lg ">
+            <h2 className="text-4xl font-bold text-white p-4 bg-black bg-opacity-50 rounded-lg">
               We enable Collaborators
               <br /> to create delightful technical solutions
             </h2>

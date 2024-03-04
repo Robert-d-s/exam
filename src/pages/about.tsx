@@ -71,7 +71,7 @@ const formatText = (text: string, maxLength: number): JSX.Element[] => {
 const AboutComponent: React.FC = () => {
   return (
     <div className="space-y-8 p-6">
-      <h2 className="text-3xl font-bold mb-4">About Enablment</h2>
+      <h2 className="text-3xl mb-4 font-pt-sans-bold-900">About Enablment</h2>
       <div style={{ maxHeight: "calc(100vh - 300px)", overflowY: "auto" }}>
         <section>
           <h3 className="text-2xl font-semibold mb-2">Definitions</h3>
@@ -90,7 +90,7 @@ const AboutComponent: React.FC = () => {
             <h3 className="text-2xl font-semibold mb-2">Transparency</h3>
             {aboutContent.transparency.map((item, index) => (
               <div key={index} className="mb-3">
-                <p className="text-lg">{formatText(item, 75)}</p>
+                <p className="text-lg font-roboto">{formatText(item, 75)}</p>
               </div>
             ))}
           </div>
@@ -116,7 +116,7 @@ const AboutComponent: React.FC = () => {
             <h3 className="text-2xl font-semibold mb-2">Organization</h3>
             {aboutContent.organization.map((item, index) => (
               <div key={index} className="mb-3">
-                <p className="text-lg">{formatText(item, 75)}</p>
+                <p className="text-lg font-roboto">{formatText(item, 75)}</p>
               </div>
             ))}
           </div>

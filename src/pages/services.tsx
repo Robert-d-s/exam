@@ -115,7 +115,7 @@ const formatText = (text: string, maxLength: number): JSX.Element[] => {
 const ServicesComponent: React.FC = () => {
   return (
     <div className="space-y-8 p-6">
-      <h2 className="text-3xl font-bold mb-4">Services</h2>
+      <h2 className="text-3xl font-pt-sans-bold-900 mb-4">Services</h2>
       <div
         className=""
         // style={{ maxHeight: "calc(100vh - 300px)", overflowY: "auto" }}
@@ -161,7 +161,10 @@ const ServicesComponent: React.FC = () => {
                 {service.features && (
                   <div className="flex flex-col space-y-2 mt-4">
                     {service.features.map((feature, fIndex) => (
-                      <div key={fIndex} className="flex items-center space-x-2">
+                      <div
+                        key={fIndex}
+                        className="flex items-center space-x-2 "
+                      >
                         <Image
                           src={feature.icon}
                           alt={`${feature.name} Icon`}

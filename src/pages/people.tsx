@@ -53,7 +53,7 @@ const PeopleSection: React.FC<PeopleSectionProps> = ({ isActive }) => {
   if (!isActive) return null;
   return (
     <>
-      <h2 className="text-3xl font-bold mb-1 mx-4">People</h2>
+      <h2 className="text-3xl font-pt-sans-bold-900 mb-1 mx-4">People</h2>
       <div className="people-section grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
         {peopleData.map((person, index) => (
           <PersonCard key={index} person={person} />
