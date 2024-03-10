@@ -1,3 +1,4 @@
+import React from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { NextPage } from "next";
 import { useState, useEffect } from "react";
@@ -21,7 +22,10 @@ const Home: NextPage = () => {
   const isContactActive = activeSection === "Contact";
   const backgroundFadeVariants = {
     hidden: { opacity: 1 },
-    visible: { opacity: 0.5 },
+    visible: {
+      opacity: 0.5,
+      transition: { duration: 0.4, delay: 0.2, ease: "easeOut" },
+    },
   };
   const closeContactForm = () => {
     setActiveSection("Home");
@@ -77,15 +81,8 @@ const Home: NextPage = () => {
 
     setActiveSection("Home");
   };
-  const isActiveSectionCorrectlySet = (section: string) => {
-    if (isContactActive) {
-      return activeSection === section;
-    }
-    return activeSection === section;
-  };
-  const handleContactClick = () => {
-    console.log("Contact button clicked");
-  };
+  const isActiveSectionCorrectlySet = (section: string) =>
+    activeSection === section;
 
   return (
     <>
@@ -99,9 +96,9 @@ const Home: NextPage = () => {
 
         <div className="sections-container flex flex-col; st-top">
           <AnimatePresence>
-            {isContactActive && (
+            {/* {isContactActive && (
+              // <React.Fragment key="contact">
               <>
-                {/* Backdrop with opacity */}
                 <motion.div
                   className="fixed inset-0 z-40 bg-black bg-opacity-50"
                   variants={backgroundFadeVariants}
@@ -109,7 +106,7 @@ const Home: NextPage = () => {
                   animate="visible"
                   exit="hidden"
                 ></motion.div>
-                {/* Contact Form without inheriting opacity */}
+
                 <motion.div
                   className="fixed inset-0 z-50 flex justify-center items-center"
                   initial="hidden"
@@ -122,11 +119,36 @@ const Home: NextPage = () => {
                   />
                 </motion.div>
               </>
+              // </React.Fragment>
+            )} */}
+            {isContactActive && (
+              <motion.div
+                className="fixed inset-0 z-40 flex justify-center items-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                key="contactOverlay"
+              >
+                <div
+                  className="absolute inset-0 bg-black bg-opacity-50"
+                  onClick={closeContactForm}
+                ></div>
+                <div className="z-50">
+                  <ContactForm
+                    onSubmit={handleFormSubmit}
+                    onClose={closeContactForm}
+                  />
+                </div>
+              </motion.div>
             )}
+
             <div className="flex pt-10 ">
               {activeSection === "Home" && (
                 <div className="flex justify-center items-start ">
-                  <ServiceTable onContactClick={handleContactClick} />
+                  {/* <ServiceTable /> */}
+                  <ServiceTable
+                    onContactClick={() => setActiveSection("Contact")}
+                  />
                 </div>
               )}
 
@@ -149,12 +171,12 @@ const Home: NextPage = () => {
                       id={section}
                       content={section}
                       isActive={activeSection === section}
+                      color={sectionColors[index % sectionColors.length]}
                       zIndex={
                         activeSection === section
                           ? sections.length
                           : sections.length - index
                       }
-                      color={sectionColors[index % sectionColors.length]}
                       videoSrc={videoSrc}
                       isContactFormActive={isContactActive}
                     />

@@ -114,7 +114,19 @@
   box-shadow: 0 4px 6px rgba(0, 0.3, 0, 0.6);
 }
 
+@media (min-width: 814px) {
+  .menu-container {
+    display: flex !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 @media (max-width: 812px) {
+  .section {
+    padding: 0;
+  }
+
   .responsive-section {
     width: 90% !important;
     left: 50% !important;
@@ -139,5 +151,14 @@
     position: relative;
     text-align: center;
     width: 100%;
+  }
+  .text-container {
+    margin-left: 0 !important;
+  }
+  .services-image {
+    width: 37rem;
+  }
+  .services-image-container {
+    margin-bottom: 1.5rem;
   }
 }

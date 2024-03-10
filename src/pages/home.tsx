@@ -21,7 +21,10 @@ const Home: NextPage = () => {
   const isContactActive = activeSection === "Contact";
   const backgroundFadeVariants = {
     hidden: { opacity: 1 },
-    visible: { opacity: 0.5 },
+    visible: {
+      opacity: 0.5,
+      transition: { duration: 0.4, delay: 0.2, ease: "easeOut" },
+    },
   };
   const closeContactForm = () => {
     setActiveSection("Home");
@@ -77,12 +80,8 @@ const Home: NextPage = () => {
 
     setActiveSection("Home");
   };
-  const isActiveSectionCorrectlySet = (section: string) => {
-    if (isContactActive) {
-      return activeSection === section;
-    }
-    return activeSection === section;
-  };
+  const isActiveSectionCorrectlySet = (section: string) =>
+    activeSection === section;
 
   return (
     <>
@@ -149,12 +148,12 @@ const Home: NextPage = () => {
                       id={section}
                       content={section}
                       isActive={activeSection === section}
+                      color={sectionColors[index % sectionColors.length]}
                       zIndex={
                         activeSection === section
                           ? sections.length
                           : sections.length - index
                       }
-                      color={sectionColors[index % sectionColors.length]}
                       videoSrc={videoSrc}
                       isContactFormActive={isContactActive}
                     />

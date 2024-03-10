@@ -114,11 +114,10 @@ const formatText = (text: string, maxLength: number): JSX.Element[] => {
 };
 const ServicesComponent: React.FC = () => {
   return (
-    <div className="space-y-8 p-6">
+    // <div className="space-y-8 p-6">
+    <div className="space-y-8 p-4 sm:p-6">
       <h2 className="text-3xl font-pt-sans-bold-900 mb-4">Services</h2>
       <div
-        className=""
-        // style={{ maxHeight: "calc(100vh - 300px)", overflowY: "auto" }}
         style={{
           display: "grid",
           placeItems: "center", // This centers the content both horizontally and vertically
@@ -128,20 +127,18 @@ const ServicesComponent: React.FC = () => {
       >
         {servicesData.map((service, index) => (
           <div key={index} className="mb-6">
-            <div className="flex items-center space-x-4">
-              <div className="shadow-lg rounded-lg overflow-hidden">
+            <div className="flex items-center justify-center flex-wrap space-x-4">
+              <div className="services-image-container shadow-lg rounded-lg overflow-hidden position-relative">
                 <Image
                   src={service.imageUrl}
                   alt={`${service.title}`}
                   width={500}
                   height={500}
-                  objectFit="cover"
+                  className="services-image"
                 />
               </div>
               {/* Rest of the Content */}
-              <div className="">
-                {" "}
-                {/* Let the content grow to fill the space */}
+              <div className="text-container">
                 <div className="flex items-center space-x-2">
                   <Image
                     src={service.icon}

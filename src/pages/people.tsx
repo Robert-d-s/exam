@@ -90,56 +90,130 @@ const getIconPath = (role: string): string => {
 const PersonCard: React.FC<PersonCardProps> = ({ person }) => {
   const [isHovered, setIsHovered] = React.useState(false);
 
+  // return (
+  //   <div
+  //     className="person-card cursor-pointer overflow-hidden relative w-full h-auto "
+  //     onMouseEnter={() => setIsHovered(true)}
+  //     onMouseLeave={() => setIsHovered(false)}
+  //   >
+  //     <div className="relative w-full h-full ">
+  //       <Image
+  //         src={person.images[0]}
+  //         alt={`${person.name} - Base`}
+  //         layout="responsive"
+  //         width={342}
+  //         height={512}
+  //         className={`rounded-lg transition-opacity duration-700 ease-in-out ${
+  //           isHovered ? "opacity-0" : "opacity-100"
+  //         }`}
+  //       />
+  //       <div className="absolute inset-0 flex justify-center items-center">
+  //         <Image
+  //           src={person.images[1]}
+  //           alt={`${person.name} - Hover`}
+  //           layout="responsive"
+  //           width={342}
+  //           height={512}
+  //           className={`rounded-lg transition-opacity duration-700 ease-in-out ${
+  //             isHovered ? "opacity-100" : "opacity-0"
+  //           }`}
+  //         />
+  //       </div>
+  //     </div>
+  //     <div className="absolute inset-0 flex flex-col justify-end p-4  rounded-lg">
+  //       <div
+  //         style={{ width: "fit-content" }}
+  //         className="bg-black bg-opacity-40 p-2"
+  //       >
+  //         <h3 className="text-white text-xl md:text-sm font-bold">
+  //           {person.name}
+  //         </h3>
+  //       </div>
+  //       {person.roles.map((role, index) => (
+  //         <div key={index} style={{ width: "fit-content" }}>
+  //           <div className="bg-black bg-opacity-40 flex items-center">
+  //             <div className="w-8 h-8 mr-2 flex justify-center items-center relative">
+  //               <Image
+  //                 src={getIconPath(role)}
+  //                 alt={`${role} icon`}
+  //                 layout="fill"
+  //                 objectFit="contain"
+  //                 className="filter invert"
+  //               />
+  //             </div>
+  //             <span className="text-white text-lg md:text-sm mr-2">{role}</span>
+  //           </div>
+  //         </div>
+  //       ))}
+  //     </div>
+  //   </div>
+  // );
   return (
     <div
-      className="person-card cursor-pointer overflow-hidden relative w-full h-auto "
+      className="person-card cursor-pointer overflow-hidden relative w-full h-auto"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative w-full h-full ">
-        <Image
-          src={person.images[0]}
-          alt={`${person.name} - Base`}
-          layout="responsive"
-          width={342}
-          height={512}
-          className={`rounded-lg transition-opacity duration-700 ease-in-out ${
+      {/* <div className="relative w-full h-[512px]"> */}
+      <div
+        className="relative w-full md:w-auto lg:w-full aspect-w-1 aspect-h-1"
+        style={{ paddingTop: "calc(512 / 342 * 100%)" }}
+      >
+        {/* Base image */}
+        <div
+          className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
             isHovered ? "opacity-0" : "opacity-100"
           }`}
-        />
-        <div className="absolute inset-0 flex justify-center items-center">
+          style={{ paddingTop: "calc(512 / 342 * 100%)" }}
+        >
+          <Image
+            src={person.images[0]}
+            alt={`${person.name} - Base`}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="rounded-lg"
+          />
+        </div>
+        {/* Hover image */}
+        <div
+          className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+            isHovered ? "opacity-100" : "opacity-0"
+          }`}
+          style={{ paddingTop: "calc(512 / 342 * 100%)" }}
+        >
           <Image
             src={person.images[1]}
             alt={`${person.name} - Hover`}
-            layout="responsive"
-            width={342}
-            height={512}
-            className={`rounded-lg transition-opacity duration-700 ease-in-out ${
-              isHovered ? "opacity-100" : "opacity-0"
-            }`}
+            fill
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="rounded-lg"
           />
         </div>
       </div>
-      <div className="absolute inset-0 flex flex-col justify-end p-4  rounded-lg">
+      <div className="absolute inset-0 flex flex-col justify-end p-4 rounded-lg">
         <div
           style={{ width: "fit-content" }}
-          className="bg-black bg-opacity-40 p-2"
+          className="bg-black bg-opacity-40 lg:p-2 md:p-1"
         >
-          <h3 className="text-white text-xl font-bold">{person.name}</h3>
+          <h3 className="text-white lg:text-xl md:text-sm font-bold">
+            {person.name}
+          </h3>
         </div>
         {person.roles.map((role, index) => (
           <div key={index} style={{ width: "fit-content" }}>
             <div className="bg-black bg-opacity-40 flex items-center">
-              <div className="w-8 h-8 mr-2 flex justify-center items-center relative">
+              {/* <div className="w-8 h-8 mr-2 flex justify-center items-center relative"> */}
+              <div className="relative mr-1 flex justify-center items-center lg:w-[2vw] lg:h-[2vw] md:w-[3vw] md:h-[3vw]">
                 <Image
                   src={getIconPath(role)}
                   alt={`${role} icon`}
-                  layout="fill"
-                  objectFit="contain"
+                  fill
                   className="filter invert"
                 />
               </div>
-              <span className="text-white text-lg mr-2">{role}</span>
+              <span className="text-white lg:text-lg md:text-sm mr-2">
+                {role}
+              </span>
             </div>
           </div>
         ))}

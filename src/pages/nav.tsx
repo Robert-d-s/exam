@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { motion } from "framer-motion";
 
 interface NavbarProps {
   sections: string[];
@@ -15,28 +16,90 @@ const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [hoveredSection, setHoveredSection] = useState<string | null>(null);
   const router = useRouter();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSectionClick = (section: string) => {
     if (section === "Internal") {
-      // If the section is 'Internal', navigate to the login route
       router.push("/login");
     } else {
       setActiveSection(section);
     }
+    // setIsMenuOpen(false);
+  };
+
+  const menuIconVariants = {
+    opened: {
+      rotate: 90,
+      scale: 1.2,
+    },
+    closed: {
+      rotate: 0,
+      scale: 1,
+    },
+  };
+
+  const menuVariants = {
+    opened: {
+      opacity: 1,
+      y: "90%",
+      transition: {
+        y: { stiffness: 1000, velocity: -100 },
+        duration: 0.3,
+      },
+      // Explicitly define display property for the opened state to ensure visibility
+      display: "flex",
+    },
+    closed: {
+      opacity: [1, 0],
+      y: "-50%",
+      transition: {
+        y: { stiffness: 1000 },
+        opacity: { duration: 0.3 },
+        duration: 0.3,
+      },
+      transitionEnd: {
+        // Keep display as "none" only for small screens; adjust as necessary based on your design
+        display: "none",
+      },
+    },
   };
 
   return (
-    // <nav className="flex justify-center space-x-4 p-4">
     <nav
-      className="relative flex items-center justify-center p-4"
+      className="relative flex items-center justify-center content-center p-4"
       style={{ minHeight: "64px" }}
     >
       <div className="absolute left-0 pl-4">
         <Image src="/icons/logo.svg" alt="Logo" width={100} height={50} />
       </div>
-      <div className="flex justify-center space-x-4">
+      <motion.div
+        className="md:hidden z-20 absolute right-4 "
+        onClick={() => setIsMenuOpen(!isMenuOpen)}
+        variants={menuIconVariants}
+        animate={isMenuOpen ? "opened" : "closed"}
+      >
+        <svg
+          className="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
+          ></path>
+        </svg>
+      </motion.div>
+      <motion.div
+        variants={menuVariants}
+        initial="closed"
+        animate={isMenuOpen ? "opened" : "closed"}
+        className={`menu-container absolute   md:top-auto md:relative md:flex md:flex-row md:items-center md:space-x-4 `}
+      >
         {sections.map((section) => (
-          // Use onMouseEnter and onMouseLeave on the parent div
           <div
             key={section}
             className="flex items-center"
@@ -51,19 +114,17 @@ const Navbar: React.FC<NavbarProps> = ({
                   ? "bg-gray-500"
                   : "bg-transparent border-2 border-black"
               }`}
-              // onClick={() => setActiveSection(section)}
               onClick={() => handleSectionClick(section)}
             />
             <button
               className="text-black py-2 px-4"
-              // onClick={() => setActiveSection(section)}
               onClick={() => handleSectionClick(section)}
             >
               {section}
             </button>
           </div>
         ))}
-      </div>
+      </motion.div>
     </nav>
   );
 };

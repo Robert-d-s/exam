@@ -73,7 +73,7 @@ const AboutComponent: React.FC = () => {
     <div className="space-y-8 p-6">
       <h2 className="text-3xl mb-4 font-pt-sans-bold-900">About Enablment</h2>
       <div style={{ maxHeight: "calc(100vh - 300px)", overflowY: "auto" }}>
-        <section>
+        <section className="pb-4">
           <h3 className="text-2xl font-semibold mb-2">Definitions</h3>
           {aboutContent.definitions.map((def, index) => (
             <div key={index} className="mb-3">
@@ -85,7 +85,7 @@ const AboutComponent: React.FC = () => {
           ))}
         </section>
 
-        <section className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
+        <section className="flex flex-col md:flex-row  space-y-4 md:space-y-0 md:space-x-4">
           <div className="md:w-1/2">
             <h3 className="text-2xl font-semibold mb-2">Transparency</h3>
             {aboutContent.transparency.map((item, index) => (
@@ -94,7 +94,7 @@ const AboutComponent: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="md:w-1/2 flex justify-center">
+          <div className="md:w-1/2 flex justify-center shadow-md">
             <video
               width="100%"
               height="auto"
@@ -120,7 +120,7 @@ const AboutComponent: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="md:w-1/2 flex justify-center">
+          <div className="md:w-1/2 flex justify-center shadow-md">
             <video
               width="100%"
               height="auto"
