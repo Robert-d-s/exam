@@ -33,7 +33,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
     <div
       className={`fixed inset-0 flex justify-center items-center ${className}`}
     >
-      <div className="bg-white flex gap-4 rounded-lg shadow-lg p-8 m-4 w-1/2 max-h-full overflow-y-auto">
+      <div className="bg-white flex gap-4 rounded-lg shadow-lg p-8 m-4 lg:w-1/2 max-h-full overflow-y-auto">
         <div>
           <video
             width="100%"
@@ -48,16 +48,16 @@ const ContactForm: React.FC<ContactFormProps> = ({
             <source src="/video/email.mp4" type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-          <div className="flex justify-between">
-            <div className="text-sm mt-4">
+          <div className="flex justify-between ">
+            <div className="text-sm mt-4 w-1/2">
               <p>Øster Allé 56 6. sal</p>
               <p>2100 København Ø</p>
               <p>CVR: 42309648</p>
-              <div className="mt-6">
+              <div className="lg:mt-6 flex flex-col space-y-2 md:flex-row sm:mt-2 sm:space-y-0 md:space-x-2">
                 <a href="#" className="text-blue-600 hover:underline">
                   Cookie policy
-                </a>{" "}
-                •{" "}
+                </a>
+                <span className="hidden md:inline">•</span>
                 <a href="#" className="text-blue-600 hover:underline">
                   Privacy policy
                 </a>
@@ -160,7 +160,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
                   required
                 />
               </div>
-              <div className="flex items-center mt-4">
+              <div className="flex items-center mt-4 sm:mt-0">
                 <div className="text-xs text-gray-400 flex-grow">
                   This site is protected by reCAPTCHA and the Google
                   <a href="#" className="text-blue-600 hover:underline">

@@ -132,26 +132,24 @@
     left: 50% !important;
     transform: translateX(-50%) !important;
   }
-  .overlay-text {
+  /* .overlay-text {
     position: relative !important;
+  } */
+  .overlay-text {
+    position: absolute;
+    top: 0;
   }
   .overlay-text h2 {
-    font-size: 1rem;
+    /* font-size: 1rem; */
     line-height: 1.5rem;
-    display: inline-block;
     padding: 0.5rem;
   }
   .st-top {
-    display: flex;
-    justify-content: center;
+    /* display: flex; */
+    justify-content: flex-end;
+    padding-right: 2.5rem;
   }
-  .st {
-    z-index: 10;
-    margin-top: 26rem;
-    position: relative;
-    text-align: center;
-    width: 100%;
-  }
+
   .text-container {
     margin-left: 0 !important;
   }

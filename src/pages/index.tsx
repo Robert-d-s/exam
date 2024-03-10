@@ -96,31 +96,6 @@ const Home: NextPage = () => {
 
         <div className="sections-container flex flex-col; st-top">
           <AnimatePresence>
-            {/* {isContactActive && (
-              // <React.Fragment key="contact">
-              <>
-                <motion.div
-                  className="fixed inset-0 z-40 bg-black bg-opacity-50"
-                  variants={backgroundFadeVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="hidden"
-                ></motion.div>
-
-                <motion.div
-                  className="fixed inset-0 z-50 flex justify-center items-center"
-                  initial="hidden"
-                  animate="visible"
-                  exit="hidden"
-                >
-                  <ContactForm
-                    onSubmit={handleFormSubmit}
-                    onClose={closeContactForm}
-                  />
-                </motion.div>
-              </>
-              // </React.Fragment>
-            )} */}
             {isContactActive && (
               <motion.div
                 className="fixed inset-0 z-40 flex justify-center items-center"
@@ -145,7 +120,6 @@ const Home: NextPage = () => {
             <div className="flex pt-10 ">
               {activeSection === "Home" && (
                 <div className="flex justify-center items-start ">
-                  {/* <ServiceTable /> */}
                   <ServiceTable
                     onContactClick={() => setActiveSection("Contact")}
                   />

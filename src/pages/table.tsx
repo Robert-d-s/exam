@@ -27,21 +27,18 @@ const tableData: ClientServiceData[] = [
     services: "Video Streaming Platform and Mobil App",
   },
   { client: "H5", year: 2024, services: "Website" },
-  // ... other data objects
 ];
 
-// The React component
-// const ServiceTable: React.FC = () => {
 const ServiceTable: React.FC<ServiceTableProps> = ({ onContactClick }) => {
   return (
-    <div className="flex flex-col mx-4 st">
-      <p className="text-3xl font-pt-sans-bold-900 pb-2">
+    <div className="flex flex-col mx-4 z-10">
+      <p className="text-3xl font-pt-sans-bold-900 pb-2 sm:text-2xl">
         Our Happy Collaborators
       </p>
       {tableData.map((item, index) => (
         <div key={index} className="w-full pb-2">
-          <div className="bg-white shadow rounded-lg p-3">
-            <h3 className="text-lg font-semibold">{item.client}</h3>
+          <div className="bg-white shadow rounded-lg lg:p-3 sm:p-1 sm:text-sm">
+            <h3 className="text-lg sm:text-md font-semibold">{item.client}</h3>
             <p className="text-gray-600 font-roboto">Year: {item.year}</p>
             <p className="text-gray-600 font-roboto">
               Services: {item.services}
@@ -49,7 +46,7 @@ const ServiceTable: React.FC<ServiceTableProps> = ({ onContactClick }) => {
           </div>
         </div>
       ))}
-      <div className="flex justify-center mt-2">
+      <div className="flex mt-2">
         <button
           className="bg-black hover:bg-green-500 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300"
           onClick={onContactClick}

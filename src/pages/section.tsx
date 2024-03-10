@@ -84,7 +84,7 @@ const Section: React.FC<SectionProps> = ({
       animate={controls}
       exit="inactive"
       transition={{ duration: 0.5, type: "easeOut" }}
-      className={`section p-10 border-2 border-gray-400 rounded-tl-3xl rounded-tr-3xl shadow-lg ${color} responsive-section`}
+      className={`section border-2 border-gray-400 rounded-tl-3xl rounded-tr-3xl shadow-lg ${color} responsive-section`}
       style={{
         position: "absolute",
         width: "75%",
@@ -107,9 +107,9 @@ const Section: React.FC<SectionProps> = ({
       ) : id === "Services" ? (
         <ServicesComponent />
       ) : videoSrc ? (
-        <div className="relative w-full h-full">
+        <div className="w-full h-full">
           <video
-            className="video w-full rounded-lg overflow-hidden"
+            className="video w-full h-full overflow-hidden rounded-tl-3xl rounded-tr-3xl object-cover"
             autoPlay
             loop
             muted
@@ -118,16 +118,8 @@ const Section: React.FC<SectionProps> = ({
             <source src={videoSrc} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-          <div
-            className="overlay-text"
-            style={{
-              position: "absolute",
-              bottom: "12vh",
-              left: "0",
-              padding: "1rem",
-            }}
-          >
-            <h2 className="text-4xl font-bold text-white p-4 bg-black bg-opacity-50 rounded-lg">
+          <div className="overlay-text lg:bottom-48 p-4 lg:relative md:flex ">
+            <h2 className="text-4xl font-bold text-white p-4 bg-black bg-opacity-50 rounded-lg sm:text-lg">
               We enable Collaborators
               <br /> to create delightful technical solutions
             </h2>

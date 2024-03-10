@@ -73,7 +73,7 @@ const Navbar: React.FC<NavbarProps> = ({
         <Image src="/icons/logo.svg" alt="Logo" width={100} height={50} />
       </div>
       <motion.div
-        className="md:hidden z-20 absolute right-4 "
+        className="lg:hidden z-20 absolute right-4 "
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         variants={menuIconVariants}
         animate={isMenuOpen ? "opened" : "closed"}
@@ -97,7 +97,7 @@ const Navbar: React.FC<NavbarProps> = ({
         variants={menuVariants}
         initial="closed"
         animate={isMenuOpen ? "opened" : "closed"}
-        className={`menu-container absolute   md:top-auto md:relative md:flex md:flex-row md:items-center md:space-x-4 `}
+        className={`menu-container absolute md:top-auto md:relative md:flex md:flex-row md:items-center md:space-x-4 `}
       >
         {sections.map((section) => (
           <div
