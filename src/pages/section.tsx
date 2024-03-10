@@ -119,7 +119,7 @@ const Section: React.FC<SectionProps> = ({
             Your browser does not support the video tag.
           </video>
           <div className="overlay-text lg:bottom-48 p-4 lg:relative md:flex ">
-            <h2 className="text-4xl font-bold text-white p-4 bg-black bg-opacity-50 rounded-lg sm:text-lg">
+            <h2 className="lg:text-4xl font-bold text-white p-4 bg-black bg-opacity-50 rounded-lg sm:text-lg">
               We enable Collaborators
               <br /> to create delightful technical solutions
             </h2>
