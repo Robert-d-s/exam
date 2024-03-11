@@ -14,11 +14,13 @@ module.exports = {
       screens: {
         "2xl": "1400px",
         tablet: "810px",
+        mobile: "429px",
       },
     },
     extend: {
       screens: {
         tablet: "810px",
+        mobile: "429px",
       },
       fontFamily: {
         digital: ["digital-7", "sans-serif"],

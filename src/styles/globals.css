@@ -158,3 +158,16 @@
     position: relative !important;
   }
 }
+
+@media (max-width: 429px) {
+  .client-table {
+    right: 1.3rem;
+    text-align: center;
+    top: 15rem;
+  }
+
+  .overlay-text h2 {
+    top: 2rem;
+    left: 1.3rem;
+  }
+}
