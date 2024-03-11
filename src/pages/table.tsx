@@ -48,7 +48,7 @@ const ServiceTable: React.FC<ServiceTableProps> = ({ onContactClick }) => {
       ))}
       <div className="flex mt-2">
         <button
-          className="bg-black hover:bg-green-500 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300"
+          className="bg-black hover:bg-green-500 text-white font-bold py-2 px-4 rounded-full transition-colors duration-300 "
           onClick={onContactClick}
         >
           Shall we collaborate ?

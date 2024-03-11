@@ -94,7 +94,7 @@ const Home: NextPage = () => {
           activeSection={activeSection}
         />
 
-        <div className="sections-container flex flex-col; st-top">
+        <div className="sections-container flex flex-col st-top">
           <AnimatePresence>
             {isContactActive && (
               <motion.div
@@ -117,9 +117,9 @@ const Home: NextPage = () => {
               </motion.div>
             )}
 
-            <div className="flex pt-6 ">
+            <div className="flex pt-6">
               {activeSection === "Home" && (
-                <div className="flex justify-center items-start ">
+                <div className="flex justify-center items-start client-table">
                   <ServiceTable
                     onContactClick={() => setActiveSection("Contact")}
                   />

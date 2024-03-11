@@ -142,15 +142,14 @@
     line-height: 1.5rem;
     padding: 0.5rem;
   }
-  .st-top {
-    /* display: flex; */
-    justify-content: flex-end;
-    padding-right: 2.5rem;
-  }
 
-  /* .text-container {
-    margin-left: 0 !important;
-  } */
+  .client-table {
+    position: absolute;
+    right: 3rem;
+    top: 10rem;
+  }
+  .st-top {
+  }
 
   .services-image-container img {
     position: relative !important;
