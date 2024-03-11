@@ -138,17 +138,20 @@
     top: 0;
   }
   .overlay-text h2 {
-    /* font-size: 1rem; */
+    position: relative;
     line-height: 1.5rem;
     padding: 0.5rem;
+    top: 5.5rem;
+    background-color: black;
+  }
+  .video {
+    opacity: 30%;
   }
 
   .client-table {
     position: absolute;
     right: 3rem;
     top: 10rem;
-  }
-  .st-top {
   }
 
   .services-image-container img {
