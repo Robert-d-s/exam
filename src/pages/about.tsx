@@ -97,9 +97,9 @@ const AboutComponent: React.FC = () => {
           </div>
           <div className="md:w-1/2 flex justify-center shadow-md">
             <video
-              width="100%"
-              height="auto"
-              className="rounded-lg lazy"
+              // width="100%"
+              // height="auto"
+              className="rounded-lg lazy h-full w-full object-cover"
               autoPlay
               loop
               muted
@@ -122,10 +122,10 @@ const AboutComponent: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="md:w-1/2 h-[50vh] flex justify-center items-center overflow-hidden ">
+          <div className="md:w-1/2 flex justify-center">
             <video
-              width="100%"
-              height="auto"
+              // width="100%"
+              // height="auto"
               className="rounded-lg lazy h-full w-full object-cover"
               autoPlay
               loop
