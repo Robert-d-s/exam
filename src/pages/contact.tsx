@@ -53,11 +53,11 @@ const ContactForm: React.FC<ContactFormProps> = ({
               <p>Øster Allé 56 6. sal</p>
               <p>2100 København Ø</p>
               <p>CVR: 42309648</p>
-              <div className="lg:mt-6 flex flex-col space-y-2 md:flex-row sm:mt-2 sm:space-y-0 md:space-x-2">
+              <div className="lg:mt-6 flex flex-col space-y-2 lg:flex-row sm:mt-2 sm:space-y-0 lg:space-x-2">
                 <a href="#" className="text-blue-600 hover:underline">
                   Cookie policy
                 </a>
-                <span className="hidden md:inline">•</span>
+                <span className="hidden lg:inline">•</span>
                 <a href="#" className="text-blue-600 hover:underline">
                   Privacy policy
                 </a>
