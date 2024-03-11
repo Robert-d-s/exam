@@ -70,7 +70,13 @@ const Navbar: React.FC<NavbarProps> = ({
       style={{ minHeight: "64px" }}
     >
       <div className="absolute left-0 pl-4">
-        <Image src="/icons/logo.svg" alt="Logo" width={100} height={50} />
+        <Image
+          src="/icons/logo.svg"
+          alt="Logo"
+          width={100}
+          height={50}
+          priority
+        />
       </div>
       <motion.div
         className="lg:hidden z-20 absolute right-4 "

@@ -131,6 +131,7 @@ const ServicesComponent: React.FC = () => {
                   alt={`${service.title}`}
                   layout="fill"
                   objectFit="cover"
+                  sizes="(min-width: 768px) 50vw, 100vw"
                 />
               </div>
               {/* Rest of the Content */}
