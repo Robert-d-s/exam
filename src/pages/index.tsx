@@ -117,7 +117,7 @@ const Home: NextPage = () => {
               </motion.div>
             )}
 
-            <div className="flex pt-10 ">
+            <div className="flex pt-6 ">
               {activeSection === "Home" && (
                 <div className="flex justify-center items-start ">
                   <ServiceTable
