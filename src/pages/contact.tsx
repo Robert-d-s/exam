@@ -33,7 +33,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
     <div
       className={`fixed inset-0 flex justify-center items-center ${className}`}
     >
-      <div className="bg-white flex gap-4 rounded-lg shadow-lg p-8 m-4 lg:w-1/2 max-h-full overflow-y-auto">
+      <div className="bg-white flex gap-4 rounded-lg shadow-lg p-8 m-4 lg:w-10/12 max-h-full overflow-y-auto">
         <div>
           <video
             width="100%"
