@@ -90,7 +90,8 @@ const AboutComponent: React.FC = () => {
             <h3 className="text-2xl font-semibold mb-2">Transparency</h3>
             {aboutContent.transparency.map((item, index) => (
               <div key={index} className="mb-3">
-                <p className="text-lg font-roboto">{formatText(item, 75)}</p>
+                {/* <p className="text-lg font-roboto">{formatText(item, 75)}</p> */}
+                <p className="text-lg font-roboto">{item}</p>
               </div>
             ))}
           </div>
@@ -116,7 +117,8 @@ const AboutComponent: React.FC = () => {
             <h3 className="text-2xl font-semibold mb-2">Organization</h3>
             {aboutContent.organization.map((item, index) => (
               <div key={index} className="mb-3">
-                <p className="text-lg font-roboto">{formatText(item, 75)}</p>
+                {/* <p className="text-lg font-roboto">{formatText(item, 75)}</p> */}
+                <p className="text-lg font-roboto">{item}</p>
               </div>
             ))}
           </div>
