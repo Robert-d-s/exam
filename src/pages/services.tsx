@@ -128,14 +128,19 @@ const ServicesComponent: React.FC = () => {
           <div key={index} className="mb-6">
             <div className="flex flex-wrap items-center lg:justify-start sm:justify-center md:flex-nowrap space-x-4">
               {/* <div className="services-image-container shadow-lg rounded-lg overflow-hidden "> */}
-              <div className="relative w-1/2 h-64">
+              {/* <div className="relative w-1/2 h-64"> */}
+              <div className="relative w-full md:w-1/2">
                 <Image
                   src={service.imageUrl}
                   alt={`${service.title}`}
                   // width={500}
                   // height={500}
                   // className="services-image"
-                  layout="fill"
+                  // layout="fill"
+                  // objectFit="cover"
+                  layout="responsive"
+                  width={16} // Aspect ratio width (e.g., for 16:9 aspect ratio)
+                  height={9} // Aspect ratio height (e.g., for 16:9 aspect ratio)
                   objectFit="cover"
                 />
               </div>
