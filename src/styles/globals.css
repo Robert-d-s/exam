@@ -132,9 +132,7 @@
     left: 50% !important;
     transform: translateX(-50%) !important;
   }
-  /* .overlay-text {
-    position: relative !important;
-  } */
+
   .overlay-text {
     position: absolute;
     top: 0;
@@ -153,9 +151,9 @@
   .text-container {
     margin-left: 0 !important;
   }
-  .services-image {
+  /* .services-image {
     width: 37rem;
-  }
+  } */
   .services-image-container {
     margin-bottom: 1.5rem;
   }
