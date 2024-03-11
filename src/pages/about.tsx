@@ -112,7 +112,7 @@ const AboutComponent: React.FC = () => {
           </div>
         </section>
 
-        <section className="flex flex-col md:flex-row-reverse mt-6 items-center space-y-4 md:space-y-0 md:space-x-reverse md:space-x-4">
+        <section className="flex flex-col w-full h-full md:flex-row-reverse mt-6 items-center space-y-4 md:space-y-0 md:space-x-reverse md:space-x-4">
           <div className="md:w-1/2 mt-6">
             <h3 className="text-2xl font-semibold mb-2">Organization</h3>
             {aboutContent.organization.map((item, index) => (
@@ -122,11 +122,11 @@ const AboutComponent: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="md:w-1/2 flex justify-center shadow-md">
+          <div className="md:w-1/2 h-[50vh] flex justify-center items-center overflow-hidden ">
             <video
               width="100%"
               height="auto"
-              className="rounded-lg lazy"
+              className="rounded-lg lazy h-full w-full object-cover"
               autoPlay
               loop
               muted
