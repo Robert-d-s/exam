@@ -79,13 +79,14 @@ const AboutComponent: React.FC = () => {
             <div key={index} className="mb-3">
               <p className="text-lg">
                 <span className="font-bold">{def.term}:</span>{" "}
-                {formatText(def.description, 75)}
+                {/* {formatText(def.description, 75)} */}
+                {def.description}
               </p>
             </div>
           ))}
         </section>
 
-        <section className="flex flex-col md:flex-row  space-y-4 md:space-y-0 md:space-x-4">
+        <section className="flex flex-col md:flex-row space-y-4 gap-4">
           <div className="md:w-1/2">
             <h3 className="text-2xl font-semibold mb-2">Transparency</h3>
             {aboutContent.transparency.map((item, index) => (
@@ -112,7 +113,8 @@ const AboutComponent: React.FC = () => {
           </div>
         </section>
 
-        <section className="flex flex-col w-full h-full md:flex-row-reverse mt-6 items-center space-y-4 md:space-y-0 md:space-x-reverse md:space-x-4">
+        {/* <section className="flex flex-col md:flex-row-reverse mt-6 items-center space-y-4 md:space-y-0 md:space-x-reverse md:space-x-4"> */}
+        <section className="flex flex-col md:flex-row-reverse mt-6 gap-4">
           <div className="md:w-1/2 mt-6">
             <h3 className="text-2xl font-semibold mb-2">Organization</h3>
             {aboutContent.organization.map((item, index) => (
