@@ -135,7 +135,7 @@ const ServicesComponent: React.FC = () => {
                 />
               </div>
               {/* Rest of the Content */}
-              <div className="text-container">
+              <div className="text-container lg:w-1/2">
                 <div className="flex items-center space-x-2">
                   <Image
                     src={service.icon}
@@ -149,7 +149,8 @@ const ServicesComponent: React.FC = () => {
                 </div>
                 {service.description.map((paragraph, pIndex) => (
                   <p key={pIndex} className="text-lg mb-4">
-                    {formatText(paragraph, 75)}
+                    {/* {formatText(paragraph, 75)} */}
+                    {paragraph}
                   </p>
                 ))}
                 {service.features && (
