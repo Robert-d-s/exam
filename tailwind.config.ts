@@ -14,6 +14,9 @@ module.exports = {
       colors: {
         enableBg: "#007bff",
       },
+      screens: {
+        tablet: "810px",
+      },
     },
   },
   plugins: [require("@tailwindcss/aspect-ratio"), addVariablesForColors],

@@ -148,13 +148,11 @@
     padding-right: 2.5rem;
   }
 
-  .text-container {
+  /* .text-container {
     margin-left: 0 !important;
-  }
-  /* .services-image {
-    width: 37rem;
   } */
-  .services-image-container {
-    margin-bottom: 1.5rem;
+
+  .services-image-container img {
+    position: relative !important;
   }
 }

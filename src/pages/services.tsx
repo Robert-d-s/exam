@@ -124,8 +124,8 @@ const ServicesComponent: React.FC = () => {
       >
         {servicesData.map((service, index) => (
           <div key={index} className="mb-6">
-            <div className="flex flex-wrap items-stretch shadow-lg rounded-lg overflow-hidden lg:justify-start sm:justify-center md:flex-nowrap space-x-4">
-              <div className="relative w-full md:w-1/2 flex-grow">
+            <div className="flex flex-wrap items-stretch shadow-lg rounded-lg overflow-hidden lg:justify-start sm:justify-center lg:flex-nowrap space-x-4">
+              <div className="relative w-full flex-grow tablet:flex-grow-0 md:w-1/2  services-image-container">
                 <Image
                   src={service.imageUrl}
                   alt={`${service.title}`}
@@ -135,7 +135,7 @@ const ServicesComponent: React.FC = () => {
                 />
               </div>
               {/* Rest of the Content */}
-              <div className="text-container lg:w-1/2">
+              <div className="text-container lg:w-1/2 sm:mt-4">
                 <div className="flex items-center space-x-2">
                   <Image
                     src={service.icon}

@@ -13,9 +13,13 @@ module.exports = {
       padding: "2rem",
       screens: {
         "2xl": "1400px",
+        tablet: "810px",
       },
     },
     extend: {
+      screens: {
+        tablet: "810px",
+      },
       fontFamily: {
         digital: ["digital-7", "sans-serif"],
         "roboto-condensed": ['"Roboto Condensed"', "sans-serif"],
