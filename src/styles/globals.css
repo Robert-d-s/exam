@@ -170,4 +170,16 @@
     top: 2rem;
     left: 1.3rem;
   }
+  .menu-container {
+    flex-direction: column;
+    padding-left: 1rem;
+    padding-bottom: 0.5rem;
+    z-index: 50;
+    background-color: whitesmoke;
+    transform: translateY(55%) translateX(150px) !important;
+  }
+  .contact-form-container {
+    flex-direction: column-reverse;
+    padding: 1rem;
+  }
 }

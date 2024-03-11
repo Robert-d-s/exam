@@ -24,7 +24,7 @@ const Navbar: React.FC<NavbarProps> = ({
     } else {
       setActiveSection(section);
     }
-    // setIsMenuOpen(false);
+    setIsMenuOpen(false);
   };
 
   const menuIconVariants = {

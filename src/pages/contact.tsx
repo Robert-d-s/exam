@@ -33,7 +33,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
     <div
       className={`fixed inset-0 flex justify-center items-center ${className}`}
     >
-      <div className="bg-white flex gap-4 rounded-lg shadow-lg p-8 m-4 lg:w-10/12 max-h-full overflow-y-auto">
+      <div className="bg-white flex gap-4 rounded-lg shadow-lg p-8 m-4 lg:w-10/12 max-h-full overflow-y-auto contact-form-container">
         <div>
           <video
             width="100%"
@@ -53,7 +53,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
               <p>Øster Allé 56 6. sal</p>
               <p>2100 København Ø</p>
               <p>CVR: 42309648</p>
-              <div className="lg:mt-6 flex flex-col space-y-2 lg:flex-row sm:mt-2 sm:space-y-0 lg:space-x-2">
+              <div className="lg:mt-6 flex flex-col space-y-2 lg:flex-row sm:mt-2 sm:space-y-0 lg:space-x-2 CandP">
                 <a href="#" className="text-blue-600 hover:underline">
                   Cookie policy
                 </a>
