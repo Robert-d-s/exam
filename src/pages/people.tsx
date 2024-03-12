@@ -91,7 +91,7 @@ const PersonCard: React.FC<PersonCardProps> = ({ person }) => {
   const [isHovered, setIsHovered] = React.useState(false);
   return (
     <div
-      className="person-card cursor-pointer overflow-hidden relative w-full h-auto"
+      className="person-card cursor-pointer overflow-hidden relative w-full h-auto shadow-lg"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

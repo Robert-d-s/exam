@@ -84,7 +84,7 @@ const Section: React.FC<SectionProps> = ({
       animate={controls}
       exit="inactive"
       transition={{ duration: 0.5, type: "easeOut" }}
-      className={`section border-2 border-gray-400 rounded-tl-3xl rounded-tr-3xl shadow-lg ${color} responsive-section`}
+      className={`section border-2 border-green-600 rounded-tl-3xl rounded-tr-3xl shadow-lg ${color} responsive-section`}
       style={{
         position: "absolute",
         width: "75%",
