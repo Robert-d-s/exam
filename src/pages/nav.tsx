@@ -19,7 +19,7 @@ const Navbar: React.FC<NavbarProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSectionClick = (section: string) => {
-    if (section === "Internal") {
+    if (section === "Client-Portal") {
       router.push("/login");
     } else {
       setActiveSection(section);
@@ -76,6 +76,7 @@ const Navbar: React.FC<NavbarProps> = ({
           width={100}
           height={50}
           priority
+          // className="filter invert"
         />
       </div>
       <motion.div

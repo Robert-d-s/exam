@@ -7,6 +7,7 @@ import Section from "./section";
 import { BackgroundBeams } from "../components/ui/background-beams";
 import ContactForm from "./contact";
 import ServiceTable from "./table";
+import FooterComponent from "./footer";
 
 const Home: NextPage = () => {
   const sections = [
@@ -15,7 +16,7 @@ const Home: NextPage = () => {
     "Services",
     "People",
     "Contact",
-    "Internal",
+    "Client-Portal",
   ];
 
   const [activeSection, setActiveSection] = useState<string>(sections[0]);
@@ -160,6 +161,7 @@ const Home: NextPage = () => {
           </AnimatePresence>
         </div>
       </div>
+      <FooterComponent />
     </>
   );
 };
