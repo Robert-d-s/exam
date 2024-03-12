@@ -32,7 +32,7 @@ const tableData: ClientServiceData[] = [
 const ServiceTable: React.FC<ServiceTableProps> = ({ onContactClick }) => {
   return (
     <div className="flex flex-col mx-2 z-10">
-      <p className="text-3xl font-pt-sans-bold-900 mb-2 text-center bg-white shadow rounded-lg sm:text-2xl">
+      <p className="text-3xl font-bold mb-2 text-center bg-white shadow rounded-lg sm:text-2xl">
         Our Happy Collaborators
       </p>
       {tableData.map((item, index) => (
