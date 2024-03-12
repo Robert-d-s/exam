@@ -13,31 +13,23 @@ const NavigationBar: React.FC = () => {
   };
   return (
     <nav className="flex items-center justify-between p-4 bg-white shadow font-roboto-condensed uppercase">
-      <div className="flex items-center">
-        {/* <Image
+      <Link href="/">
+        <Image
           src="/logo.svg"
           alt="Enablment-tt Logo"
           width={200}
           height={40}
-        /> */}
-        <Link href="/">
-          <Image
-            src="/logo.svg"
-            alt="Enablment-tt Logo"
-            width={200}
-            height={40}
-            style={{ cursor: "pointer" }} // This style may not be applied due to <Image> restrictions
-          />
+          style={{ cursor: "pointer" }}
+        />
+      </Link>
+      <div className="flex-grow font-semibold text-lg mx-4 flex items-center justify-center">
+        <Link href="/issues2" className="mr-4">
+          Issues
         </Link>
-        <div className="ml-4 font-semibold text-lg ">
-          <Link href="/issues2" className="mr-4">
-            Issues
-          </Link>
-          <Link href="/adminPage" className="mr-4">
-            Admin
-          </Link>
-          <Link href="/timeKeeper2">Timekeeper</Link>
-        </div>
+        <Link href="/adminPage" className="mr-4">
+          Admin
+        </Link>
+        <Link href="/timeKeeper2">Timekeeper</Link>
       </div>
       <div>
         <div>
