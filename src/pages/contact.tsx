@@ -54,11 +54,11 @@ const ContactForm: React.FC<ContactFormProps> = ({
               <p>2100 København Ø</p>
               <p>CVR: 42309648</p>
               <div className="lg:mt-6 flex flex-col space-y-2 lg:flex-row sm:mt-2 sm:space-y-0 lg:space-x-2 CandP">
-                <a href="#" className="text-blue-600 hover:underline">
+                <a href="#" className="text-blue-700 hover:underline">
                   Cookie policy
                 </a>
                 <span className="hidden lg:inline">•</span>
-                <a href="#" className="text-blue-600 hover:underline">
+                <a href="#" className="text-blue-700 hover:underline">
                   Privacy policy
                 </a>
               </div>
@@ -161,14 +161,14 @@ const ContactForm: React.FC<ContactFormProps> = ({
                 />
               </div>
               <div className="flex items-center mt-4 sm:mt-0">
-                <div className="text-xs text-gray-400 flex-grow">
+                <div className="text-xs text-gray-500 flex-grow">
                   This site is protected by reCAPTCHA and the Google
-                  <a href="#" className="text-blue-600 hover:underline">
+                  <a href="#" className="text-blue-700 hover:underline">
                     {" "}
                     Privacy Policy
                   </a>{" "}
                   and
-                  <a href="#" className="text-blue-600 hover:underline">
+                  <a href="#" className="text-blue-700 hover:underline">
                     {" "}
                     Terms of Service
                   </a>{" "}

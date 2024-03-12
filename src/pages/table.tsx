@@ -39,8 +39,8 @@ const ServiceTable: React.FC<ServiceTableProps> = ({ onContactClick }) => {
         <div key={index} className="w-full pb-2">
           <div className="bg-white shadow rounded-lg sm:p-1 sm:text-sm">
             <h3 className="text-lg sm:text-md font-semibold">{item.client}</h3>
-            <p className="text-gray-600 font-roboto">Year: {item.year}</p>
-            <p className="text-gray-600 font-roboto">
+            <p className="text-gray-900 font-roboto">Year: {item.year}</p>
+            <p className="text-gray-900 font-roboto">
               Services: {item.services}
             </p>
           </div>
