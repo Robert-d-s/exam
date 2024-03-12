@@ -148,7 +148,11 @@ const ServicesComponent: React.FC = () => {
                   </h3>
                 </div>
                 {service.description.map((paragraph, pIndex) => (
-                  <p key={pIndex} className="text-lg mb-4">
+                  <p
+                    key={pIndex}
+                    style={{ lineHeight: "1.4" }}
+                    className="text-lg mb-3"
+                  >
                     {/* {formatText(paragraph, 75)} */}
                     {paragraph}
                   </p>
@@ -166,7 +170,9 @@ const ServicesComponent: React.FC = () => {
                           width={20}
                           height={20}
                         />
-                        <span className="text-lg">{feature.name}</span>
+                        <span style={{ lineHeight: "1.4" }} className="text-lg">
+                          {feature.name}
+                        </span>
                       </div>
                     ))}
                   </div>

@@ -77,7 +77,7 @@ const AboutComponent: React.FC = () => {
           <h3 className="text-2xl font-semibold mb-2">Definitions</h3>
           {aboutContent.definitions.map((def, index) => (
             <div key={index} className="mb-3">
-              <p className="text-lg">
+              <p style={{ lineHeight: "1.4" }} className="text-lg">
                 <span className="font-bold">{def.term}:</span>{" "}
                 {/* {formatText(def.description, 75)} */}
                 {def.description}
@@ -92,14 +92,17 @@ const AboutComponent: React.FC = () => {
             {aboutContent.transparency.map((item, index) => (
               <div key={index} className="mb-3">
                 {/* <p className="text-lg font-roboto">{formatText(item, 75)}</p> */}
-                <p className="text-lg font-roboto">{item}</p>
+                <p
+                  style={{ lineHeight: "1.4" }}
+                  className="text-lg font-roboto"
+                >
+                  {item}
+                </p>
               </div>
             ))}
           </div>
           <div className="md:w-1/2 flex justify-center shadow-md">
             <video
-              // width="100%"
-              // height="auto"
               className="rounded-lg lazy h-full w-full object-cover"
               autoPlay
               loop
@@ -119,7 +122,12 @@ const AboutComponent: React.FC = () => {
             {aboutContent.organization.map((item, index) => (
               <div key={index} className="mb-3">
                 {/* <p className="text-lg font-roboto">{formatText(item, 75)}</p> */}
-                <p className="text-lg font-roboto">{item}</p>
+                <p
+                  style={{ lineHeight: "1.4" }}
+                  className="text-lg font-roboto"
+                >
+                  {item}
+                </p>
               </div>
             ))}
           </div>
