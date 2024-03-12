@@ -55,11 +55,11 @@ const FooterComponent: React.FC = () => {
           </span>
         </div>
         <div className="flex gap-1 items-center mt-4">
-          <span className="text-green-600">(+45) 22 92 67 80</span>
+          <span className="text-black">(+45) 22 92 67 80</span>
           <Image src="/icons/phone.svg" alt="Call" width={24} height={24} />
         </div>
         <div className="flex gap-1 items-center">
-          <span className="text-green-600 mb-1">gd@enablment.com</span>
+          <span className="text-black mb-1">gd@enablment.com</span>
           <Image src="/icons/mail.svg" alt="Email" width={24} height={24} />
         </div>
       </div>
