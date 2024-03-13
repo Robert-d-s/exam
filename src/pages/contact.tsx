@@ -140,7 +140,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
                   type="text"
                   name="name"
                   placeholder="Name"
-                  className="w-full mb-4 p-2 border border-gray-300 rounded"
+                  className="w-full mb-4 p-2 border border-gray-500 rounded"
                   onChange={handleChange}
                   required
                 />
@@ -148,14 +148,14 @@ const ContactForm: React.FC<ContactFormProps> = ({
                   type="email"
                   name="email"
                   placeholder="E-mail"
-                  className="w-full mb-4 p-2 border border-gray-300 rounded"
+                  className="w-full mb-4 p-2 border border-gray-500 rounded"
                   onChange={handleChange}
                   required
                 />
                 <textarea
                   name="message"
                   placeholder="Your message"
-                  className="w-full mb-4 p-2 border border-gray-300 rounded"
+                  className="w-full mb-4 p-2 border border-gray-500 rounded"
                   onChange={handleChange}
                   required
                 />
