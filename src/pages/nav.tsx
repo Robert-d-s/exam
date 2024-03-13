@@ -124,7 +124,12 @@ const Navbar: React.FC<NavbarProps> = ({
               onClick={() => handleSectionClick(section)}
             />
             <button
-              className="text-black py-2 px-4"
+              // className="text-black py-2 px-4"
+              className={`py-2 px-4 ${
+                section === "Contact"
+                  ? "text-white font-bold rounded-lg  px-2 mx-2 py-0 bg-green-700"
+                  : "text-black"
+              }`}
               onClick={() => handleSectionClick(section)}
             >
               {section}
