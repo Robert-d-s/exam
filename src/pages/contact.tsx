@@ -99,7 +99,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
                 </span>
               </div>
               <div className="flex gap-1 items-center mt-4">
-                <span className="text-green-600">(+45) 22 92 67 80</span>
+                <span className="text-green-700">(+45) 22 92 67 80</span>
                 <Image
                   src="/icons/phone.svg"
                   alt="call"
@@ -109,7 +109,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
                 />
               </div>
               <div className="flex gap-1 items-center ">
-                <span className="text-green-600 mb-1">gd@enablment.com</span>
+                <span className="text-green-700 mb-1">gd@enablment.com</span>
                 <Image
                   src="/icons/mail.svg"
                   alt="email"
@@ -125,7 +125,7 @@ const ContactForm: React.FC<ContactFormProps> = ({
           <div className="flex flex-col justify-between h-full">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg text-gray-900">
-                To: <span className="text-green-500">Enablment</span>
+                To: <span className="text-green-600 font-bold">Enablment</span>
               </h2>
               <button
                 className="flex-none w-12 h-12 bg-black text-xl text-white rounded-full hover:bg-red-500 hover:scale-105 transition transform duration-200 ease-in-out"
